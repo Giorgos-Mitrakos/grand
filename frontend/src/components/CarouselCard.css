@@ -1,0 +1,94 @@
+*{
+    box-sizing: border-box;
+}
+
+.carousel-card {
+    box-shadow: 0 0.25rem 0.5rem 0 rgba(0, 0, 0, 0.2);
+    margin: 0.5rem;
+    text-align: center;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    color: #312f8b;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    width: 14.4rem;
+    height: 18rem;
+}
+
+.carousel-card-container{
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: 8fr 3fr;
+}
+
+.carousel-card-image-container{
+    border-bottom:1px solid #a3a1e9;
+    height: 12rem;
+}
+
+.carousel-card-name-price{
+    display: grid;
+}
+
+.carousel-card-image{
+    width: auto;
+    max-width: 14rem;
+    height: 100%;
+    max-height: 9rem;
+    justify-self: center;
+    align-items: center;
+    padding: 0.5rem 0rem;
+}
+
+.carousel-card-name{
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.carousel-card-price {
+    margin: 0.2rem;
+    font-size: 1.2rem;
+}
+
+@media only screen and (max-width: 1024px) {
+
+    .carousel-card {
+        width: 90%;
+        max-width: 25rem;
+        height: 12rem;
+        margin: 1rem;
+        padding: 0.2rem;
+    }
+
+    .carousel-card-container{
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        height: 9rem;
+        padding: 0.5rem;
+    }
+
+    .carousel-card-image-container{
+        border-bottom: hidden;
+        width: 8rem;
+    }
+
+    .carousel-card-image{
+        max-width: 6rem;
+        height: auto;
+        max-height: 12rem;
+    }
+
+    .carousel-card-name-price{
+        display: grid;
+        grid-template-rows: 4fr 1fr;
+        padding: 0.5rem;
+    }
+
+    .carousel-card-name{
+        height: 100%;
+        text-align: left;
+    }
+
+    .carousel-card-price{
+        text-align: right;
+    }
+}

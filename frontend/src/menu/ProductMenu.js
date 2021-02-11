@@ -1,0 +1,365 @@
+import React, { useState } from 'react';
+import './ProductMenu.css';
+import { Link } from 'react-router-dom';
+import { productMenuToggle } from '../action/menuActions';
+import { useDispatch } from 'react-redux';
+
+function ProductMenu(props) {
+
+    const [mobileModal, setMobileModal] = useState(false);
+    const [tabletModal, setTabletModal] = useState(false);
+    const [desktopModal, setDesktopModal] = useState(false);
+    const [keyboardMouseModal, setKeyboardMouseModal] = useState(false);
+    const [pcHardwearModal, setPcHardwearModal] = useState(false)
+    const [networkModal, setNetworkModal] = useState(false)
+    const [laptopModal, setLaptopModal] = useState(false);
+    const [multimediaModal, setMultimediaModal] = useState(false);
+    const [camerasModal, setCamerasModal] = useState(false);
+    const [storageModal, setStorageModal] = useState(false);
+    const [soundSystemModal, setSoundSystemModal] = useState(false);
+    const [tvModal, setTvModal] = useState(false);
+    const [officeSuppliesModal, setOfficeSuppliesModal] = useState(false);
+    const [batteriesModal, setBatteriesModal] = useState(false);
+    const [rolePaperModal, setRolePaperModal] = useState(false);
+    const [paperModal, setPaperModal] = useState(false);
+    const [inksModal, setInksModal] = useState(false);
+    const [softwareModal, setSoftwareModal] = useState(false);
+    const [gamingModal, setGamingModal] = useState(false);
+    const [lightingModal, setLightingModal] = useState(false);
+    const [gadgetModal, setGadgetModal] = useState(false);
+    const [freeTimeModal, setFreeTimeModal] = useState(false);
+    const [autoMotoModal, setAutoMotoModal] = useState(false);
+    const [medicalDevicesModal, setMedicalDevicesModal] = useState(false);
+    const dispatch = useDispatch();
+
+    const handleClik = (e) => {
+        e.stopPropagation();
+        if (window.innerWidth < 1024) {
+            dispatch(productMenuToggle(false));
+        }
+    }
+
+    return (
+        <div className="product-menu-containter">
+            <div className="menu-header" onClick={() => setMobileModal(!mobileModal)}>
+                <div>
+                    <i class="material-icons">tablet_android</i>
+                    <h5>Κινητή Τηλεφωνία</h5>
+                </div>
+                <i className="material-icons expand">{!mobileModal ? "expand_more" : "expand_less"}</i>
+            </div>
+            {mobileModal && <ul className="mobile-modal">
+                <Link onClick={handleClik} to="/products/Kινητά/Used-Refurbished"><li>Used - Refurbished</li></Link>
+                <Link onClick={handleClik} to="/products/Kινητά/Kινητά"><li>Κινητά</li></Link>
+                <Link onClick={handleClik} to="/products/Kινητά/Προστασία-Οθόνης"><li>Προστασία Οθόνης</li></Link>
+                <Link onClick={handleClik} to="/products/Kινητά/Θήκες-Κινητών"><li>Θήκες Κινητών</li></Link>
+                <Link onClick={handleClik} to="/products/Kινητά/Car-Kit"><li>Car Kit</li></Link>
+                <Link onClick={handleClik} to="/products/Kινητά/Bluetooth"><li>Bluetooth</li></Link>
+                <Link onClick={handleClik} to="/products/Kινητά/Handsfree"><li>Handsfree</li></Link>
+                <Link onClick={handleClik} to="/products/Kινητά/Smartwatches"><li>Smartwatches</li></Link>
+                <Link onClick={handleClik} to="/products/Kινητά/Φορτιστές-Κινητών"><li>Φορτιστές Κινητών</li></Link>
+                <Link onClick={handleClik} to="/products/Μπαταρίες/PowerBanks"><li>Power Banks</li></Link>
+                <Link onClick={handleClik} to="/products/Kινητά/Καλώδια-Φόρτισης-Δεδομένων"><li>Καλώδια Φόρτισης-Δεδομένων</li></Link>
+                <Link onClick={handleClik} to="/products/Kινητά/Adapters-Φόρτισης-Δεδομένων"><li>Adapters Φόρτισης-Δεδομένων</li></Link>
+                <Link onClick={handleClik} to="/products/Kινητά/Selfie-Sticks"><li>Selfie Sticks</li></Link>
+                <Link onClick={handleClik} to="/products/Kινητά/Βάσεις-Στήριξης-Κινητών"><li>Βάσεις Στήριξης Κινητών</li></Link>
+                <Link onClick={handleClik} to="/products/Kινητά/Γραφίδες"><li>Γραφίδες</li></Link>
+                <Link onClick={handleClik} to="/products/Kινητά/Διάφορα-αξεσουάρ"><li>Διάφορα αξεσουάρ</li></Link>
+                <Link onClick={handleClik} to="/products/Kινητά/Ανταλλακτικά-Κινητών"><li>Ανταλλακτικά Κινητών</li></Link>
+            </ul>}
+            <div className="menu-header" onClick={() => setTabletModal(!tabletModal)}>
+                <div>
+                    <i class="material-icons">tablet</i>
+                    <h5>Tablet</h5>
+                </div>
+                <i className="material-icons expand">{!tabletModal ? "expand_more" : "expand_less"}</i>
+            </div>
+            {tabletModal && <ul className="tablet-modal">
+                <Link onClick={handleClik} to="/products/Tablet/Used-Refurbished"><li>Used - Refurbished</li></Link>
+                <Link onClick={handleClik} to="/products/Tablet/Tablet"><li>Tablet</li></Link>
+                <Link onClick={handleClik} to="/products/Tablet/Προστασία-Οθόνης"><li>Προστασία Οθόνης</li></Link>
+                <Link onClick={handleClik} to="/products/Tablet/Θήκες-Tablet"><li>Θήκες Tablet</li></Link>
+                <Link onClick={handleClik} to="/products/Tablet/Βάσεις"><li>Βάσεις Tablet</li></Link>
+                <Link onClick={handleClik} to="/products/Tablet/Φορτιστές-tablet"><li>Φορτιστές Tablet</li></Link>
+                <Link onClick={handleClik} to="/products/Μπαταρίες/PowerBanks"><li>Power Banks</li></Link>
+                <Link onClick={handleClik} to="/products/Kινητά/Καλώδια-Φόρτισης-Δεδομένων"><li>Καλώδια Φόρτισης-Δεδομένων</li></Link>
+                <Link onClick={handleClik} to="/products/Kινητά/Adapters-Φόρτισης-Δεδομένων"><li>Adapters Φόρτισης-Δεδομένων</li></Link>
+                <Link onClick={handleClik} to="/products/Tablet/Selfie-Sticks"><li>Selfie Sticks</li></Link>
+                <Link onClick={handleClik} to="/products/Tablet/Βάσεις-Στήριξης-tablet"><li>Βάσεις Στήριξης tablet</li></Link>
+                <Link onClick={handleClik} to="/products/taTabletblet/Διάφορα-αξεσουάρ"><li>Διάφορα αξεσουάρ</li></Link>
+            </ul>}
+            <div className="menu-header" onClick={() => setDesktopModal(!desktopModal)}>
+                <div>
+                    <i class="material-icons">desktop_windows</i>
+                    <h5>Desktop</h5>
+                </div>
+                <i className="material-icons expand">{!desktopModal ? "expand_more" : "expand_less"}</i>
+            </div>
+            {desktopModal && <ul className="desktop-modal">
+                <Link onClick={handleClik} to="/products/Desktop/Used-Refurbished"><li>Used - Refurbished</li></Link>
+                <Link onClick={handleClik} to="/products/Desktop/Desktop-PC"><li>Desktop PC</li></Link>
+                <Link onClick={handleClik} to="/products/Μultimedia/Οθόνες"><li>Οθόνες</li></Link>
+                <Link onClick={handleClik} to="/products/Μultimedia/Ηχεία"><li>Ηχεία</li></Link>
+                <li className="menu-header" onClick={() => setKeyboardMouseModal(!keyboardMouseModal)}>
+                    <h5>Πληκτρολόγια & Ποντίκια</h5>
+                    <i className="material-icons expand">{!keyboardMouseModal ? "expand_more" : "expand_less"}</i>
+                </li>
+                {keyboardMouseModal && <ul className="second-modal">
+                    <Link onClick={handleClik} to="/products/Πληκτρολόγια-Ποντίκια/Πληκτρολόγια"><li>Πληκτρολόγια</li></Link>
+                    <Link onClick={handleClik} to="/products/Πληκτρολόγια-Ποντίκια/Ποντίκια"><li>Ποντίκια</li></Link>
+                </ul>}
+                <Link onClick={handleClik} to="/products/Desktop/MousePads"><li>MousePads</li></Link>
+                <Link onClick={handleClik} to="/products/cameras/web-cameras"><li>Webcams</li></Link>
+                <Link onClick={handleClik} to="/products/Μultimedia/Headsets"><li>Headsets</li></Link>
+                <Link onClick={handleClik} to="/products/Μultimedia/Μικρόφωνα"><li>Μικρόφωνα</li></Link>
+                <Link onClick={handleClik} to="/products/Desktop/Εκτυπωτές"><li>Εκτυπωτές</li></Link>
+                <Link onClick={handleClik} to="/products/Desktop/Bluetooth-Adapters"><li>Bluetooth Adapters</li></Link>
+                <Link onClick={handleClik} to="/products/Desktop/Διάφορα-Περιφερειακά"><li>Διάφορα Περιφερειακά</li></Link>
+                <li className="menu-header" onClick={() => setPcHardwearModal(!pcHardwearModal)}>
+                    <h5>Pc Hardwear</h5>
+                    <i className="material-icons expand">{!pcHardwearModal ? "expand_more" : "expand_less"}</i>
+                </li>
+                {pcHardwearModal && <ul className="second-modal">
+                    <Link onClick={handleClik} to="/products/Pc-Hardwear/Τροφοδοτικά"><li>Τροφοδοτικά-PC</li></Link>
+                    <Link onClick={handleClik} to="/products/Pc-Hardwear/Δίσκοι-SSD"><li>Δίσκοι &amp; SSD</li></Link>
+                    <Link onClick={handleClik} to="/products/Pc-Hardwear/DVD-RW"><li>DVD-RW</li></Link>
+                    <Link onClick={handleClik} to="/products/Pc-Hardwear/Μνήμες-Ram"><li>Μνήμες Ram</li></Link>
+                    <Link onClick={handleClik} to="/products/Pc-Hardwear/Καλώδια"><li>Καλώδια</li></Link>
+                </ul>}
+                <li className="menu-header" onClick={() => setNetworkModal(!networkModal)}>
+                    <h5>Δικτυακός Εξοπλισμός</h5>
+                    <i className="material-icons expand">{!networkModal ? "expand_more" : "expand_less"}</i>
+                </li>
+                {networkModal && <ul className="second-modal">
+                    <Link onClick={handleClik} to="/products/Δικτυακός-Εξοπλισμός/Κάρτες-Δικτύου"><li>Κάρτες Δικτύου</li></Link>
+                    <Link onClick={handleClik} to="/products/Δικτυακός-Εξοπλισμός/Range-Extenders-Powerlines"><li>Range Extenders - Powerlines</li></Link>
+                    <Link onClick={handleClik} to="/products/Δικτυακός-Εξοπλισμός/Switches"><li>Switches</li></Link>
+                    <Link onClick={handleClik} to="/products/Δικτυακός-Εξοπλισμός/Καλώδια"><li>Καλώδια</li></Link>
+                </ul>}
+            </ul>}
+            <div className="menu-header" onClick={() => setLaptopModal(!laptopModal)}>
+                <div>
+                    <i class="material-icons">laptop</i>
+                    <h5>Laptop</h5>
+                </div>
+                <i className="material-icons expand">{!laptopModal ? "expand_more" : "expand_less"}</i>
+            </div>
+            {laptopModal && <ul className="laptop-modal">
+                <Link onClick={handleClik} to="/products/Laptop/Used-Refurbished"><li>Used - Refurbished</li></Link>
+                <Link onClick={handleClik} to="/products/Laptop/laptop"><li>Laptop</li></Link>
+                <Link onClick={handleClik} to="/products/Laptop/Τσάντες-Laptop"><li>Τσάντες Laptop</li></Link>
+                <Link onClick={handleClik} to="/products/Laptop/Φορτιστές-Laptop"><li>Φορτιστές Laptop</li></Link>
+                <Link onClick={handleClik} to="/products/Laptop/Μπαταρίες-Laptop"><li>Μπαταρίες Laptop</li></Link>
+                <Link onClick={handleClik} to="/products/Laptop/Bάσεις-Docking-Station-Laptop"><li>Bάσεις & Docking Station Laptop</li></Link>
+                <Link onClick={handleClik} to="/products/Laptop/Διάφορα-Αξεσουάρ-Laptop"><li>Διάφορα Αξεσουάρ για Laptop</li></Link>
+                <Link onClick={handleClik} to="/products/Laptop/Ανταλλακτικά-Laptop"><li>Ανταλλακτικά για Laptop</li></Link>
+            </ul>}
+            <div className="menu-header" onClick={() => setMultimediaModal(!multimediaModal)}>
+                <div>
+                    <i class="material-icons">headset_mic</i>
+                    <h5>Εικόνα - Ήχος</h5>
+                </div>
+                <i className="material-icons expand">{!multimediaModal ? "expand_more" : "expand_less"}</i>
+            </div>
+            {multimediaModal && <ul className="multimedia-modal">
+                <Link onClick={handleClik} to="/products/Μultimedia/Οθόνες"><li>Οθόνες</li></Link>
+                <Link onClick={handleClik} to="/products/Μultimedia/Ηχεία"><li>Ηχεία</li></Link>
+                <li className="menu-header" onClick={() => setCamerasModal(!camerasModal)}>
+                    <h5>Cameras</h5>
+                    <i className="material-icons expand">{!camerasModal ? "expand_more" : "expand_less"}</i>
+                </li>
+                {camerasModal && <ul className="second-modal">
+                    <Link onClick={handleClik} to="/products/Cameras/web-cameras"><li>Web Cameras</li></Link>
+                    <Link onClick={handleClik} to="/products/Cameras/Κάμερες-καταγραφής-πορείας"><li>Κάμερες καταγραφής πορείας</li></Link>
+                    <Link onClick={handleClik} to="/products/Cameras/Action-Cameras"><li>Action Cameras</li></Link>
+                    <Link onClick={handleClik} to="/products/Cameras/Action-Cameras-Accessories"><li>Action Cameras Accessories</li></Link>
+                    <Link onClick={handleClik} to="/products/Cameras/Photo-Cameras"><li>Photo Cameras</li></Link>
+                    <Link onClick={handleClik} to="/products/Cameras/Θήκες-Τσάντες"><li>Θήκες/Τσάντες</li></Link>
+                    <Link onClick={handleClik} to="/products/Cameras/Φακοί-Flash"><li>Φακοί/Flash Κάμερας</li></Link>
+                    <Link onClick={handleClik} to="/products/Cameras/Τρίποδα"><li>Τρίποδα</li></Link>
+                    <Link onClick={handleClik} to="/products/Cameras/Αξεσουάρ-Κάμερας"><li>Αξεσουάρ Κάμερας</li></Link>
+                </ul>}
+                <Link onClick={handleClik} to="/products/Μultimedia/mp3-mp4-players"><li>MP3 & MP4 Players</li></Link>
+                <Link onClick={handleClik} to="/products/Μultimedia/Μικρόφωνα"><li>Μικρόφωνα</li></Link>
+                <Link onClick={handleClik} to="/products/Μultimedia/Usb-Hubs-Card-Readers"><li>Usb Hubs - Card Readers</li></Link>
+                <li className="menu-header" onClick={() => setStorageModal(!storageModal)}>
+                    <h5>Αποθηκευτικά Μέσα</h5>
+                    <i className="material-icons expand">{!storageModal ? "expand_more" : "expand_less"}</i>
+                </li>
+                {storageModal && <ul className="second-modal">
+                    <Link onClick={handleClik} to="/products/Αποθηκευτικά-Μέσα/CD-DVD"><li>CD - DVD</li></Link>
+                    <Link onClick={handleClik} to="/products/Αποθηκευτικά-Μέσα/Flash-Drivers"><li>Flash Drivers</li></Link>
+                    <Link onClick={handleClik} to="/products/Αποθηκευτικά-Μέσα/Memory-Cards"><li>Memory Cards</li></Link>
+                </ul>}
+                <Link onClick={handleClik} to="/products/Μultimedia/Game-Controllers-Accessories"><li>Game Controllers & Accessories</li></Link>
+                <Link onClick={handleClik} to="/products/Μultimedia/Pointing-Devices"><li>Pointing Devices</li></Link>
+                <Link onClick={handleClik} to="/products/Μultimedia/3D-Pen"><li>3D Pen</li></Link>
+                <li className="menu-header" onClick={() => setSoundSystemModal(!soundSystemModal)}>
+                    <h5>Ηχοσυστήματα</h5>
+                    <i className="material-icons expand">{!soundSystemModal ? "expand_more" : "expand_less"}</i>
+                </li>
+                {soundSystemModal && <ul className="second-modal">
+                    <Link onClick={handleClik} to="/products/Μultimedia/Αξεσουάρ-Ήχου"><li>Αξεσουάρ Ήχου</li></Link>
+                    <Link onClick={handleClik} to="/products/Μultimedia/Ηχοσυστήματα-Αυτοκινήτου"><li>Ηχοσυστήματα Αυτοκινήτου</li></Link>
+                    <Link onClick={handleClik} to="/products/Μultimedia/Ηχοσυστήματα"><li>Ηχοσυστήματα</li></Link>
+                    <Link onClick={handleClik} to="/products/Μultimedia/Φορητά-Ηχοσυστήματα"><li>Φορητά Ηχοσυστήματα</li></Link>
+                    <Link onClick={handleClik} to="/products/Μultimedia/Πικάπ"><li>Πικάπ</li></Link>
+                    <Link onClick={handleClik} to="/products/Μultimedia/Ραδιόφωνα"><li>Ραδιόφωνα</li></Link>
+                    <Link onClick={handleClik} to="/products/Μultimedia/Karaoke"><li>Karaoke</li></Link>
+                    <Link onClick={handleClik} to="/products/Μultimedia/Walkie-Talkie-Συσκευές-Υπαγόρευσης"><li>Walkie Talkie-Συσκευές Υπαγόρευσης</li></Link>
+                </ul>}
+                <li className="menu-header" onClick={() => setTvModal(!tvModal)}>
+                    <h5>Τηλεοράσεις</h5>
+                    <i className="material-icons expand">{!tvModal ? "expand_more" : "expand_less"}</i>
+                </li>
+                {tvModal && <ul className="second-modal">
+                    <Link onClick={handleClik} to="/products/Μultimedia/Τηλεοράσεις"><li>Τηλεοράσεις</li></Link>
+                    <Link onClick={handleClik} to="/products/Μultimedia/Φορήτες-Τηλεοράσεις"><li>Φορήτες Τηλεοράσεις</li></Link>
+                    <Link onClick={handleClik} to="/products/Μultimedia/Home-Cinema"><li>Home Cinema</li></Link>
+                    <Link onClick={handleClik} to="/products/Μultimedia/Media-Players"><li>Media Players</li></Link>
+                    <Link onClick={handleClik} to="/products/Μultimedia/Βάσεις-Στήριξης-TV"><li>Βάσεις Στήριξης TV</li></Link>
+                    <Link onClick={handleClik} to="/products/Μultimedia/Κεραίες-TV"><li>Κεραίες</li></Link>
+                    <Link onClick={handleClik} to="/products/Μultimedia/Ψηφιακοί-Δεκτές-Αποκωδικοποιητές"><li>Ψηφιακοί Δεκτές/Αποκωδικοποιητές</li></Link>
+                    <Link onClick={handleClik} to="/products/Μultimedia/Αξεσουάρ-TV"><li>Αξεσουάρ Τηλεόρασης</li></Link>
+                </ul>}
+            </ul>}
+            <div className="menu-header" onClick={() => setOfficeSuppliesModal(!officeSuppliesModal)}>
+                <div>
+                    <i class="material-icons">edit</i>
+                    <h5>Είδη Γραφείου</h5>
+                </div>
+                <i className="material-icons expand">{!officeSuppliesModal ? "expand_more" : "expand_less"}</i>
+            </div>
+            {officeSuppliesModal && <ul className="office-modal">
+                <Link onClick={handleClik} to="/products/είδη-γραφείου/Σταθερά-Τηλέφωνα"><li>Σταθερά Τηλέφωνα</li></Link>
+                <Link onClick={handleClik} to="/products/είδη-γραφείου/καταστροφείς-εγγράφων"><li>Καταστροφείς Εγγράφων</li></Link>
+                <li className="menu-header" onClick={() => setBatteriesModal(!batteriesModal)}>
+                    <h5>Μπαταρίες</h5>
+                    <i className="material-icons expand">{!batteriesModal ? "expand_more" : "expand_less"}</i>
+                </li>
+                {batteriesModal && <ul className="second-modal">
+                    <Link onClick={handleClik} to="/products/Μπαταρίες/Λιθίου"><li>Λιθίου</li></Link>
+                    <Link onClick={handleClik} to="/products/Μπαταρίες/Επαναφορτιζόμενες"><li>Επαναφορτιζόμενες</li></Link>
+                    <Link onClick={handleClik} to="/products/Μπαταρίες/Αλκαλικές"><li>Αλκαλικές</li></Link>
+                </ul>}
+                <li className="menu-header" onClick={() => setRolePaperModal(!rolePaperModal)}>
+                    <h5>Ρολλά Μηχανημάτων</h5>
+                    <i className="material-icons expand">{!rolePaperModal ? "expand_more" : "expand_less"}</i>
+                </li>
+                {rolePaperModal && <ul className="second-modal">
+                    <Link onClick={handleClik} to="/products/Ρολλά-μηχανημάτων/Plotter"><li>Plotter</li></Link>
+                    <Link onClick={handleClik} to="/products/Ρολλά-μηχανημάτων/Αυτοκόλλητες Ετικέτες"><li>Αυτοκόλλητες Ετικέτες</li></Link>
+                    <Link onClick={handleClik} to="/products/Ρολλά-μηχανημάτων/Θερμικά Ταμειακών - POS"><li>Θερμικά Ταμειακών - POS</li></Link>
+                </ul>}
+                <li className="menu-header" onClick={() => setPaperModal(!paperModal)}>
+                    <h5>Χαρτιά</h5>
+                    <i className="material-icons expand">{!paperModal ? "expand_more" : "expand_less"}</i>
+                </li>
+                {paperModal && <ul className="second-modal">
+                    <Link onClick={handleClik} to="/products/χαρτιά/Εκτυπώσεων-Φωτοτυπιών"><li>Εκτυπώσεων - Φωτοτυπιών</li></Link>
+                    <Link onClick={handleClik} to="/products/χαρτιά/Ετικέτες"><li>Ετικέτες</li></Link>
+                    <Link onClick={handleClik} to="/products/χαρτιά/Φωτογραφικό"><li>Φωτογραφικό</li></Link>
+                </ul>}
+                <Link onClick={handleClik} to="/products/είδη-γραφείου/Υλικά-Πλαστικοποίησης"><li>Υλικά Πλαστικοποίησης</li></Link>
+                <Link onClick={handleClik} to="/products/είδη-γραφείου/Καθαριστικά"><li>Καθαριστικά</li></Link>
+                <li className="menu-header" onClick={() => setInksModal(!inksModal)}>
+                    <h5>Μελάνια</h5>
+                    <i className="material-icons expand">{!inksModal ? "expand_more" : "expand_less"}</i>
+                </li>
+                {inksModal && <ul className="second-modal">
+                    <Link onClick={handleClik} to="/products/Laser/Μελάνια"><li>Laser μελάνια</li></Link>
+                    <Link onClick={handleClik} to="/products/Inkjet/Μελάνια"><li>Inkjet μελάνια</li></Link>
+                    <Link onClick={handleClik} to="/products/Laser/Drums"><li>Drums</li></Link>
+                </ul>}
+            </ul>}
+            <div className="menu-header" onClick={() => setSoftwareModal(!softwareModal)}>
+                <div>
+                    <i class="material-icons">apps</i>
+                    <h5>Προγράμματα & Υπηρεσίες</h5>
+                </div>
+                <i className="material-icons expand">{!softwareModal ? "expand_more" : "expand_less"}</i>
+            </div>
+            {softwareModal && <ul className="software-modal">
+                <Link onClick={handleClik} to="/products/προγράμματα-υπηρεσίες/Antivirus"><li>Antivirus</li></Link>
+                <Link onClick={handleClik} to="/products/προγράμματα-υπηρεσίες/PEGASUS-Μηχανογράφηση"><li>PEGASUS Μηχανογράφηση</li></Link>
+                <Link onClick={handleClik} to="/products/προγράμματα-υπηρεσίες/e-TOKEN-Ψηφιακή-Υπογραφή"><li>e-TOKEN Ψηφιακή Υπογραφή</li></Link>
+                <Link onClick={handleClik} to="/products/προγράμματα-υπηρεσίες/Υπηρεσίες"><li>Υπηρεσίες</li></Link>
+            </ul>}
+            <div className="menu-header" onClick={() => setGamingModal(!gamingModal)}>
+                <div>
+                    <i class="material-icons">sports_esports</i>
+                    <h5>Gaming</h5>
+                </div>
+                <i className="material-icons expand">{!gamingModal ? "expand_more" : "expand_less"}</i>
+            </div>
+            {gamingModal && <ul className="house-modal">
+                <Link onClick={handleClik} to="/products/Gaming/Gamepads"><li>Gamepads</li></Link>
+                <Link onClick={handleClik} to="/products/Gaming/Παιχνίδια"><li>Παιχνίδια</li></Link>
+                <Link onClick={handleClik} to="/products/Gaming/Virtual-Reality"><li>Virtual Reality</li></Link>
+                <Link onClick={handleClik} to="/products/Gaming/Αξεσουάρ"><li>Αξεσουάρ</li></Link>
+                <Link onClick={handleClik} to="/products/Gaming/Τιμονιέρες"><li>Τιμονιέρες</li></Link>
+                <Link onClick={handleClik} to="/products/Gaming/Joysticks"><li>Joysticks</li></Link>
+                <Link onClick={handleClik} to="/products/Gaming/Gaming-Chair"><li>Gaming Chair</li></Link>
+            </ul>}
+            <div className="menu-header" onClick={() => setLightingModal(!lightingModal)}>
+                <div>
+                    <i class="material-icons">emoji_objects</i>
+                    <h5>Φωτισμός</h5>
+                </div>
+                <i className="material-icons expand">{!lightingModal ? "expand_more" : "expand_less"}</i>
+            </div>
+            {lightingModal && <ul className="lighting-modal">
+                <Link onClick={handleClik} to="/products/Φωτισμός/Λάμπες-LED"><li>Λάμπες LED</li></Link>
+                <Link onClick={handleClik} to="/products/Φωτισμός/Προβολείς-LED"><li>Προβολείς LED</li></Link>
+                <Link onClick={handleClik} to="/products/Φωτισμός/Πολύμπριζα"><li>Πολύμπριζα</li></Link>
+                <Link onClick={handleClik} to="/products/Φωτισμός/Εργαλεία"><li>Εργαλεία</li></Link>
+            </ul>}
+            <div className="menu-header" onClick={() => setGadgetModal(!gadgetModal)}>
+                <div>
+                    <i class="material-icons">devices_other</i>
+                    <h5> Gadgets</h5>
+                </div>
+                <i className="material-icons expand">{!gadgetModal ? "expand_more" : "expand_less"}</i>
+            </div>
+            {gadgetModal && <ul className="health-modal">
+                <li className="menu-header" onClick={() => setFreeTimeModal(!freeTimeModal)}>
+                    <h5>Ελεύθερος Χρόνος</h5>
+                    <i className="material-icons expand">{!freeTimeModal ? "expand_more" : "expand_less"}</i>
+                </li>
+                {freeTimeModal && <ul className="second-modal">
+                    <Link onClick={handleClik} to="/products/Gadgets/Κυάλια"><li>Κυάλια</li></Link>
+                    <Link onClick={handleClik} to="/products/Gadgets/Πατίνια"><li>Πατίνια</li></Link>
+                    <Link onClick={handleClik} to="/products/Gadgets/Μικροσκοπία"><li>Μικροσκοπία</li></Link>
+                </ul>}
+                <li className="menu-header" onClick={() => setAutoMotoModal(!autoMotoModal)}>
+                    <h5>Auto-Moto</h5>
+                    <i className="material-icons expand">{!autoMotoModal ? "expand_more" : "expand_less"}</i>
+                </li>
+                {autoMotoModal && <ul className="second-modal">
+                    <Link onClick={handleClik} to="/products/Gadgets/Συσκευές-Πλοήγησης-GPS"><li>Συσκευές Πλοήγησης GPS</li></Link>
+                    <Link onClick={handleClik} to="/products/Gadgets/Κάμερες-Αυτοκινήτου"><li>Κάμερες Αυτοκινήτου</li></Link>
+                    <Link onClick={handleClik} to="/products/Gadgets/Αξεσουάρ-Αυτοκινήτου"><li>Αξεσουάρ Αυτοκινήτου</li></Link>
+                    <Link onClick={handleClik} to="/products/Gadgets/Διάφορα"><li>Διάφορα</li></Link>
+                </ul>}
+                <Link onClick={handleClik} to="/products/Gadgets/Ψηφιακές-Κορνίζες"><li>Ψηφιακές Κορνίζες</li></Link>
+                <Link onClick={handleClik} to="/products/Gadgets/Drones"><li>Drones</li></Link>
+            </ul>}
+            <div className="menu-header" onClick={() => setMedicalDevicesModal(!medicalDevicesModal)}>
+                <div>
+                    <i class="material-icons">medical_services</i>
+                    <h5>Ιατρικά Είδη</h5>
+                </div>
+                <i className="material-icons expand">{!medicalDevicesModal ? "expand_more" : "expand_less"}</i>
+            </div>
+            {medicalDevicesModal && <ul className="house-modal">
+                <Link onClick={handleClik} to="/products/Ιατρικά-Είδη/Προστασίας"><li>Προστασίας</li></Link>
+                <Link onClick={handleClik} to="/products/Ιατρικά-Είδη/Οξύμετρα"><li>Οξύμετρα</li></Link>
+                <Link onClick={handleClik} to="/products/Ιατρικά-Είδη/Θερμόμετρα"><li>Θερμόμετρα</li></Link>
+                <Link onClick={handleClik} to="/products/Ιατρικά-Είδη/Αποστειρωτές-Αντισηπτικά"><li>Αποστειρωτές - Αντισηπτικά</li></Link>
+            </ul>}
+
+        </div>
+    );
+}
+
+export default ProductMenu;

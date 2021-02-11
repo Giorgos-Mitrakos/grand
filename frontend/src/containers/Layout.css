@@ -1,0 +1,99 @@
+*{
+    box-sizing: border-box;
+}
+
+.layout-container{
+    display: grid;
+    grid-template-areas:
+    "header"
+    "main"
+    "footer";
+    grid-template-columns: 100%;
+    grid-template-rows:auto 1fr auto;
+    height: 100%;
+}
+
+.header-contacts-container{
+    grid-area: header;
+    display: grid;
+    grid-template-areas:
+    "contacts"
+    "head";
+    grid-template-columns: 100%;
+    grid-template-rows:3rem 5rem;
+    background-color: #deccf0;
+    position: sticky;
+}
+
+.contacts-container{
+    display: flex;
+    align-items: center;
+    grid-area: contacts;
+    background-color: inherit;
+    color: #312f8b;
+    padding: 0;
+}
+
+.header-container {
+    grid-area: head;     
+    background-color: inherit;
+    color: #312f8b;
+ }
+
+ .sticky1 {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: auto;
+  }
+
+  /* Add some top padding to the page content to prevent sudden quick movement (as the navigation bar gets a new position at the top of the page (position:fixed and top:0) */
+.sticky + .content {
+  padding-top: 60px;
+}
+
+ .main-container {
+     grid-area: main;
+ }
+
+ .mobile-menu-container{
+    display: block;
+ }
+
+.footer-container {
+    box-shadow: 0 -0.3rem 0.6rem 0 rgba(0, 0, 0, 0.4);
+    grid-area: footer;
+    background-color: #deccf0;
+    color: #312f8b;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@media only screen and (max-width: 1024px) {
+    
+    .layout-container{
+        display: grid;
+        grid-template-areas:
+        "header"
+        "main"
+        "footer";
+        grid-template-columns: 100%;
+        grid-template-rows: 5rem 1fr auto;
+        height: 100%;
+    }
+
+    .header-contacts-container{
+        grid-area: header;
+        display: grid;
+        grid-template-areas:
+        "head";
+        grid-template-columns: 100%;
+        grid-template-rows:5rem;
+    }    
+
+    .contacts-container{
+        display: none;
+    }
+}

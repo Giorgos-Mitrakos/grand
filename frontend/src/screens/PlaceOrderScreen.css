@@ -1,0 +1,151 @@
+*{
+    box-sizing: border-box;
+}
+
+.placeorder{
+    display: flex;
+    color: #312f8b;
+}
+
+.placeorder-info{
+    flex: 60%;
+}
+
+.order-info{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    box-shadow: 0 0.25rem 0.5rem 0 rgba(0, 0, 0, 0.2);
+    margin: 1rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    background-color: #f7f1fd;
+}
+
+.order-info>h3{
+    margin: 1rem 0 1rem 0;;
+}
+
+.order-info :first-child{
+    flex: 100%;
+}
+
+.order-info:last-child{
+    display: flex;
+}
+
+.order-info >div{
+    flex: 45%;
+    display: flex;
+    margin-right: 1rem;
+}
+
+.order-info >div >div{
+    flex: 80%;
+}
+
+.order-info >div >label{
+    flex: 20%;
+}
+
+.charger-shipping{
+    display: flex;
+}
+
+.charger-info{
+    flex: 50%;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0.25rem 0.5rem 0 rgba(0, 0, 0, 0.2);
+    margin: 1rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    background-color: #f7f1fd;
+}
+
+.charger-info>h3{
+    margin: 1rem 0 1rem 0;
+}
+
+.charger-info >div{
+    flex: 45%;
+    display: flex;
+    margin-right: 1rem;
+    margin-top: 0.2rem;
+}
+
+.charger-info >div >div{
+    flex: 65%;
+}
+
+.charger-info >div >label{
+    flex: 35%;
+}
+
+.shipping-info{
+    flex: 50%;;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0.25rem 0.5rem 0 rgba(0, 0, 0, 0.2);
+    margin: 1rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    background-color: #f7f1fd;
+}
+
+.shipping-info >div{
+    flex: 45%;
+    display: flex;
+    margin-right: 1rem;
+    margin-top: 0.2rem;
+}
+
+.shipping-info >div >div{
+    flex: 65%;
+}
+
+.shipping-info >div >label{
+    flex: 35%;
+}
+
+.invoice-info{
+    flex: 50%;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0.25rem 0.5rem 0 rgba(0, 0, 0, 0.2);
+    margin: 1rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    background-color: #f7f1fd;
+}
+
+.invoice-info>h3{
+    margin: 1rem 0 1rem 0;
+}
+
+.invoice-info >div{
+    flex: 45%;
+    display: flex;
+    margin-right: 1rem;
+    margin-bottom: 1rem;
+}
+
+.invoice-info >div >div{
+    flex: 65%;
+}
+
+.invoice-info >div >label{
+    flex: 35%;
+}
+
+@media only screen and (max-width: 1024px) {
+    .placeorder{
+        flex-direction: column;
+    }
+
+    .charger-shipping{
+        flex-direction: column;
+    }
+}
+
+

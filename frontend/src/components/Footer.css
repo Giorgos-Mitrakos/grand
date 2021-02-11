@@ -1,0 +1,150 @@
+*{
+    box-sizing: border-box;
+}
+
+.footer-wrapper{
+    display: flex;
+    flex-direction: column;
+}
+
+.footer{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 2rem;
+}
+
+.info{
+    margin: 0.5rem;
+    padding: 1rem;
+} 
+
+.copywrite-container{
+    display: flex;
+    justify-content: space-between;
+    margin-left: 2rem;
+}
+
+.footer a{
+    text-decoration: none;
+}
+
+.footer a:hover{
+    color: #bb2374;
+}
+
+.footer li{
+    font-size: 1rem;
+}
+
+.contact-info{
+    width: fit-content
+}
+
+.contact-info h3{
+    margin-bottom: 0;
+}
+
+.contact-info h5{
+    margin-top: 0;
+}
+
+.contact-info div{
+    margin-top: 0.5rem;
+}
+
+.contact-info-items{
+    display: flex;
+    align-items: center;
+}
+
+.contact-info-items i{
+    font-size: 1.3rem;
+    margin-right: 0.5rem;
+}
+
+.logo-social{
+    height: 1.8rem;
+    background-color:  inherit;
+}
+
+.brand-info{
+    margin: 0rem 1rem 1rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.logo-info{
+    width: 3rem;
+    height: 3rem;
+}
+
+.brand-name-info{
+    display: block; 
+    text-decoration: none;   
+    font-weight: bold;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    color: #312f8b;
+}
+
+.brand-name-info>h1{
+    padding: 0;
+    margin: 0;
+    margin-left: 0.9rem;
+}
+
+.brand-name-info>h5{
+    padding: 0;
+    margin: 0;
+}
+
+.newsletter-info #email{
+    width: 15rem;    
+    margin: 0.5rem 0 0.5rem 0;
+    padding: 0.5rem;
+    border-radius: 1rem;
+    font-size: 1rem;
+    color: #312f8b;
+}
+
+.newsletter-info #submit-email{
+    display: block;
+    width: 30%;
+    min-width: 5.2rem;
+    margin: 0.5rem 0 0.5rem 0;
+    padding: 0.5rem;
+    border-radius: 1rem;
+    font-size: 1rem;
+    color: inherit;
+}
+
+.newsletter-info #submit-email:disabled{
+    color:  #9291df;
+}
+
+#private-policy-link{
+    text-decoration: underline;
+    font-weight: lighter;
+    cursor: pointer;
+}
+
+@media only screen and (max-width: 1024px) {
+
+.footer{
+        display: flex;
+        flex-wrap: wrap;
+}
+
+/* .info{
+    flex: 50%;
+} */
+
+}
+
+@media only screen and (max-width: 580px) {
+    .info{
+        flex: 100%;  
+    }
+}
+

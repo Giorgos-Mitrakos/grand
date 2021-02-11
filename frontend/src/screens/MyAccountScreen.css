@@ -1,0 +1,152 @@
+*{
+    box-sizing: border-box;
+}
+
+.my-account-wrapper{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+.expand{
+    align-self: center;
+}
+
+.card-header {
+    justify-content: center;
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+    width: 60%;
+    align-self: center;
+    background-color: #ece2f7;
+    color: #312f8b;
+    padding: 1rem;
+    font-size: 1rem;
+    border: 1px #a6a5df solid;
+    cursor: pointer;
+}
+
+.my-account-wrapper:last-child {
+    margin-bottom: 5rem;
+}
+
+.account-info{
+    width: 60%;
+    align-self: center;
+    border: 1px #a6a5df solid;
+    color: #312f8b;
+}
+
+#accountForm>ul{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+#accountForm>ul>li:last-child{
+    width: 100%;
+}
+
+#accountForm li{
+    width: 45%;
+    margin: 1rem;
+}
+
+.password-change{
+    width: 60%;
+    align-self: center;
+    border: 1px #a6a5df solid;
+    color: #312f8b;
+}
+
+#passwordChangeForm li{
+    width: 100%;
+    padding: 1rem;
+}
+
+.address-info{
+    width: 60%;
+    align-self: center;
+    border: 1px #a6a5df solid;
+    color: #312f8b;
+}
+
+#addressForm{
+    width: 100%;
+    padding: 1rem;
+}
+
+#addressForm>ul{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: center;
+}
+
+#addressForm li{
+    width: 100%;
+    display: flex;
+    justify-content: start-flex;
+}
+
+#addressForm div{
+    width: 100%;
+    padding: 0.5rem;
+}
+
+#addressForm li:last-child div:last-child{
+    width: 30%;
+    padding: 0.5rem;
+}
+
+.column-display input{
+    height: 2.5rem;
+    font-size: 1rem;
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    border: 1px #a6a5df solid;
+}
+
+.column-display{
+display: flex;
+flex-direction: column;
+font-size: 1rem;
+}
+
+.accountInfoMessage{
+    color: green;
+    text-align: center;
+}
+
+@media only screen and (max-width: 1024px) {
+#accountForm li{
+    width: 100%;
+    margin: 1rem;
+}
+
+.card-header {
+    width: 90%;
+}
+
+.account-info{
+    width: 90%;
+}
+
+.password-change{
+    width: 90%;
+}
+
+.address-info{
+    width: 90%;
+}
+
+#addressForm li{
+    display: flex;
+    flex-direction: column;
+}
+
+}

@@ -1,0 +1,36 @@
+.profile-menu-containter{
+    color: #312f8b;
+}
+
+.profile-menu-containter>ul{
+    width: 11rem;
+    margin: 0.5rem;
+}
+
+.profile-menu-containter li{
+    text-align: center;
+    margin: 0.5rem;
+}
+
+.profile-menu-containter li:last-child{
+    margin-bottom: 1rem;
+}
+
+.profile-menu-containter div{
+    text-align: center;
+}
+
+hr{
+    color: #a3a1e9;
+}
+
+.profile-menu-containter button{
+    border: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    text-align: center;
+    cursor: pointer;
+    color: #312f8b;
+    background-color: inherit;
+}

@@ -1,0 +1,17 @@
+*{
+    box-sizing: border-box;
+}
+
+.filter-container{
+    display: flex;
+    justify-content: flex-end;
+    margin: 1rem;
+}
+
+.filter-container>label{
+    margin: 1rem;
+}
+
+.filter_orders{
+    width: auto;
+}

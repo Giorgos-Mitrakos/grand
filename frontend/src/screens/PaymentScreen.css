@@ -1,0 +1,59 @@
+.payment-form-wrapper{
+    display: flex;
+    color: #312f8b;
+}
+
+.payment-form{
+    flex:60%;
+    box-shadow: 0 0.25rem 0.5rem 0 rgba(0, 0, 0, 0.2);
+    margin: 1rem;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    background-color: #f7f1fd;
+}
+
+.payment-form-container{
+    width: 100%;
+    padding: 1rem;
+    color: #312f8b;
+    justify-content: center;
+}
+
+.sending-form-container{
+    width: 100%;
+    padding: 1rem;
+    color: #312f8b;
+    justify-content: center;    
+}
+
+.sending-form-container>li>div>label{
+    margin: 0.5rem;
+    font-weight: normal;
+}
+
+.payment-form-container>li>div>label{
+    margin: 0.5rem;
+    font-weight: normal;
+}
+
+.sending-form-container>li{
+    margin: 0.5rem;
+}
+
+.payment-form-container>li{
+    margin: 0.5rem;
+}
+
+.continuebtn{
+    width: 100%;
+}
+
+.continuebtn:disabled{
+    color: #9291df;
+}
+
+@media only screen and (max-width: 1024px) {
+    .payment-form-wrapper{
+        flex-direction: column;
+    }
+}

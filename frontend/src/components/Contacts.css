@@ -1,0 +1,65 @@
+*{
+    box-sizing: border-box;
+}
+
+.contact-container {
+      height: 2.0vw;
+      background-color:inherit;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+}
+
+.call-email{
+  display: flex;
+}
+
+.social-media{
+  display: flex;  
+  margin-right: 2.6rem;
+}
+
+.call-email>div{
+  font-size: 1rem;
+  text-align: start;
+  padding: 0;
+  margin: 0;
+  margin-left: 1rem;
+}
+
+.logo-facebook{
+  height: 1.3rem;
+  background-color:  inherit;
+}
+
+.f-logo{
+    height: 1.5vw;    
+    width: auto;
+    margin: 0.5rem;
+    margin-right: 0.7rem;
+    background-color: inherit;
+  }
+
+  .f-logo:hover{    
+    height: 1.6vw;
+  }
+
+  .logo-instagram{
+    height: 1.3rem;
+    margin-right: 0.5rem;
+    background-color:  inherit;
+  }
+  
+  .insta-logo{
+      height: 1.5vw;    
+      width: auto;
+      margin: 0.5rem;
+      background-color: inherit;
+    }
+  
+    .insta-logo:hover{    
+      height: 1.6vw;
+    }
+
+    
+  

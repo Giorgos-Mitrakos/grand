@@ -1,0 +1,83 @@
+*{
+    box-sizing: border-box;
+}
+
+.gdpr-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.gdpr{
+    box-shadow: 0.3rem 0.3rem 0.6rem 0 rgba(0, 0, 0, 0.4);
+    border-radius: 0.5rem;
+    width: 70%;
+    margin: 1rem;
+    padding: 2rem;
+    color: #312f8b;
+}
+
+.gdpr li{
+    margin: 2rem;
+}
+
+.gdpr h3{
+    margin: 0.5rem;
+}
+
+.gdpr p{
+    margin: 0.5rem;
+    line-height: 1.5rem;
+}
+
+.under{
+    text-decoration: underline;
+}
+
+.newsletter-desclaimer{
+    display: flex;
+    flex-direction: column;
+}
+
+.newsletter-desclaimer input{
+    margin: 0.5rem;
+    padding: 0.5rem;
+    color: #312f8b;
+}
+
+.newsletter-desclaimer label{
+    margin: 0.5rem;
+    color: #312f8b;
+}
+
+.newsletter-desclaimer-email{
+    width: 70%;  
+    border-radius: 0.3rem;
+    font-size: 1rem;
+}
+
+.newsletter-desclaimer-textarea{
+    width: 70%;  
+    height: 20vh;
+    margin: 0.5rem;    
+    padding: 0.5rem;
+    border-radius: 0.3rem;
+    font-size: 1rem;
+}
+
+@media only screen and (max-width: 1024px) {
+
+    .gdpr{
+        width: 95%;
+        padding: 0rem;
+    }
+
+    .newsletter-desclaimer-email{
+        width: 100%;
+    }
+
+    .newsletter-desclaimer-textarea{
+        width: 100%;
+    }
+
+}

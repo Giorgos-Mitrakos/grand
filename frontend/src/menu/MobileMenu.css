@@ -1,0 +1,17 @@
+.mobile-menu{
+    display: block;
+}
+
+.mobile-menu a{
+    color:  #312f8b;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 1.2rem;
+    display: block;  
+    background-color: #dcdcdd;
+}
+
+.mobile-menu a:hover{
+    background-color: #5655a5;
+    color:  white;
+}

@@ -1,0 +1,11 @@
+*{
+    box-sizing: border-box;
+}
+
+.carousel a{
+    text-decoration: none;
+}
+
+.carousel-item{
+    justify-self: center;
+}

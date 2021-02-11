@@ -1,0 +1,80 @@
+*{
+    box-sizing: border-box;
+}
+
+.collection{
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    margin-bottom: 1rem;
+}
+
+.filter_collection{
+    color: #312f8b;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+    align-items: center;
+}
+
+.filter_collection_per_page{
+    width: auto;
+    margin-right: 1rem;
+}
+
+.collection a{
+    text-decoration: none;
+}
+
+.title-center{
+    text-align: center;
+    margin: 1rem;
+}
+
+.make-your-case-description{
+    margin: 2rem;
+}
+
+.make-your-case-wrapper{
+    display: flex;    
+    background-color: aliceblue;
+}
+
+.make-your-case-image-container{
+    flex: 1.5;
+    height: 100%;
+}
+
+.make-your-case{
+    display: flex;
+    flex-direction: column;
+    flex:1;
+    align-items: flex-end;
+    color: #312f8b;
+    height: 100%;
+}
+
+.make-your-case-upload{
+    color: #312f8b;
+    margin: 1rem;
+}
+
+.make-your-case-upload li{
+    margin: 1rem;
+}
+.make-your-case-upload li>input{
+    margin-top: 0.5rem;
+}
+
+@media only screen and (max-width: 1024px) {
+    
+    .make-your-case-image-container{
+        display: none;
+    }
+
+    .title h2{
+        text-align: center;
+    }
+}

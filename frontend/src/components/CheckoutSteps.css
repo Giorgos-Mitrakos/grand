@@ -1,0 +1,19 @@
+.checkout-steps{
+    display: flex;
+    justify-content: space-between;
+    width: 80%;
+    margin: 1rem auto;
+}
+
+.checkout-steps>div{
+    border-top: 0.3rem #deccf0 solid;
+    color: #deccf0;
+    flex: 1 1;
+    padding-top: 1rem;
+}
+
+.checkout-steps>div.active{
+    border-top: 0.3rem #5755cc solid;
+    color: #312f8b;
+    background-color: inherit;
+}

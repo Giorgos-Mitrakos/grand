@@ -1,0 +1,131 @@
+*{
+    box-sizing: border-box;
+}
+
+.pagination {
+    display: flex;
+    flex-direction: row;
+}
+    
+.pagination a {
+    color: #312f8b;
+    padding: 8px 16px;
+    text-decoration: none;
+}
+    
+.active {
+    background-color: #cfb9e4;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 5px;
+}
+    
+.pagination a:hover:not(.active) {
+    background-color: #ddd;
+    border-radius: 5px;
+}
+    
+
+.products-by-category-wrapper{
+    display: flex;
+    margin: 1rem;
+    justify-content: center;
+}
+
+.product-menu-sidebar{
+    min-width: 18rem;
+}
+
+.products-by-category-container{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    min-height: 20rem;
+    margin: 0rem 1rem 2rem 1rem;
+}
+
+.filter_button{
+    display: none;
+}
+
+.filter_items{
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: right;
+}
+
+.filter_items li:first-child{
+    flex: 2;
+}
+
+.filter-button{
+    padding: 0.5rem 1.5rem 0.5rem 1.5rem;    
+    border-radius: 0.2rem;
+    font-size: 1rem;
+    background-color: #deccf0;
+    color: #312f8b;
+}
+
+.filter-modal-content{
+    background-color: #fefefe;
+    margin: auto;
+    padding: 1.25rem;
+    border: 1px solid #888;
+    width: 100%;
+    height: auto;
+}
+
+.filter_items li{
+    display: flex;
+    align-items: center;
+    color: #312f8b;
+    margin: 0.5rem;
+}
+
+.paginationList{
+    display: flex;
+    justify-content: center;
+    cursor: pointer;
+    margin: 1rem;
+}
+
+@media only screen and (max-width: 1024px) {
+
+.product-menu-sidebar{
+    display: none;
+    width: 100%;
+    z-index: 10;
+}
+
+.filter_button{
+    display: block;
+    color: #312f8b;
+    border: none;
+    margin: 0;
+    padding: 0;
+    background-color: inherit;
+}
+
+.filter_button:hover{
+    cursor: pointer;
+}
+
+.filter_items{
+    font-size: 0.9rem;
+    margin-right: 1rem;
+}
+
+.filter_items_per_page{
+    font-size: 0.9rem;
+    padding: 0.1rem;
+}
+
+.filter-button{
+    font-size: 0.9rem;
+    padding: 0.2rem 0.4rem 0.2rem 0.4rem;   
+}
+
+}

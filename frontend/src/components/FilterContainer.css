@@ -1,0 +1,82 @@
+.filter-wrapper{
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-features>li{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.filter-features>li>li{
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0rem;
+    margin: 0rem;
+
+    /* background-color: #ddd; */
+}
+
+.filterByFeatures{
+    margin-right: 0.3rem;
+    padding: 0rem;
+    border-radius: 0.2rem;
+    color: #312f8b;
+}
+
+
+.filter-compatibility{
+    align-content: center;
+    align-items: center;
+    display: flex;
+    color: #312f8b;
+}
+
+.filter-compatibility ul{
+    align-content: center;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.filter-compatibility ul>li{
+    margin-left: 0.3rem;
+}
+
+.filter-compatibility ul>li>label{
+    margin-left: 0.3rem;
+}
+
+.brandsListWrapper{
+    display: flex;
+    align-items: center;
+}
+
+.brandsList{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    color: #312f8b;
+}
+
+@media only screen and (max-width: 1024px) {
+
+    .filter-features>li{
+        display: flex;
+        flex-direction: column;
+    }
+
+    .filter-features>li>li{
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .filter-compatibility ul{
+        flex-direction: column;
+    }
+
+    .brandsList{
+        flex-direction: column;
+    }
+
+}

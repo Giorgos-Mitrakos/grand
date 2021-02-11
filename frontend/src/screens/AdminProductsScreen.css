@@ -1,0 +1,83 @@
+.admin-button{
+    border-radius: 0.5rem;
+    padding: 0.3rem;
+}
+
+.product-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.content-margined{
+    margin: 1rem;
+    color: #312f8b;
+}
+
+.checkbox-flex{
+    display: flex;
+}
+
+table{
+    width: 100%;
+    color: #312f8b;
+}
+
+th{
+    text-align: center;
+    height: 2rem;
+}
+
+td{
+    text-align: center;
+    height: 2rem;
+}
+
+tbody>tr:nth-child(odd){
+    background-color:rgb(232, 241, 248);
+}
+
+.admin-product-image{
+    height: 3rem;
+    max-width: 3rem;
+}
+
+.admin-product-image:hover{
+    transform: scale(6);
+}
+
+.form-create-product{
+    display: flex;
+    justify-content: center;
+    background-color: white;
+}
+
+.form-create-product>ul{
+    width: 60%;
+    
+}
+
+.form-create-product>form{
+    width: 30%;
+    margin-right: 1rem;
+}
+
+.feature-form li{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.feature-form li>div{
+    display: flex;
+}
+
+.feature-form li>h2{
+    width: 100%;
+    text-align: center;
+}
+
+.feature-list option{
+    width: 10rem;
+}
+
