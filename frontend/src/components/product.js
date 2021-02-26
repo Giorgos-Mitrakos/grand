@@ -39,7 +39,7 @@ function Product (props){
                     <img className="product-image" src={props.src} alt={props.alt}/>
                 </div>
                 <div className="product-name-price">
-                    <div className="product-name">{props.productName.length>30?props.productName.slice(0,34)+"...":props.productName}</div>
+                    <div className="product-name">{props.productName.length>35?props.productName.slice(0,39)+"...":props.productName}</div>
                     <div className="flip-product">
                         <div className="product-price">{props.price.toFixed(2)} €</div>
                         <div className="product-see-details">Δείτε περισσότερα</div>
@@ -47,7 +47,7 @@ function Product (props){
                 </div>
             </Link>
             <div className="product-wishlist-cart">                
-                <i class="material-icons product-wishlist-cart-icons" onClick={handleAddToWishList} data-tip data-for="my-wish-list">favorite_border</i>
+                <i className="material-icons product-wishlist-cart-icons" onClick={handleAddToWishList} data-tip data-for="my-wish-list">favorite_border</i>
                 <ReactTooltip backgroundColor="#deccf0" textColor="#312f8b" id="my-wish-list" place="right" effect="solid">
                     Προσθήκη στα αγαπημένα μου.
                 </ReactTooltip>

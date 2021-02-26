@@ -43,7 +43,7 @@ function ProductMenu(props) {
         <div className="product-menu-containter">
             <div className="menu-header" onClick={() => setMobileModal(!mobileModal)}>
                 <div>
-                    <i class="material-icons">tablet_android</i>
+                    <i className="material-icons">tablet_android</i>
                     <h5>Κινητή Τηλεφωνία</h5>
                 </div>
                 <i className="material-icons expand">{!mobileModal ? "expand_more" : "expand_less"}</i>
@@ -69,7 +69,7 @@ function ProductMenu(props) {
             </ul>}
             <div className="menu-header" onClick={() => setTabletModal(!tabletModal)}>
                 <div>
-                    <i class="material-icons">tablet</i>
+                    <i className="material-icons">tablet</i>
                     <h5>Tablet</h5>
                 </div>
                 <i className="material-icons expand">{!tabletModal ? "expand_more" : "expand_less"}</i>
@@ -90,7 +90,7 @@ function ProductMenu(props) {
             </ul>}
             <div className="menu-header" onClick={() => setDesktopModal(!desktopModal)}>
                 <div>
-                    <i class="material-icons">desktop_windows</i>
+                    <i className="material-icons">desktop_windows</i>
                     <h5>Desktop</h5>
                 </div>
                 <i className="material-icons expand">{!desktopModal ? "expand_more" : "expand_less"}</i>
@@ -139,7 +139,7 @@ function ProductMenu(props) {
             </ul>}
             <div className="menu-header" onClick={() => setLaptopModal(!laptopModal)}>
                 <div>
-                    <i class="material-icons">laptop</i>
+                    <i className="material-icons">laptop</i>
                     <h5>Laptop</h5>
                 </div>
                 <i className="material-icons expand">{!laptopModal ? "expand_more" : "expand_less"}</i>
@@ -156,7 +156,7 @@ function ProductMenu(props) {
             </ul>}
             <div className="menu-header" onClick={() => setMultimediaModal(!multimediaModal)}>
                 <div>
-                    <i class="material-icons">headset_mic</i>
+                    <i className="material-icons">headset_mic</i>
                     <h5>Εικόνα - Ήχος</h5>
                 </div>
                 <i className="material-icons expand">{!multimediaModal ? "expand_more" : "expand_less"}</i>
@@ -225,7 +225,7 @@ function ProductMenu(props) {
             </ul>}
             <div className="menu-header" onClick={() => setOfficeSuppliesModal(!officeSuppliesModal)}>
                 <div>
-                    <i class="material-icons">edit</i>
+                    <i className="material-icons">edit</i>
                     <h5>Είδη Γραφείου</h5>
                 </div>
                 <i className="material-icons expand">{!officeSuppliesModal ? "expand_more" : "expand_less"}</i>
@@ -274,7 +274,7 @@ function ProductMenu(props) {
             </ul>}
             <div className="menu-header" onClick={() => setSoftwareModal(!softwareModal)}>
                 <div>
-                    <i class="material-icons">apps</i>
+                    <i className="material-icons">apps</i>
                     <h5>Προγράμματα & Υπηρεσίες</h5>
                 </div>
                 <i className="material-icons expand">{!softwareModal ? "expand_more" : "expand_less"}</i>
@@ -287,7 +287,7 @@ function ProductMenu(props) {
             </ul>}
             <div className="menu-header" onClick={() => setGamingModal(!gamingModal)}>
                 <div>
-                    <i class="material-icons">sports_esports</i>
+                    <i className="material-icons">sports_esports</i>
                     <h5>Gaming</h5>
                 </div>
                 <i className="material-icons expand">{!gamingModal ? "expand_more" : "expand_less"}</i>
@@ -303,7 +303,7 @@ function ProductMenu(props) {
             </ul>}
             <div className="menu-header" onClick={() => setLightingModal(!lightingModal)}>
                 <div>
-                    <i class="material-icons">emoji_objects</i>
+                    <i className="material-icons">emoji_objects</i>
                     <h5>Φωτισμός</h5>
                 </div>
                 <i className="material-icons expand">{!lightingModal ? "expand_more" : "expand_less"}</i>
@@ -316,7 +316,7 @@ function ProductMenu(props) {
             </ul>}
             <div className="menu-header" onClick={() => setGadgetModal(!gadgetModal)}>
                 <div>
-                    <i class="material-icons">devices_other</i>
+                    <i className="material-icons">devices_other</i>
                     <h5> Gadgets</h5>
                 </div>
                 <i className="material-icons expand">{!gadgetModal ? "expand_more" : "expand_less"}</i>
@@ -346,7 +346,7 @@ function ProductMenu(props) {
             </ul>}
             <div className="menu-header" onClick={() => setMedicalDevicesModal(!medicalDevicesModal)}>
                 <div>
-                    <i class="material-icons">medical_services</i>
+                    <i className="material-icons">medical_services</i>
                     <h5>Ιατρικά Είδη</h5>
                 </div>
                 <i className="material-icons expand">{!medicalDevicesModal ? "expand_more" : "expand_less"}</i>

@@ -15,6 +15,7 @@ import xmlRoute from './routes/xmlRoute.js';
 import phoneHellasXmlRoute from './routes/phoneHellasXmlRoute.js';
 import emailRoute from './routes/emailRoute.js';
 import paymentRoute from './routes/paymentRoute.js';
+import getProductsFromHellasphone from './routes/getProductsFromHellasphone.js';
 
 dotenv.config();
 
@@ -33,6 +34,7 @@ app.use("/api/isispc-xml", xmlRoute);
 app.use("/api/hellasphone-xml/", phoneHellasXmlRoute);
 app.use("/api/email/", emailRoute);
 app.use("/api/payment/", paymentRoute);
+app.use("/api/getProducts/", getProductsFromHellasphone);
 app.get('*', (req, res) => {
     res.sendFile(path.join(`${__dirname}/../frontend/public/index.html`));
 });

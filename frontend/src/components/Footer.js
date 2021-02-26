@@ -64,24 +64,24 @@ function Footer() {
                 <div className="navigation-info info">
                     <h2>Πλοήγηση</h2>
                     <ul>
-                        {navigation.map(x=>
-                            <li><Link to={x.linkto}>{x.title}</Link></li>
+                        {navigation.map((x,index)=>
+                            <li  key={index}><Link to={x.linkto}>{x.title}</Link></li>
                         )}
                     </ul>
                 </div>
                 <div className="product-info info">
                     <h2>Προϊόντα</h2>
                     <ul>
-                        {categories.map(x =>
-                            <li><Link to={x.linkto}>{x.productCategory}</Link></li>
+                        {categories.map((x, index) =>
+                            <li key={index}><Link to={x.linkto}>{x.productCategory}</Link></li>
                         )}
                     </ul>
                 </div>
                 <div className="info">
                     <h2>Η Εταιρία</h2>
                     <ul>
-                        {theCompany.map(x=>
-                        <li><Link to={x.linkto}>{x.title}</Link></li>
+                        {theCompany.map((x,index)=>
+                        <li key={index}><Link to={x.linkto}>{x.title}</Link></li>
                         )}
                     </ul>
                 </div>

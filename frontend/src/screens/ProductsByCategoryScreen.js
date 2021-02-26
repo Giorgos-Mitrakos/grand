@@ -346,7 +346,7 @@ function ProductsByCategoryScreen(props) {
                         error ? <div>{error}</div> :
                             <div className="collection">
                                 {currentPageData.map(product => (
-                                    <Product src={product.image} id={product._id} details={"/product/" + product._id} alt={product.name} productName={product.name} price={product.totalPrice} />
+                                    <Product key={product._id} src={product.image} id={product._id} details={"/product/" + product._id} alt={product.name} productName={product.name} price={product.totalPrice} />
                                 ))}
                             </div>
                     }

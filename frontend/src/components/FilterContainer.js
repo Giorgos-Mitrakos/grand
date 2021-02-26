@@ -54,8 +54,8 @@ function FilterContainer(props) {
             <div className="brandsListWrapper">                
                 <ul className="brandsList">
                     <li>Κατασκευαστής :</li>
-                    {props.uniqueBrands.map(x=>
-                    <li>
+                    {props.uniqueBrands.map((x, index)=>
+                    <li key={index}>
                         <input type="checkbox" className="filterByFeatures" value={x} onChange={(e)=>props.filterBrandHandler(e.target.checked,e.target.value)}></input>
                         <label>{x}</label>
                     </li>)}
