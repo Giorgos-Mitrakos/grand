@@ -7,8 +7,8 @@ function CategoriesContainer(props) {
    
     return (
         <div className="categories-container">
-            {categories.map(x=>
-            <Link to={x.linkto}>
+            {categories.map((x, index)=>
+            <Link key={index} to={x.linkto}>
                 <ProductCategories
                     src={x.imgSource}
                     alt={x.altContent}

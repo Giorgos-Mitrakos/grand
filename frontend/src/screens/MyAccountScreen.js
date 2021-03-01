@@ -16,7 +16,7 @@ function MyaccountScreen(props){
     const userAccountAddress= useSelector(state=>state.userAccountAddress);
     const {userAddressInfo} = userAccountAddress;
     const userPasswordChange = useSelector(state=>state.userPasswordChange);
-    const {success: successChange, message: changePasswordMessage} = userPasswordChange;
+    const {message: changePasswordMessage} = userPasswordChange;
     const dispatch = useDispatch();
     const [accountInfoModal,setAccountInfoModal] = useState(false);
     const [passwordChangeModal,setPasswordChangeModal] = useState(false);

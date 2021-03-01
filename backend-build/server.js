@@ -34,6 +34,8 @@ var _emailRoute = _interopRequireDefault(require("./routes/emailRoute.js"));
 
 var _paymentRoute = _interopRequireDefault(require("./routes/paymentRoute.js"));
 
+var _getProductsFromHellasphone = _interopRequireDefault(require("./routes/getProductsFromHellasphone.js"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 _dotenv["default"].config();
@@ -55,6 +57,7 @@ app.use("/api/isispc-xml", _xmlRoute["default"]);
 app.use("/api/hellasphone-xml/", _phoneHellasXmlRoute["default"]);
 app.use("/api/email/", _emailRoute["default"]);
 app.use("/api/payment/", _paymentRoute["default"]);
+app.use("/api/getProducts/", _getProductsFromHellasphone["default"]);
 app.get('*', function (req, res) {
   res.sendFile(_path["default"].join("".concat(__dirname, "/../frontend/public/index.html")));
 });

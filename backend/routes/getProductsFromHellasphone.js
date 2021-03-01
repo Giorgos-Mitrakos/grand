@@ -2,7 +2,6 @@ var http = require('http');
 import express from 'express';
 import { getToken, isAuth, isAdmin } from '../util.js';
 import mysqlConnection from '../connection';
-import { Console } from 'console';
 
 const router = express.Router();
 

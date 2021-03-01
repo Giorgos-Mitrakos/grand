@@ -26,7 +26,7 @@ router.get("/", /*#__PURE__*/function () {
             _connection["default"].getConnection(function (err, connection) {
               if (err) throw err; // not connected!
 
-              connection.query('SELECT * FROM products', function (err, result, fields) {
+              connection.query('SELECT * FROM products WHERE visibility=1', function (err, result, fields) {
                 if (err) throw err;
                 console.log(result);
                 res.send(result);
