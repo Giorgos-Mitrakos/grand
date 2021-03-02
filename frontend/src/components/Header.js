@@ -5,7 +5,6 @@ import ReactTooltip from 'react-tooltip';
 import { useDispatch, useSelector } from 'react-redux';
 import ProfileMenu from '../menu/ProfileMenu';
 import { menuOpen } from '../action/menuActions';
-import { importProducts } from '../action/productActions';
 import { navigation } from '../data/data';
 
 function Header(){
@@ -41,9 +40,6 @@ function Header(){
                         <Link to={x.linkto}>{x.title}</Link>
                     </div>
                     )}
-                </div>
-                <div>
-                    <button onClick={()=>dispatch(importProducts())}>Call</button>
                 </div>
                 <div className="header-links"> 
                     <div className="dd-profile-wrapper">                                      

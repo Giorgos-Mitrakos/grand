@@ -1184,7 +1184,7 @@ router.get("/", async (req, res) => {
                     var d = new Date();
                     d.setDate(d.getDate() - 1);
 
-                    let sql = "UPDATE products SET visibility=0 WHERE (supplier='hellasphone' AND lastUpdated<?) OR (supplier='hellasphone' AND lastUpdated is null)"
+                    let sql = "UPDATE products SET visibility=0 WHERE (supplier='hellasphone' AND lastUpdated<?) OR (supplier='hellasphone' AND lastUpdated is null) OR price=0"
                     connection.query(sql, d, function (err, result, fields) {
                         if (err) throw err;
 
@@ -1206,7 +1206,7 @@ router.get("/", async (req, res) => {
             console.log("Got error: " + e.message);
         })
         console.log("This is the end")
-        return res.send("Hello")
+        return res.send("Done!")
     })
 
 

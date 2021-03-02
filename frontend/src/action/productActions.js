@@ -44,10 +44,6 @@ import { PRODUCT_LIST_REQUEST, PRODUCT_LIST_SUCCESS, PRODUCT_LIST_FAIL,
      } from "../constants/productConstant";
 import Axios from "axios";
 
-const importProducts = ()=>async (displatch)=>{
-     await Axios.get("/api/getProducts");
-}
-
 const listProducts = () =>async (dispatch)=> {
     try{
         dispatch({type:PRODUCT_LIST_REQUEST});
@@ -616,4 +612,4 @@ export {listProducts, detailsProduct, saveProduct,removeProducts, listSendingMet
     listPaymentMethodsAdmin,editPaymentMethods, createPaymentMethod, deletePaymentMethod,
     getCompatibilities,listCompatibilityCompanies,getCompatibilityModels,
     insertCompatibilityCompany,insertCompatibilityModel,insertCompatibility,
-    getProductCompatibilities, deleteProductCompatibility, importProducts}
+    getProductCompatibilities, deleteProductCompatibility}

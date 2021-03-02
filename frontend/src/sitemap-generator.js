@@ -1,3 +1,9 @@
+/* Για να δημιουργήσεις νέο sitemap στο grandmobile θα πρέπει 
+να αφαιρέσεις τις ρυθμίσεις στο babelrc και να αφαιρέσεις επίσης
+στο site route admin απο τις συναρτήσεις categories και subcategories
+τα middleware isAdmin και isAuth, και μετα να τρέξεις το script sitemap */ 
+
+
 const Axios = require("axios");
 require("babel-register")({
   presets: ["es2015", "react"]
