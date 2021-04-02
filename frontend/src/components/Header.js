@@ -5,6 +5,7 @@ import ReactTooltip from 'react-tooltip';
 import { useDispatch, useSelector } from 'react-redux';
 import ProfileMenu from '../menu/ProfileMenu';
 import { menuOpen } from '../action/menuActions';
+import { importProducts } from '../action/productActions';
 import { navigation } from '../data/data';
 
 function Header(){
@@ -21,9 +22,7 @@ function Header(){
     return (        
             <div className="header">
                 <button className="Navbar-toggle" onClick={handleClick}>
-                        <div className="bars"></div>
-                        <div className="bars"></div>
-                        <div className="bars"></div>
+                <i className="material-icons" style={{ fontSize: "2rem" }}>menu</i>
                 </button>
                 <div className="brand">                
                     <Link to='/'>

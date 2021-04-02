@@ -1,10 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { Suspense, lazy, useEffect } from 'react';
 import './MainScreen.css';
 import { Link } from 'react-router-dom';
-import CollectionCarousel from '../components/CollectionCarousel';
-import MostViewProductsCarousel from '../components/MostViewProductsCarousel';
-import CategoriesContainer from '../components/CategoriesContainer';
 import CookieConsent from "react-cookie-consent";
+import { useSelector, useDispatch } from 'react-redux';
+import { randomListCollection } from '../action/collectionActions';
+import { findMostViewedProducts } from '../action/productActions';
+const CategoriesContainer = lazy(() => import('../components/CategoriesContainer'));
+const MyCarousel = lazy(() => import('../components/MyCarousel'));
 
 function MainScreen() {
 
@@ -16,20 +18,40 @@ function MainScreen() {
         }
     }, []);
 
+    const collectionRandomList = useSelector(state => state.collectionRandomList);
+    const { collection, loading: collectionLoading, error: collectionError } = collectionRandomList;
+    const mostViewedProducts = useSelector(state => state.mostViewedProducts);
+    const { mostViewed, loading: mostViewedLoading, error: mostViewedError } = mostViewedProducts;
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        dispatch(randomListCollection());
+        dispatch(findMostViewedProducts());
+
+    }, [dispatch])
+
     return (
         <div className="main-screen-container">
             <div className="main-image">
-                <img className="make-your-case-image" src="./images/color-smartphone-cases.jpg" alt="Make your case" />
+                <img className="make-your-case-image" src="./images/color-smartphone-cases.webp" alt="Make your case" />
             </div>
             <div className="products-container">
                 <h2>ΠΡΟΙΟΝΤΑ</h2>
-                <CategoriesContainer />
+                <Suspense fallback={<div>Loading...</div>}>
+                    <CategoriesContainer />
+                </Suspense>
             </div>
             <div className="collection-carousel">
-                <CollectionCarousel />
+                <h2>Η ΣΥΛΛΟΓΗ ΜΑΣ</h2>
+                <Suspense fallback={<div>Loading...</div>}>
+                    <MyCarousel carouselList={collection} loading={collectionLoading} error={collectionError} />
+                </Suspense>
             </div>
             <div className="collection-carousel">
-                <MostViewProductsCarousel />
+                <h2>ΔΗΜΟΦΙΛΕΣΤΕΡΑ ΠΡΟΙΟΝΤΑ</h2>
+                <Suspense fallback={<div>Loading...</div>}>
+                    <MyCarousel carouselList={mostViewed} loading={mostViewedLoading} error={mostViewedError} />
+                </Suspense>
             </div>
             <CookieConsent
                 containerClasses="consent"
@@ -41,7 +63,7 @@ function MainScreen() {
                 cookieName="CookieConsent"
                 cookieValue="true"
                 declineCookieValue="false"
-                style={{ background: "#2B373B", height: "auto" }}
+                style={{ background: "#2B373B", height: "auto", fontFamily: "Roboto" }}
                 buttonStyle={{ color: "#4e503b", fontSize: "1rem" }}
                 expires={150}
             >

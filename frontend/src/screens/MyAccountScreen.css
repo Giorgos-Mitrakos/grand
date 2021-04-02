@@ -122,6 +122,21 @@ font-size: 1rem;
     text-align: center;
 }
 
+.proceed-checkout-btn{
+    padding: 0.4rem;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    background-color: #deccf0;
+    cursor: pointer;
+    color: inherit;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.proceed-checkout-btn:disabled{
+    color:  #9291df;
+}
+
 @media only screen and (max-width: 1024px) {
 #accountForm li{
     width: 100%;

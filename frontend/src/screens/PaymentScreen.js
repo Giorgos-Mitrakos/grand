@@ -43,7 +43,7 @@ function PaymentScreen(props) {
         return ()=>{
             
         }
-    });
+    },[]);
     
 
     return (
@@ -60,7 +60,7 @@ function PaymentScreen(props) {
                             {loadingSendingMethods?<LoadingSpinner/>:
                             errorSendingMethods?<div>{errorSendingMethods}</div>:
                             sendingMethods.map(send=>
-                                <li>
+                                <li key={send.sendingMethod_id}>
                                     <input type="radio" name="sendingMethod" id="sendingMethod" value={send.sendingMethod}
                                     onChange={(e)=>sendingMethodHandler(send.sendingMethod_id, send.sendingMethod,send.sendingMethodCost)}/>
                                     <label htmlFor="sendingMethod">   {send.sendingMethod}</label>

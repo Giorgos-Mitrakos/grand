@@ -1,38 +1,39 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { Route, Switch } from "react-router-dom";
-import CollectionScreen from '../screens/CollectionScreen';
-import ProductsScreen from '../screens/ProductsScreen';
 import MainScreen from '../screens/MainScreen';
-import ContactUsScreen from '../screens/ContactUsScreen';
-import ProductDetailScreen from '../screens/ProductDetailsScreen';
-import CartScreen from '../screens/CartScreen';
-import SigninScreen from '../screens/SigninScreen';
-import RegisterScreen from '../screens/RegisterScreen';
-import AdminProductsScreen from '../screens/AdminProductsScreen';
 import ProtectedRoute from '../components/ProtectedRoute';
-import ShippingScreen from '../screens/ShippingScreen';
-import PaymentScreen from '../screens/PaymentScreen';
-import PlaceOrderScreen from '../screens/PlaceOrderScreen';
-import WishListScreen from '../screens/WishListScreen';
-import MyaccountScreen from '../screens/MyAccountScreen';
-import AdminOrdersScreen from '../screens/AdminOrdersScreen';
-import AdminOrdersDetailScreen from '../screens/AdminOrderDetails';
-import AdminCollectionScreen from "../screens/AdminCollectionScreen.js";
-import AdminListsScreen from '../screens/AdminListsScreen';
 import ProductsByCategoryScreen from '../screens/ProductsByCategoryScreen';
-import CollectionDetailScreen from '../screens/CollectionDetailsScreen';
-import Gdpr from '../screens/Gdpr';
-import NewsletterDisclaimer from '../screens/NewsletterDisclaimer';
-import ForgottenPassword from '../screens/ForgottenPassword';
-import UpdatePassword from '../screens/UpdatePassword';
-import ConditionsOfUse from '../screens/ConditionsOfUse';
-import CustomerOrdersScreen from '../screens/CustomerOrdersScreen';
-import CustomerOrderDetails from '../screens/CustomerOrderDetails';
-import SendingMethodsScreen from '../screens/SendingMethodsScreen';
-import ReturnPolicy from '../screens/ReturnPolicy';
+const CollectionScreen = lazy(() => import('../screens/CollectionScreen'));
+const ProductsScreen = lazy(() => import('../screens/ProductsScreen'));
+const ContactUsScreen = lazy(() => import('../screens/ContactUsScreen'));
+const ProductDetailScreen = lazy(() => import('../screens/ProductDetailsScreen'));
+const CartScreen = lazy(() => import('../screens/CartScreen'));
+const SigninScreen = lazy(() => import('../screens/SigninScreen'));
+const AdminProductsScreen = lazy(() => import('../screens/AdminProductsScreen'));
+const RegisterScreen = lazy(() => import('../screens/RegisterScreen'));
+const ShippingScreen = lazy(() => import('../screens/ShippingScreen'));
+const PaymentScreen = lazy(() => import('../screens/PaymentScreen'));
+const PlaceOrderScreen = lazy(() => import('../screens/PlaceOrderScreen'));
+const WishListScreen = lazy(() => import('../screens/WishListScreen'));
+const MyaccountScreen = lazy(() => import('../screens/MyAccountScreen'));
+const AdminOrdersScreen = lazy(() => import('../screens/AdminOrdersScreen'));
+const AdminOrdersDetailScreen = lazy(() => import('../screens/AdminOrderDetails'));
+const AdminCollectionScreen = lazy(() => import('../screens/AdminCollectionScreen'));
+const AdminListsScreen = lazy(() => import('../screens/AdminListsScreen'));
+const CollectionDetailScreen = lazy(() => import('../screens/CollectionDetailsScreen'));
+const Gdpr = lazy(() => import('../screens/Gdpr'));
+const NewsletterDisclaimer = lazy(() => import('../screens/NewsletterDisclaimer'));
+const ForgottenPassword = lazy(() => import('../screens/ForgottenPassword'));
+const UpdatePassword = lazy(() => import('../screens/UpdatePassword'));
+const ConditionsOfUse = lazy(() => import('../screens/ConditionsOfUse'));
+const CustomerOrdersScreen = lazy(() => import('../screens/CustomerOrdersScreen'));
+const CustomerOrderDetails = lazy(() => import('../screens/CustomerOrderDetails'));
+const SendingMethodsScreen = lazy(() => import('../screens/SendingMethodsScreen'));
+const ReturnPolicy = lazy(() => import('../screens/ReturnPolicy'));
 
 function Routes() {
     return (
+        <Suspense fallback={<div>Loading...</div>}>
         <Switch>
             <Route path='/' exact={true} component={MainScreen} />
             <Route path='/contact-us' component={ContactUsScreen} />
@@ -65,7 +66,7 @@ function Routes() {
             <ProtectedRoute path="/admin/order/:id" component={AdminOrdersDetailScreen} />
             <ProtectedRoute path="/admin/lists" component={AdminListsScreen} />
         </Switch>
-
+        </Suspense>
     );
 }
 export default Routes;

@@ -1,5 +1,5 @@
 import Axios from 'axios';
-import { ADMIN_COLLECTION_LIST_FAIL, ADMIN_COLLECTION_LIST_REQUEST, ADMIN_COLLECTION_LIST_SUCCESS, COLLECTION_DETAILS_FAIL, COLLECTION_DETAILS_REQUEST, COLLECTION_DETAILS_SUCCESS, COLLECTION_LIST_FAIL, COLLECTION_LIST_REQUEST, COLLECTION_LIST_SUCCESS, COLLECTION_SAVE_REQUEST, COLLECTION_SAVE_SUCCESS, COLLECTION_VISIBILITY_CHANGE_FAIL, COLLECTION_VISIBILITY_CHANGE_REQUEST, COLLECTION_VISIBILITY_CHANGE_SUCCESS } from '../constants/collectionConstants';
+import { ADMIN_COLLECTION_LIST_FAIL, ADMIN_COLLECTION_LIST_REQUEST, ADMIN_COLLECTION_LIST_SUCCESS, COLLECTION_DETAILS_FAIL, COLLECTION_DETAILS_REQUEST, COLLECTION_DETAILS_SUCCESS, COLLECTION_LIST_FAIL, COLLECTION_LIST_REQUEST, COLLECTION_LIST_SUCCESS, COLLECTION_RANDOM_LIST_FAIL, COLLECTION_RANDOM_LIST_REQUEST, COLLECTION_RANDOM_LIST_SUCCESS, COLLECTION_SAVE_REQUEST, COLLECTION_SAVE_SUCCESS, COLLECTION_VISIBILITY_CHANGE_FAIL, COLLECTION_VISIBILITY_CHANGE_REQUEST, COLLECTION_VISIBILITY_CHANGE_SUCCESS } from '../constants/collectionConstants';
 import { PRODUCT_SAVE_FAIL } from '../constants/productConstant';
 
 const listCollectionAdmin = () =>async (dispatch,getState)=>{
@@ -26,6 +26,18 @@ const listCollection = () =>async (dispatch)=> {
     catch(error)
     {
         dispatch({type:COLLECTION_LIST_FAIL, payload: error.message});
+    }    
+}
+
+const randomListCollection = () =>async (dispatch)=> {
+    try{
+        dispatch({type:COLLECTION_RANDOM_LIST_REQUEST});
+        const {data}= await Axios.get("/api/products/collectionrandomlist");
+        dispatch({type:COLLECTION_RANDOM_LIST_SUCCESS, payload: data});
+    }
+    catch(error)
+    {
+        dispatch({type:COLLECTION_RANDOM_LIST_FAIL, payload: error.message});
     }    
 }
 
@@ -81,4 +93,5 @@ const changeCollectionVisibility = (collectionId,productVisibility)=>async (disp
     }
 }
 
-export {listCollectionAdmin,listCollection,detailsCollection,saveCollection,changeCollectionVisibility}
+export {listCollectionAdmin,listCollection,detailsCollection,
+    saveCollection,changeCollectionVisibility,randomListCollection}

@@ -18,7 +18,7 @@ import { wishListReducer } from "./reducers/wishListReducer";
 import { orderReducer, orderListReducer, orderDetailsReducer, changeOrderStatusReducer,
      updateOrderStatusReducer, 
      updateShippingAddressReducer, updateOrderReducer, deleteOrderItemReducer, customerOrderListReducer, customerOrderDetailsReducer } from "./reducers/orderReducer";
-import { collectionAdminReducer, collectionDetailsReducer, collectionListReducer } from "./reducers/collectionReducer";
+import { collectionAdminReducer, collectionDetailsReducer, collectionListReducer, collectionRandomListReducer } from "./reducers/collectionReducer";
 import { emailAccountDeleteConfirmationReducer, emailAddNewsletterReducer, emailContactReducer, emailOrderCorfimationReducer, emailPassUpdateConfirmationReducer, emailRegisterReducer, 
     emailRemoveNewsletterReducer, emailResetPasswordReducer, updatePasswordReducer } from "./reducers/emailReducer";
 import { paymentMethodsListReducer, sendingMethodsListReducer } from "./reducers/paymentReducer";
@@ -88,6 +88,7 @@ const reducer=combineReducers({
     emailAccountDeleteConfirmation:emailAccountDeleteConfirmationReducer,
     customerOrderList:customerOrderListReducer,
     customerOrderDetails:customerOrderDetailsReducer,
+    collectionRandomList:collectionRandomListReducer
 })
 
 const composeEchancer= window._REDUX_DEVTOOLS_EXTENSION_COMPOSE_ || compose;

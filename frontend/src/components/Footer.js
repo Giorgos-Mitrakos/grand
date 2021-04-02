@@ -45,6 +45,16 @@ function Footer() {
         }
     }, [successSending]);
 
+    const codeStr = `
+                    <script type="text/javascript"> //<![CDATA[
+                        var tlJsHost = ((window.location.protocol == "https:") ? "https://secure.trust-provider.com/" : "http://www.trustlogo.com/");
+                        document.write(unescape("%3Cscript src='" + tlJsHost + "trustlogo/javascript/trustlogo.js' type='text/javascript'%3E%3C/script%3E"));
+                    //]]></script>
+                    <script language="JavaScript" type="text/javascript">
+                        TrustLogo("https://www.positivessl.com/images/seals/positivessl_trust_seal_lg_222x54.png", "POSDV", "none");
+                    </script>
+                    `
+                    
     const validEmail = (value) => {
         if (value !== "undefined") {
             var pattern = new RegExp(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i);
@@ -64,8 +74,8 @@ function Footer() {
                 <div className="navigation-info info">
                     <h2>Πλοήγηση</h2>
                     <ul>
-                        {navigation.map((x,index)=>
-                            <li  key={index}><Link to={x.linkto}>{x.title}</Link></li>
+                        {navigation.map((x, index) =>
+                            <li key={index}><Link to={x.linkto}>{x.title}</Link></li>
                         )}
                     </ul>
                 </div>
@@ -80,8 +90,8 @@ function Footer() {
                 <div className="info">
                     <h2>Η Εταιρία</h2>
                     <ul>
-                        {theCompany.map((x,index)=>
-                        <li key={index}><Link to={x.linkto}>{x.title}</Link></li>
+                        {theCompany.map((x, index) =>
+                            <li key={index}><Link to={x.linkto}>{x.title}</Link></li>
                         )}
                     </ul>
                 </div>
@@ -106,44 +116,47 @@ function Footer() {
                                 alt={contactUs.instagram.altContent} />
                         </a>
                     </div>
-                    </div>
-                    <div className="newsletter-info info">
-                        <h2>Newsletter</h2>
-                        <div>
-                            <p>
-                                Συμπληρώστε το email σας για να μένετε<br /> ενημερωμένοι για νέα & προσφορές!
-                            </p>
-                            <form className="newsletter-email" onSubmit={submitHandler}>
-                                <input type="email" id="email" name="email" placeholder="email" onChange={(e) => validEmail(e.target.value)}></input><br></br>
-                                <input type="checkbox" id="private-policy" name="private-policy" onChange={(e) => { setChecked(e.target.checked) }}></input>
-                                {" "}
-                                <Link to="/newsletter-disclaimer" id="private-policy-link">
-                                    <strong>Αποδοχή όρων χρήσης</strong>
-                                </Link>
-                                <input type="submit" id="submit-email" name="submit-email" value="Εγγραφή" disabled={!checked || !email}></input>
-                            </form>
-                        </div>
-                    </div>
                 </div>
-                <div className="copywrite-container">
+                <div className="newsletter-info info">
+                    <h2>Newsletter</h2>
                     <div>
-                        <p>Copyright 2020 © grandmobile.gr | All rights reserved |
-                        <Link to="/Πολιτική-Απορρήτου">Πολιτική Απορρήτου</Link>
-                        </p>
-                    </div>
-                    <div className="brand-info">
-                        <Link to='/'>
-                            <img className="logo-info"
-                                src="./PNG_FINAL.png"
-                                alt="logo" />
-                        </Link>
-                        <Link to='/' className="brand-name-info">
-                            <h1>Grand</h1>
-                            <h5>mobile accessories</h5>
-                        </Link>
+                        <p>
+                            Συμπληρώστε το email σας για να μένετε<br /> ενημερωμένοι για νέα & προσφορές!
+                            </p>
+                        <form className="newsletter-email" onSubmit={submitHandler}>
+                            <input type="email" id="email" name="email" placeholder="email" onChange={(e) => validEmail(e.target.value)}></input><br></br>
+                            <input type="checkbox" id="private-policy" name="private-policy" onChange={(e) => { setChecked(e.target.checked) }}></input>
+                            {" "}
+                            <Link to="/newsletter-disclaimer" id="private-policy-link">
+                                <strong>Αποδοχή όρων χρήσης</strong>
+                            </Link>
+                            <input type="submit" id="submit-email" name="submit-email" value="Εγγραφή" disabled={!checked || !email}></input>
+                        </form>
                     </div>
                 </div>
             </div>
+            <div className="copywrite-container">
+                <div>
+                    <p>Copyright 2020 © grandmobile.gr | All rights reserved |
+                        <Link to="/Πολιτική-Απορρήτου">Πολιτική Απορρήτου</Link>
+                    </p>
+                </div>
+                <div dangerouslySetInnerHTML={{ __html: codeStr }}>
+
+                </div>
+                <div className="brand-info">
+                    <Link to='/'>
+                        <img className="logo-info"
+                            src="./PNG_FINAL.png"
+                            alt="logo" />
+                    </Link>
+                    <Link to='/' className="brand-name-info">
+                        <h1>Grand</h1>
+                        <h5>mobile accessories</h5>
+                    </Link>
+                </div>
+            </div>
+        </div>
     )
 }
 

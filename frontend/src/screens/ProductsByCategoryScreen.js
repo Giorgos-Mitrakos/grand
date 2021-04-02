@@ -283,6 +283,7 @@ function ProductsByCategoryScreen(props) {
                 <div style={{ display: 'flex' }}>
                     <button className="filter_button" onClick={() => dispatch(productMenuToggle(true))}>
                         <i className="material-icons" style={{ fontSize: "2rem" }}>sort</i>
+                        <h3>Κατηγορίες</h3>
                     </button>
                     <ul className="breadcrumb">
                         <li><Link to="/">Αρχική</Link></li>
@@ -323,7 +324,7 @@ function ProductsByCategoryScreen(props) {
                     </li>
                     <li>
                         <label>Εμφάνιση:</label>
-                        <select className="filter_items_per_page" onChange={(e) => setItemsPerPage(parseInt(e.target.value))}>
+                        <select className="filter_items_per_page select-model" onChange={(e) => setItemsPerPage(parseInt(e.target.value))}>
                             <option value="12">12</option>
                             <option value="24">24</option>
                             <option value="48">48</option>
@@ -332,7 +333,7 @@ function ProductsByCategoryScreen(props) {
                     </li>
                     <li>
                         <label>Ταξινόμηση:</label>
-                        <select className="filter_items_per_page" value={sortType} onChange={(e) => setSortType(e.target.value)} selected={sortType}>
+                        <select className="filter_items_per_page select-model" value={sortType} onChange={(e) => setSortType(e.target.value)} selected={sortType}>
                             <option value="Προεπιλογή">Προεπιλογή</option>
                             <option value="Αλφαβητικά: Α-Ω">Αλφαβητικά: Α-Ω</option>
                             <option value="Αλφαβητικά: Ω-Α">Αλφαβητικά: Ω-Α</option>

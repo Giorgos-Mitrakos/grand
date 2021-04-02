@@ -1,5 +1,5 @@
 const { ADMIN_COLLECTION_LIST_REQUEST, ADMIN_COLLECTION_LIST_SUCCESS, ADMIN_COLLECTION_LIST_FAIL,
-    COLLECTION_SAVE_REQUEST,COLLECTION_SAVE_SUCCESS,PRODUCT_SAVE_FAIL, COLLECTION_VISIBILITY_CHANGE_REQUEST, COLLECTION_VISIBILITY_CHANGE_SUCCESS, COLLECTION_VISIBILITY_CHANGE_FAIL, COLLECTION_LIST_REQUEST, COLLECTION_LIST_SUCCESS, COLLECTION_LIST_FAIL, COLLECTION_DETAILS_REQUEST, COLLECTION_DETAILS_SUCCESS, COLLECTION_DETAILS_FAIL} = require("../constants/collectionConstants");
+    COLLECTION_SAVE_REQUEST,COLLECTION_SAVE_SUCCESS,PRODUCT_SAVE_FAIL, COLLECTION_VISIBILITY_CHANGE_REQUEST, COLLECTION_VISIBILITY_CHANGE_SUCCESS, COLLECTION_VISIBILITY_CHANGE_FAIL, COLLECTION_LIST_REQUEST, COLLECTION_LIST_SUCCESS, COLLECTION_LIST_FAIL, COLLECTION_DETAILS_REQUEST, COLLECTION_DETAILS_SUCCESS, COLLECTION_DETAILS_FAIL, COLLECTION_RANDOM_LIST_REQUEST, COLLECTION_RANDOM_LIST_SUCCESS, COLLECTION_RANDOM_LIST_FAIL} = require("../constants/collectionConstants");
 
 function collectionAdminReducer(state={collection:[]},action) {
     switch (action.type) {
@@ -44,6 +44,19 @@ function collectionListReducer(state={collection:[]},action){
     }
 }
 
+function collectionRandomListReducer(state={collection:[]},action){
+    switch (action.type) {
+        case COLLECTION_RANDOM_LIST_REQUEST:
+            return {loading:true, collection: []};
+        case COLLECTION_RANDOM_LIST_SUCCESS:
+            return {loading:false, collection : action.payload};
+        case COLLECTION_RANDOM_LIST_FAIL:
+            return {loading:false, error : action.payload};
+        default:
+            return state;
+    }
+}
+
 function collectionDetailsReducer(state={collection:{}},action){
     switch(action.type){
         case COLLECTION_DETAILS_REQUEST:
@@ -57,4 +70,4 @@ function collectionDetailsReducer(state={collection:{}},action){
     }
 }
 
-export {collectionAdminReducer,collectionListReducer,collectionDetailsReducer}
+export {collectionAdminReducer,collectionListReducer,collectionDetailsReducer, collectionRandomListReducer}

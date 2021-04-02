@@ -6,6 +6,8 @@ import { detailsProduct } from '../action/productActions';
 import ReactTooltip from 'react-tooltip';
 import { addToCart, addToLocalCart } from '../action/cartActions';
 import { addToWishList } from '../action/wishListActions';
+import createDOMPurify from "dompurify";
+
 
 function ProductDetailScreen (props){
 
@@ -15,6 +17,7 @@ function ProductDetailScreen (props){
     const userSignin = useSelector(state=>state.userSignin);
     const {userInfo} = userSignin;
     const dispatch = useDispatch();
+    const DOMPurify = createDOMPurify(window);
 
     useEffect(()=>{
         dispatch(detailsProduct(props.match.params.id));  
@@ -48,7 +51,7 @@ function ProductDetailScreen (props){
     const ShowHtml = (props)=> {   
         return (
             //<iframe srcdoc={props} />
-         <div  dangerouslySetInnerHTML={{__html: props}} />
+         <div  dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(props)}} />
         )
       }
     
@@ -58,7 +61,7 @@ function ProductDetailScreen (props){
         (
         <div className="details-screen-wrapper">            
             <div>
-                <ul class="breadcrumb">
+                <ul className="breadcrumb">
                     <li><Link to="/">Αρχική</Link></li>
                     <li><Link to="/products">Προϊοντα</Link></li>
                     <li>{product.category}</li>

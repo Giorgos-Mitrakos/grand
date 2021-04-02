@@ -71,9 +71,6 @@
 
 .order-image-name-model>div>div{
     margin: 0.5rem 1rem 0.5rem 1rem;
-}
-
-.order-image-name-model>div>div{
     align-items: center;
     justify-items: left;
 }
@@ -107,7 +104,7 @@
     margin: 0.5rem;
 }
 
-.order-image img{
+.order-image>img{
     width: 3rem;
 }
 
@@ -147,17 +144,6 @@
     border-radius: 0.5rem;
 }
 
-.continue-btn{
-    padding: 0.4rem;
-    border-radius: 0.5rem;
-    font-size: 1rem;
-    background-color: #deccf0;
-    cursor: pointer;
-    color: inherit;
-    width: 100%;
-    margin-top: 1rem;
-}
-
 .different-address{
     font-size: 1.2rem;
     margin-top: 1rem;
@@ -180,6 +166,15 @@
     margin: 0.5rem;
     border-radius: 0.5rem;
     font-size: 1rem;
+}
+
+.continuebtn{
+    margin-top: 1rem;
+    width: 100%;
+}
+
+.continuebtn:disabled{
+    color: #9291df;
 }
 
 @media only screen and (max-width: 1024px) {

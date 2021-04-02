@@ -9,9 +9,15 @@
     align-items: flex-start;
 }
 
-.content-margined{
+.filter-product-container{
     margin: 1rem;
-    color: #312f8b;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.filter-product-container>select{
+    margin-right: 1rem;
+    width: 20rem;
 }
 
 .checkbox-flex{
@@ -70,6 +76,7 @@ tbody>tr:nth-child(odd){
 
 .feature-form li>div{
     display: flex;
+    align-items: center;
 }
 
 .feature-form li>h2{
@@ -79,5 +86,10 @@ tbody>tr:nth-child(odd){
 
 .feature-list option{
     width: 10rem;
+}
+
+.feature-list{
+    width: 10rem;
+    height: 1rem;
 }
 

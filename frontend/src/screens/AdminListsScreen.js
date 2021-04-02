@@ -183,7 +183,7 @@ function AdminListsScreen(props) {
     return (
         <div>
             <div>
-                <ul class="breadcrumb">
+                <ul className="breadcrumb">
                     <li><Link to="/">Αρχική</Link></li>
                     <li>Λίστες</li>
                 </ul>
@@ -462,8 +462,10 @@ function AdminListsScreen(props) {
                         <div className="auto-scroll">
                             <table>
                                 <thead>
-                                    <th>Κατασκευαστές</th>
-                                    <th></th>
+                                    <tr>
+                                        <th>Κατασκευαστές</th>
+                                        <th></th>
+                                    </tr>
                                 </thead>
                                 <tbody>
                                     {loading ? <div>Loading...</div> :

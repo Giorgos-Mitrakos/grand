@@ -444,7 +444,7 @@ function AdminOrdersDetailScreen(props) {
                                                     {loadingSendingMethods?<LoadingSpinner/>:
                                                     errorSendingMethods?<div>{errorSendingMethods}</div>:
                                                     sendingMethods.map(send=>
-                                                    <option id={send.sendingMethod_id} cost={send.sendingMethodCost} value={send.sendingMethod}>{send.sendingMethod}</option>)}
+                                                    <option key={send.sendingMethod_id} id={send.sendingMethod_id} cost={send.sendingMethodCost} value={send.sendingMethod}>{send.sendingMethod}</option>)}
                                                 </select>
                                             </li>
                                             <li>
@@ -715,7 +715,7 @@ function AdminOrdersDetailScreen(props) {
                                                 <input type="text" name="shipping-address" id="shipping-address" required
                                                 onChange={(e)=> setShippingAddress(e.target.value)} value={shippingAddress}>
                                                 </input>
-                                                <label for="shipping-postalCode">Τ.Κ:</label>
+                                                <label htmlFor="shipping-postalCode">Τ.Κ:</label>
                                                 <input type="text" name="shipping-postalCode" id="shipping-postalCode" required
                                                 onChange={(e)=> setShippingPostalCode(e.target.value)} value={shippingPostalCode}>
                                                 </input>
@@ -787,7 +787,7 @@ function AdminOrdersDetailScreen(props) {
                                     Κόστος Προϊόντων ( {products.reduce((a,c) => a + Number(c.quantity), 0)} τεμ.) :
                                     </p>
                                     <p>
-                                        {products.reduce((a,c)=>a + c.totalPrice*c.quantity,0).toFixed(2)} €
+                                        {products.reduce((a,c)=>a + c.totalPrice * Number(c.quantity),0).toFixed(2)} €
                                     </p>
                                 </div>
                             </li>

@@ -59,7 +59,7 @@ router.post("/getcollectionList", isAuth, isAdmin,  upload.single('image'), asyn
     var sql = "SELECT * FROM products WHERE category=?";
     connection.query(sql,["Συλλογή"], function (err, result, fields) {
     if (err) throw err;
-    console.log("Get collection list");
+    
     res.status(200).send(result);
     });
 
@@ -79,7 +79,7 @@ router.post("/insertcollectionproduct", isAuth, isAdmin,  upload.single('image')
     connection.query(sql, [req.body.name, req.file.path.slice(15,req.file.path.length),
       req.body.price, req.body.description, "Συλλογή"], function (err, result, fields) {
     if (err) throw err;
-    console.log("1 record inserted");
+    
     res.status(201).send({message:'New collection product Created'});
     });
 
@@ -102,7 +102,7 @@ router.put("/insertcollectionproduct/:id", isAuth, isAdmin,  upload.single('imag
       if (err) throw err;
     
       if(Object.keys(result).length===0){
-        console.log("Product not found");
+        
         res.send({message:'Product not found'});
       }
       else
@@ -111,7 +111,6 @@ router.put("/insertcollectionproduct/:id", isAuth, isAdmin,  upload.single('imag
         connection.query(sql, [req.body.name,req.body.image,req.body.price, req.body.description,collectionId], function (err, result, fields) {
           if (err) throw err;
 
-          console.log("1 record updated");
         });
 
         sql = "SELECT * FROM products WHERE _id=?";
@@ -139,7 +138,6 @@ router.put("/changeCollectionVisibility", isAuth, isAdmin, async (req,res,next) 
     connection.query(sql, [req.body.productVisibility,req.body.collectionId], function (err, result, fields) {
       if (err) throw err;
     
-      console.log("1 record updated");
       sql = "SELECT * FROM products WHERE _id=?";
       connection.query(sql, [req.body.collectionId], function (err, result, fields) {
         if (err) throw err;
@@ -164,7 +162,6 @@ router.put("/changeVisibility", isAuth, isAdmin, async (req,res,next) =>{
     connection.query(sql, [req.body.productVisibility,req.body.productID], function (err, result, fields) {
       if (err) throw err;
     
-      console.log("1 record updated");
       sql = "SELECT * FROM products WHERE _id=?";
       connection.query(sql, [req.body.productID], function (err, result, fields) {
         if (err) throw err;
@@ -223,7 +220,7 @@ router.put("/createproduct/:id", isAuth, isAdmin, upload.single('image'), async 
       if (err) throw err;
     
       if(Object.keys(result).length===0){
-        console.log("Product not found");
+        
         res.send({message:'Product not found'});
       }
     });
@@ -233,7 +230,6 @@ router.put("/createproduct/:id", isAuth, isAdmin, upload.single('image'), async 
           req.body.image,req.body.price,req.body.percentage, req.body.description,productId], function (err, result, fields) {
           if (err) throw err;
 
-          console.log("1 record updated");
         });
 
         sql = "SELECT * FROM products WHERE _id=?";
@@ -275,7 +271,7 @@ router.post("/createcategory", isAuth, isAdmin, upload.single('image'), async (r
     var sql = "INSERT INTO categories (category, image) VALUES (?, ?)";
     connection.query(sql, [req.body.category, req.file.path.slice(15,req.file.path.length)], function (err, result, fields) {
       if (err) throw err;
-      console.log("1 record inserted");
+      
       res.status(201).send({message:'New product Created'});
     });
 
@@ -293,7 +289,7 @@ router.post("/manufacturerslist", isAuth, isAdmin, async (req, res) =>{
       
       connection.query('SELECT * FROM manufacturers ORDER BY name', function (err, result, fields) {
       if (err) throw err;
-      console.log("Read manufacturers succeed");
+      
       res.send(result);
       connection.release();
 
@@ -327,7 +323,7 @@ router.post("/insertmanufacturer", isAuth, isAdmin, async (req,res,next) =>{
               throw err;
             });
           }
-            console.log("Read manufacturers succeed");
+          
             res.send(result);
 
           connection.commit(function(err) {
@@ -336,7 +332,7 @@ router.post("/insertmanufacturer", isAuth, isAdmin, async (req,res,next) =>{
                 throw err;
               });
             }
-            console.log('Transaction Completed Successfully.');
+            
             connection.release();
           });
         });
@@ -352,7 +348,7 @@ router.post("/featuretitlelist", isAuth, isAdmin, async (req, res) =>{
       
       connection.query('SELECT * FROM feature_titles ORDER BY feature_title', function (err, result, fields) {
       if (err) throw err;
-      console.log("Read feature titles succeed");
+      
       res.send(result);
       connection.release();
 
@@ -386,7 +382,7 @@ router.post("/insertfeaturetitle", isAuth, isAdmin, async (req,res,next) =>{
               throw err;
             });
           }
-            console.log("Read feature titles succeed");
+          
             res.send(result);
 
           connection.commit(function(err) {
@@ -395,7 +391,7 @@ router.post("/insertfeaturetitle", isAuth, isAdmin, async (req,res,next) =>{
                 throw err;
               });
             }
-            console.log('Transaction Completed Successfully.');
+            
             connection.release();
           });
         });
@@ -413,7 +409,7 @@ router.post("/featurenames", isAuth, isAdmin, async (req, res)=>{
       var sql='SELECT DISTINCT feature_name FROM feature_names WHERE feature_title_id=? ORDER BY feature_name';
       connection.query(sql, [req.body.featureTitleId], function (err, result, fields) {
       if (err) throw err;
-      console.log("Read feature names succeed");
+      
       res.send(result);
       connection.release();
 
@@ -446,7 +442,7 @@ router.post("/insertfeaturename", isAuth, isAdmin, async (req,res,next) =>{
               throw err;
             });
           }
-          console.log("Read feature names succeed");
+          
             res.send(result);
 
           connection.commit(function(err) {
@@ -455,7 +451,7 @@ router.post("/insertfeaturename", isAuth, isAdmin, async (req,res,next) =>{
                 throw err;
               });
             }
-            console.log('Transaction Completed Successfully.');
+            
             connection.release();
           });
         });
@@ -642,7 +638,7 @@ router.post("/featurelist", isAuth, isAdmin, async (req, res) =>{
       
       connection.query('SELECT * FROM features WHERE product_id=?', [req.body.productId], function (err, result, fields) {
       if (err) throw err;
-      console.log("Read product features succeed");
+      
       res.send(result);
       connection.release();
 
@@ -675,7 +671,7 @@ router.post("/insertfeature", isAuth, isAdmin, async (req,res,next) =>{
               throw err;
             });
           }
-          console.log("Read product feature succeed");
+          
             res.send(result);
 
           connection.commit(function(err) {
@@ -684,7 +680,7 @@ router.post("/insertfeature", isAuth, isAdmin, async (req,res,next) =>{
                 throw err;
               });
             }
-            console.log('Transaction Completed Successfully.');
+            
             connection.release();
           });
         });
@@ -718,7 +714,7 @@ router.post("/deletefeature", isAuth, isAdmin, async (req,res,next) =>{
           throw err;
         });
       }
-      console.log("Read product features succeed");
+      
         res.send(result);
 
       connection.commit(function(err) {
@@ -727,7 +723,7 @@ router.post("/deletefeature", isAuth, isAdmin, async (req,res,next) =>{
             throw err;
           });
         }
-        console.log('Transaction Completed Successfully.');
+        
         connection.release();
       });
     });
@@ -743,7 +739,7 @@ router.post("/categories", isAuth, isAdmin, async (req, res) =>{
       
       connection.query('SELECT * FROM categories', function (err, result, fields) {
       if (err) throw err;
-      console.log("Read categories succeed");
+      
       res.send(result);
       connection.release();
 
@@ -758,7 +754,7 @@ router.post("/subcategories", isAuth, isAdmin, async (req, res) =>{
       if (err) throw err; // not connected!
       connection.query('SELECT * FROM categories WHERE parent_id=?',[req.body.parentId], function (err, result, fields) {
       if (err) throw err;
-      console.log("Read subcategories succeed");
+      
       res.send(result);
       connection.release();
 
@@ -773,7 +769,7 @@ router.post("/compatibilitycompanylist", isAuth, isAdmin, async (req, res) =>{
     if (err) throw err; // not connected!
     connection.query('SELECT * FROM compatibility_company ORDER BY company', function (err, result, fields) {
     if (err) throw err;
-    console.log("Read compatibility companies succeed");
+    
     res.send(result);
     connection.release();
 
@@ -788,7 +784,7 @@ router.post("/compatibilitymodelslist", isAuth, isAdmin, async (req, res) =>{
     if (err) throw err; // not connected!
     connection.query('SELECT * FROM compatibility_model WHERE compatibility_company_id=? ORDER BY model',[req.body.companyId], function (err, result, fields) {
     if (err) throw err;
-    console.log("Read compatibility models succeed");
+    
     res.send(result);
     connection.release();
 

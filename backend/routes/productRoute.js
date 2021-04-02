@@ -23,10 +23,34 @@ router.get("/collectionlist", async (req, res) =>{
     mysqlConnection.getConnection(function(err, connection) {
         if (err) throw err; // not connected!
     
-        var sql = "SELECT _id, name, category, brand, image, description,countInStock, numReview, subcategory, weight, supplier, availability, visibility, totalPrice FROM products WHERE category=? && visibility=1";
+        var sql = `SELECT _id, name, category, brand, image, description,
+        countInStock, numReview, subcategory, weight, supplier, availability, 
+        visibility, totalPrice FROM products WHERE category=? && visibility=1`;
         connection.query(sql,["Συλλογή"], function (err, result, fields) {
         if (err) throw err;
-        console.log("Get collection list");
+        
+        res.status(200).send(result);
+        });
+    
+        connection.release();
+    
+        // Handle error after the release.
+        if (err) throw err;
+      });  
+     
+})
+
+router.get("/collectionrandomlist", async (req, res) =>{
+    mysqlConnection.getConnection(function(err, connection) {
+        if (err) throw err; // not connected!
+    
+        var sql = `SELECT _id, name, category, brand, image, description,
+        countInStock, numReview, subcategory, weight, supplier, availability, 
+        visibility, totalPrice FROM products WHERE category=? && visibility=1
+        ORDER BY RAND() LIMIT 10`;
+        connection.query(sql,["Συλλογή"], function (err, result, fields) {
+        if (err) throw err;
+        
         res.status(200).send(result);
         });
     
@@ -166,7 +190,6 @@ router.post("/compatibilities_by_category", async (req, res) =>{
         })
     });
 })
-
 
 router.post("/products_by_category_admin", async (req, res) =>{
     mysqlConnection.getConnection(function(err, connection) {

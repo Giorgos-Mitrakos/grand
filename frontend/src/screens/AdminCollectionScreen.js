@@ -14,7 +14,7 @@ function AdminCollectionScreen(props) {
     const [price, setPrice] = useState('');
     const [description, setDescription] = useState('');
     const collectionAdmin = useSelector(state => state.collectionAdmin);
-    const { collection, loading,loadingSave, error, successSave, errorSave, loadingVisibility } = collectionAdmin;
+    const { collection, loading, loadingSave, error, successSave, errorSave, loadingVisibility } = collectionAdmin;
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -24,7 +24,7 @@ function AdminCollectionScreen(props) {
         return () => {
 
         }
-    });
+    }, []);
 
     useEffect(() => {
         if (successSave) {
@@ -70,7 +70,7 @@ function AdminCollectionScreen(props) {
             <div>
                 <div className="modal" style={{ display: modalVisible ? "block" : "none", overflowY: "scroll", maxHeight: "40rem" }}>
                     <div className="form-create-product">
-                        <form onSubmit={submitHandler} enctype="multipart/form-data">
+                        <form onSubmit={submitHandler} encType="multipart/form-data">
                             <ul className="form-container">
                                 <li>
                                     <h2>
@@ -106,7 +106,7 @@ function AdminCollectionScreen(props) {
                                     </textarea>
                                 </li>
                                 <li>
-                                    <button type="submit" className="button" disabled={loadingSave}>{loadingSave?<LoadingSpinner/>:id ? "Ενημέρωση" : "Δημιουργία"}</button>
+                                    <button type="submit" className="button" disabled={loadingSave}>{loadingSave ? <LoadingSpinner /> : id ? "Ενημέρωση" : "Δημιουργία"}</button>
                                 </li>
                                 <li>
                                     <button className="button" onClick={() => setModalVisible(false)}>Επιστροφή</button>
@@ -120,12 +120,14 @@ function AdminCollectionScreen(props) {
         <div className="product-list">
             <table className="product-table">
                 <thead>
-                    <th>ID</th>
-                    <th>Φώτο</th>
-                    <th>Όνομα</th>
-                    <th>Τιμή</th>
-                    <th>Εμφάνιση</th>
-                    <th>Ενέργεια</th>
+                    <tr>
+                        <th>ID</th>
+                        <th>Φώτο</th>
+                        <th>Όνομα</th>
+                        <th>Τιμή</th>
+                        <th>Εμφάνιση</th>
+                        <th>Ενέργεια</th>
+                    </tr>
                 </thead>
                 <tbody>
                     {loading || successSave || loadingVisibility ? <LoadingSpinner /> :

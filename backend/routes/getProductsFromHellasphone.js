@@ -5,8 +5,8 @@ import mysqlConnection from '../connection';
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
-    console.log("Hello")
+router.get("/",  (req, res) => {
+    
     http.get('http://www.hellasphone.com.gr/api.php?action=getWholeCatalog&user_id=4478767&password=383cHClX2mcR5oHjOV7d&type=JSON', function (resp) {
         var data = '';
         resp.on('data', function (chunk) {
@@ -17,7 +17,6 @@ router.get("/", async (req, res) => {
                 const insertProduct = (name, category, subcategory, brand, image, price, weight, mpn, supplier, availability) => {
                     mysqlConnection.getConnection(function (err, connection) {
                         if (err) throw err; // not connected!
-
                         let sql = "SELECT _id FROM products WHERE MPN=?"
                         connection.query(sql, [mpn], function (err, result, fields) {
                             if (err) throw err;
@@ -55,7 +54,7 @@ router.get("/", async (req, res) => {
                                 })
                             }
                         })
-
+                                            
                         connection.release();
                         // Handle error after the release.
                         if (err) throw err;
@@ -191,6 +190,7 @@ router.get("/", async (req, res) => {
                         })
 
                         connection.release();
+                        console.log(mysqlConnection._freeConnections.indexOf(connection)+"---2");
                         // Handle error after the release.
                         if (err) throw err;
                     });
@@ -324,6 +324,7 @@ router.get("/", async (req, res) => {
                         })
 
                         connection.release();
+                        console.log(mysqlConnection._freeConnections.indexOf(connection)+"---3");
                         // Handle error after the release.
                         if (err) throw err;
                     });
@@ -1153,7 +1154,6 @@ router.get("/", async (req, res) => {
                         case "Living":
                             break;
                         case "Τηλεφωνία":
-                            // console.log(element.PRODUCT)
                             mobiles_smartwatches();
                             break;
                         case "Tablets":

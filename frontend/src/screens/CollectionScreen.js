@@ -83,14 +83,14 @@ function CollectionScreen() {
                 <h2>ΦΤΙΑΞΕ ΤΗ ΘΗΚΗ ΣΟΥ</h2>
             </div>
             <div>
-                <ul class="breadcrumb">
+                <ul className="breadcrumb">
                     <li><Link to="/">Αρχική</Link></li>
                     <li>Φτιάξε τη θήκη σου</li>
                 </ul>
             </div>
             <div className="make-your-case-wrapper">
                 <div className="make-your-case-image-container">
-                    <img className="make-your-case-image" src="./images/make-your-case-images.jpg" alt="Make your case" />
+                    <img className="make-your-collection-image" src="./images/make-your-case-images.webp" alt="Make your case" />
                 </div>
                 <div className="make-your-case">
                     <div className="make-your-case-description">
@@ -104,7 +104,7 @@ function CollectionScreen() {
                             <li>
                                 <label htmlFor="product-image">Φωτογραφία :  </label>
                                 <input type="file" name="product-image" id="product-image" required
-                                    accept=".jpg, .jpeg, .png" onChange={(e) => setImage(e.target.files[0])}>
+                                    accept=".jpg, .jpeg, .png, .webp" onChange={(e) => setImage(e.target.files[0])}>
                                 </input>
                             </li>
                             <li className="product-phone-model">
@@ -143,7 +143,7 @@ function CollectionScreen() {
             </div>
             <div className="filter_collection">
                 <label>Εμφάνιση:</label>
-                <select className="filter_collection_per_page " onChange={(e) => {setItemsPerPage(parseInt(e.target.value)); setCurrentPage(0)}}>
+                <select className="filter_collection_per_page" onChange={(e) => {setItemsPerPage(parseInt(e.target.value)); setCurrentPage(0)}}>
                     <option value="20">20</option>
                     <option value="40">40</option>
                     <option value="60">60</option>

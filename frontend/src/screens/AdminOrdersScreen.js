@@ -54,13 +54,12 @@ function AdminOrdersScreen(props) {
         error?<div>{error}</div>:
         (
     <div className="content content-margined">
-
       <div className="order-header">
         <h3>Παραγγελίες</h3>
       </div>
       <div className="filter-container"> 
           <label htmlFor="canceled-orders">Αναζήτηση:</label>
-          <select className="filter_orders" onChange={(e)=>orderFilterHandler(e.target.value)}>
+          <select className="filter_orders select-model" onChange={(e)=>orderFilterHandler(e.target.value)}>
             <option value="all_orders" selected>Όλες</option>
             <option value="new_entries_orders">Καταχωρήμένες</option>
             <option value="proccessed_orders">Επεξεργασμένες</option>

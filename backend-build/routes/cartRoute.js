@@ -57,11 +57,7 @@ router.post("/insert_item", _util.isAuth, /*#__PURE__*/function () {
 
               var sql = "INSERT INTO cart (user_email, product_id, model, quantity) VALUES (?,?,?,?)";
               connection.query(sql, [req.body.email, req.body.product_id, req.body.model, req.body.qty], function (err, result, fields) {
-                if (err & err != "ER_DUP_ENTRY") {
-                  console.log("Entry is already");
-                }
-
-                console.log("Item inserted successfully");
+                if (err & err != "ER_DUP_ENTRY") {}
               });
               sql = "SELECT products._id, products.name, products.category, products.brand, products.image, products.description, products.price, products.countInStock, cart.model, cart.quantity FROM products LEFT JOIN cart ON products._id = cart.product_id WHERE cart.user_email=?";
               connection.query(sql, [req.body.email], function (err, result) {
@@ -129,7 +125,6 @@ router.post("/insert_image_case_item", _util.isAuth, uploadCaseImage.single('ima
                           });
                         }
 
-                        console.log('Transaction Completed Successfully.');
                         connection.release();
                       });
                     });
@@ -163,7 +158,6 @@ router.post("/update_item", _util.isAuth, /*#__PURE__*/function () {
               var sql = "UPDATE cart SET model=?, quantity=? WHERE user_email=? && cart_id=?";
               connection.query(sql, [req.body.model, req.body.qty, req.body.user_email, req.body.cart_id], function (err, result, fields) {
                 if (err) throw err;
-                console.log("Item updated successfully");
               });
               sql = "SELECT products._id, products.name, products.category, products.brand, products.image, products.description, products.totalPrice, products.countInStock, products.percentage, cart.cart_id, cart.model, cart.quantity, cart.image_case FROM cart LEFT JOIN products ON cart.product_id = products._id WHERE cart.user_email=?";
               connection.query(sql, [req.body.user_email], function (err, result) {
@@ -199,14 +193,12 @@ router.post("/remove_item", _util.isAuth, /*#__PURE__*/function () {
               if (req.body.image_case) {
                 fs.unlink("frontend/public" + req.body.image_case, function (err) {
                   if (err) throw err;
-                  console.log("successfully deleted ".concat(req.body.image_case));
                 });
               }
 
               var sql = "DELETE FROM cart WHERE cart_id=?";
               connection.query(sql, [req.body.cart_id], function (err, result, fields) {
                 if (err) throw err;
-                console.log("Product deleted from cart");
               });
               sql = "SELECT products._id, products.name, products.category, products.brand, products.image, products.description, products.totalPrice, products.countInStock,cart.cart_id, cart.model, cart.quantity, cart.image_case FROM cart INNER JOIN products ON cart.product_id = products._id WHERE cart.user_email=?";
               connection.query(sql, [req.body.user_email], function (err, result) {

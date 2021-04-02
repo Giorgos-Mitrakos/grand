@@ -121,21 +121,7 @@
     transform: scale(1.05);
 }
 
-.select-model{
-    margin-left: 1rem;
-    font-size: 1rem;
-    font-family: sans-serif;
-    font-weight: 500;
-    color: #312f8b;
-    line-height: 1.3;
-    padding: 0.3rem 1.4rem 0.3rem 0.5rem;
-    box-sizing: border-box;
-    border: 1px solid #deccf0;
-    border-radius: 0.5rem;
-    box-shadow: 0 1px 0 1px rgba(0,0,0,.04);
-    background-color: #fff;
-    width: auto;
-}
+
 
 label{
     font-weight: 700;

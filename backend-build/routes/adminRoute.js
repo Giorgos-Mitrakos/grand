@@ -115,7 +115,6 @@ router.post("/getcollectionList", _util.isAuth, _util.isAdmin, upload.single('im
               var sql = "SELECT * FROM products WHERE category=?";
               connection.query(sql, ["Συλλογή"], function (err, result, fields) {
                 if (err) throw err;
-                console.log("Get collection list");
                 res.status(200).send(result);
               });
               connection.release(); // Handle error after the release.
@@ -147,7 +146,6 @@ router.post("/insertcollectionproduct", _util.isAuth, _util.isAdmin, upload.sing
               var sql = "INSERT INTO products (name, image, price, description, category) VALUES (?, ?, ?, ?, ?)";
               connection.query(sql, [req.body.name, req.file.path.slice(15, req.file.path.length), req.body.price, req.body.description, "Συλλογή"], function (err, result, fields) {
                 if (err) throw err;
-                console.log("1 record inserted");
                 res.status(201).send({
                   message: 'New collection product Created'
                 });
@@ -186,7 +184,6 @@ router.put("/insertcollectionproduct/:id", _util.isAuth, _util.isAdmin, upload.s
                 if (err) throw err;
 
                 if (Object.keys(result).length === 0) {
-                  console.log("Product not found");
                   res.send({
                     message: 'Product not found'
                   });
@@ -194,7 +191,6 @@ router.put("/insertcollectionproduct/:id", _util.isAuth, _util.isAdmin, upload.s
                   sql = "UPDATE products SET name=?, image=?, price=?, description=? WHERE _id=?";
                   connection.query(sql, [req.body.name, req.body.image, req.body.price, req.body.description, collectionId], function (err, result, fields) {
                     if (err) throw err;
-                    console.log("1 record updated");
                   });
                   sql = "SELECT * FROM products WHERE _id=?";
                   connection.query(sql, [collectionId], function (err, result, fields) {
@@ -232,7 +228,6 @@ router.put("/changeCollectionVisibility", _util.isAuth, _util.isAdmin, /*#__PURE
               var sql = 'UPDATE products SET visibility=? WHERE _id=?';
               connection.query(sql, [req.body.productVisibility, req.body.collectionId], function (err, result, fields) {
                 if (err) throw err;
-                console.log("1 record updated");
                 sql = "SELECT * FROM products WHERE _id=?";
                 connection.query(sql, [req.body.collectionId], function (err, result, fields) {
                   if (err) throw err;
@@ -268,7 +263,6 @@ router.put("/changeVisibility", _util.isAuth, _util.isAdmin, /*#__PURE__*/functi
               var sql = 'UPDATE products SET visibility=? WHERE _id=?';
               connection.query(sql, [req.body.productVisibility, req.body.productID], function (err, result, fields) {
                 if (err) throw err;
-                console.log("1 record updated");
                 sql = "SELECT * FROM products WHERE _id=?";
                 connection.query(sql, [req.body.productID], function (err, result, fields) {
                   if (err) throw err;
@@ -353,7 +347,6 @@ router.put("/createproduct/:id", _util.isAuth, _util.isAdmin, upload.single('ima
                 if (err) throw err;
 
                 if (Object.keys(result).length === 0) {
-                  console.log("Product not found");
                   res.send({
                     message: 'Product not found'
                   });
@@ -362,7 +355,6 @@ router.put("/createproduct/:id", _util.isAuth, _util.isAdmin, upload.single('ima
               sql = "UPDATE products SET name=?, category=?, brand=?, subcategory=?, image=?, price=?, percentage=?, description=? WHERE _id=?";
               connection.query(sql, [req.body.name, req.body.category, req.body.brand, req.body.subcategory, req.body.image, req.body.price, req.body.percentage, req.body.description, productId], function (err, result, fields) {
                 if (err) throw err;
-                console.log("1 record updated");
               });
               sql = "SELECT * FROM products WHERE _id=?";
               connection.query(sql, [productId], function (err, result, fields) {
@@ -416,7 +408,6 @@ router.post("/createcategory", _util.isAuth, _util.isAdmin, upload.single('image
               var sql = "INSERT INTO categories (category, image) VALUES (?, ?)";
               connection.query(sql, [req.body.category, req.file.path.slice(15, req.file.path.length)], function (err, result, fields) {
                 if (err) throw err;
-                console.log("1 record inserted");
                 res.status(201).send({
                   message: 'New product Created'
                 });
@@ -449,7 +440,6 @@ router.post("/manufacturerslist", _util.isAuth, _util.isAdmin, /*#__PURE__*/func
 
               connection.query('SELECT * FROM manufacturers ORDER BY name', function (err, result, fields) {
                 if (err) throw err;
-                console.log("Read manufacturers succeed");
                 res.send(result);
                 connection.release(); // Handle error after the release.
 
@@ -501,7 +491,6 @@ router.post("/insertmanufacturer", _util.isAuth, _util.isAdmin, /*#__PURE__*/fun
                       });
                     }
 
-                    console.log("Read manufacturers succeed");
                     res.send(result);
                     connection.commit(function (err) {
                       if (err) {
@@ -510,7 +499,6 @@ router.post("/insertmanufacturer", _util.isAuth, _util.isAdmin, /*#__PURE__*/fun
                         });
                       }
 
-                      console.log('Transaction Completed Successfully.');
                       connection.release();
                     });
                   });
@@ -542,7 +530,6 @@ router.post("/featuretitlelist", _util.isAuth, _util.isAdmin, /*#__PURE__*/funct
 
               connection.query('SELECT * FROM feature_titles ORDER BY feature_title', function (err, result, fields) {
                 if (err) throw err;
-                console.log("Read feature titles succeed");
                 res.send(result);
                 connection.release(); // Handle error after the release.
 
@@ -594,7 +581,6 @@ router.post("/insertfeaturetitle", _util.isAuth, _util.isAdmin, /*#__PURE__*/fun
                       });
                     }
 
-                    console.log("Read feature titles succeed");
                     res.send(result);
                     connection.commit(function (err) {
                       if (err) {
@@ -603,7 +589,6 @@ router.post("/insertfeaturetitle", _util.isAuth, _util.isAdmin, /*#__PURE__*/fun
                         });
                       }
 
-                      console.log('Transaction Completed Successfully.');
                       connection.release();
                     });
                   });
@@ -636,7 +621,6 @@ router.post("/featurenames", _util.isAuth, _util.isAdmin, /*#__PURE__*/function 
               var sql = 'SELECT DISTINCT feature_name FROM feature_names WHERE feature_title_id=? ORDER BY feature_name';
               connection.query(sql, [req.body.featureTitleId], function (err, result, fields) {
                 if (err) throw err;
-                console.log("Read feature names succeed");
                 res.send(result);
                 connection.release(); // Handle error after the release.
 
@@ -688,7 +672,6 @@ router.post("/insertfeaturename", _util.isAuth, _util.isAdmin, /*#__PURE__*/func
                       });
                     }
 
-                    console.log("Read feature names succeed");
                     res.send(result);
                     connection.commit(function (err) {
                       if (err) {
@@ -697,7 +680,6 @@ router.post("/insertfeaturename", _util.isAuth, _util.isAdmin, /*#__PURE__*/func
                         });
                       }
 
-                      console.log('Transaction Completed Successfully.');
                       connection.release();
                     });
                   });
@@ -998,7 +980,6 @@ router.post("/featurelist", _util.isAuth, _util.isAdmin, /*#__PURE__*/function (
 
               connection.query('SELECT * FROM features WHERE product_id=?', [req.body.productId], function (err, result, fields) {
                 if (err) throw err;
-                console.log("Read product features succeed");
                 res.send(result);
                 connection.release(); // Handle error after the release.
 
@@ -1050,7 +1031,6 @@ router.post("/insertfeature", _util.isAuth, _util.isAdmin, /*#__PURE__*/function
                       });
                     }
 
-                    console.log("Read product feature succeed");
                     res.send(result);
                     connection.commit(function (err) {
                       if (err) {
@@ -1059,7 +1039,6 @@ router.post("/insertfeature", _util.isAuth, _util.isAdmin, /*#__PURE__*/function
                         });
                       }
 
-                      console.log('Transaction Completed Successfully.');
                       connection.release();
                     });
                   });
@@ -1112,7 +1091,6 @@ router.post("/deletefeature", _util.isAuth, _util.isAdmin, /*#__PURE__*/function
                       });
                     }
 
-                    console.log("Read product features succeed");
                     res.send(result);
                     connection.commit(function (err) {
                       if (err) {
@@ -1121,7 +1099,6 @@ router.post("/deletefeature", _util.isAuth, _util.isAdmin, /*#__PURE__*/function
                         });
                       }
 
-                      console.log('Transaction Completed Successfully.');
                       connection.release();
                     });
                   });
@@ -1153,7 +1130,6 @@ router.post("/categories", _util.isAuth, _util.isAdmin, /*#__PURE__*/function ()
 
               connection.query('SELECT * FROM categories', function (err, result, fields) {
                 if (err) throw err;
-                console.log("Read categories succeed");
                 res.send(result);
                 connection.release(); // Handle error after the release.
 
@@ -1184,7 +1160,6 @@ router.post("/subcategories", _util.isAuth, _util.isAdmin, /*#__PURE__*/function
 
               connection.query('SELECT * FROM categories WHERE parent_id=?', [req.body.parentId], function (err, result, fields) {
                 if (err) throw err;
-                console.log("Read subcategories succeed");
                 res.send(result);
                 connection.release(); // Handle error after the release.
 
@@ -1215,7 +1190,6 @@ router.post("/compatibilitycompanylist", _util.isAuth, _util.isAdmin, /*#__PURE_
 
               connection.query('SELECT * FROM compatibility_company ORDER BY company', function (err, result, fields) {
                 if (err) throw err;
-                console.log("Read compatibility companies succeed");
                 res.send(result);
                 connection.release(); // Handle error after the release.
 
@@ -1246,7 +1220,6 @@ router.post("/compatibilitymodelslist", _util.isAuth, _util.isAdmin, /*#__PURE__
 
               connection.query('SELECT * FROM compatibility_model WHERE compatibility_company_id=? ORDER BY model', [req.body.companyId], function (err, result, fields) {
                 if (err) throw err;
-                console.log("Read compatibility models succeed");
                 res.send(result);
                 connection.release(); // Handle error after the release.
 

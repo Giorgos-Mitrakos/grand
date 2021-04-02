@@ -274,6 +274,22 @@
     padding: 0.2rem;
 }
 
+.order-image{
+    flex: 1;
+}
+
+.order-image>img{
+    width: 3rem;
+}
+
+.order-items-total-cost{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 0.5rem 0 1rem;
+    margin: 0.5rem;
+}
+
 @media only screen and (max-width: 1024px) {
     .order_details{
         flex-direction: column;
@@ -290,6 +306,11 @@
     .shipping-details{
         margin-top: 2rem;
         border-right: none;
+    }
+
+    .order-items-total-cost{
+        padding: 0 0.5rem 0 1rem;
+        font-size: 0.9rem;
     }
 }
   

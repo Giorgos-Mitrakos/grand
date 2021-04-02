@@ -101,12 +101,14 @@
 }
 
 .filter_button{
-    display: block;
+    display: flex;
     color: #312f8b;
     border: none;
     margin: 0;
-    padding: 0;
     background-color: inherit;
+    font-size: 0.9rem;
+    padding: 0.2rem 0.4rem 0.2rem 0.4rem;
+    align-items: center;
 }
 
 .filter_button:hover{
@@ -121,11 +123,6 @@
 .filter_items_per_page{
     font-size: 0.9rem;
     padding: 0.1rem;
-}
-
-.filter-button{
-    font-size: 0.9rem;
-    padding: 0.2rem 0.4rem 0.2rem 0.4rem;   
 }
 
 }

@@ -131,7 +131,7 @@ function MyaccountScreen(props){
     return(
         <div>
             <div>
-                <ul class="breadcrumb">
+                <ul className="breadcrumb">
                     <li><Link to="/">Αρχική</Link></li>
                     <li>Ο Λογαριασμός μου</li>
                 </ul>

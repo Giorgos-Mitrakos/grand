@@ -20,7 +20,7 @@ function ProductsScreen (){
                 <h2>ΠΡΟΙΟΝΤΑ</h2>
             </div>
             <div>
-                <ul class="breadcrumb">
+                <ul className="breadcrumb">
                     <li><Link to="/">Αρχική</Link></li>
                     <li>Προϊόντα</li>
                 </ul>

@@ -82,6 +82,41 @@
     width: 6rem;
 }
 
+.add-to-cart-btn{
+    width: auto;    
+    padding: 0.4rem;
+    border-radius: 1rem;
+    font-size: 1rem;
+    background-color: #deccf0;
+    color: inherit;
+}
+
+.add-to-cart-btn:disabled{
+    color:  #9291df;
+}
+
+.add-to-cart-btn:hover{
+    background-color: #c3b2d4;
+    transform: scale(1.05);
+    cursor: pointer;
+}
+
+.delete-item-button{
+    border: none;
+    background-color: inherit;
+    color: inherit;
+    cursor: pointer;
+    
+}
+
+.delete-item-button:hover{
+    transform: scale(1.1);
+}
+
+.delete-item-button .material-icons{
+    font-size: 2rem;
+}
+
 
 @media only screen and (max-width: 1024px) {
 

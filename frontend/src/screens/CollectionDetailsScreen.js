@@ -67,7 +67,7 @@ function CollectionDetailScreen (props){
         (
         <div className="details-screen-wrapper">            
             <div>
-                <ul class="breadcrumb">
+                <ul className="breadcrumb">
                     <li><Link to="/">Αρχική</Link></li>
                     <li><Link to="/collection">Συλλογή</Link></li>
                     <li>{collection.name}</li>
