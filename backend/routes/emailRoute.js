@@ -94,7 +94,6 @@ router.post("/sendAccountDeleteConfirmation", (req, res)=>{
     res.send("Success Email Confirmation")
 });
 
-
 router.post("/resetpassword", (req, res)=>{
     
     mysqlConnection.getConnection(function(err, connection) {
@@ -457,7 +456,7 @@ router.post("/orderConfimation", (req, res)=>{
                                 emailTitle='Επιβεβαίωση Παραγγελίας #'+orderId;
                                 htmltext= 'Έχουμε <strong>παραλάβει</strong> την παραγγελία σας και αναμένεται να επεξεργαστεί από άνθρωπο μας. Θα ενημερωθείτε <strong>άμεσα</strong> όταν επεξεργαστεί με νέο μήνυμα. Μείνετε συντονισμένοι!';
                                 break;
-                            case 'Επεξεργάζετε':
+                            case 'Επεξεργάζεται':
                                 emailTitle='Η Παραγγελία #'+orderId+ ' επεξεργάζεται';
                                 htmltext= '<strong>Επεξεργαζόμαστε</strong> την παραγγελία σας και συσκευάζουμε προσεκτικά τα προϊόντα σας. Θα ενημερωθείτε <strong>άμεσα</strong> όταν ολοκληρωθεί η διαδικασία με νέο μήνυμα. Μείνετε συντονισμένοι!';
                                 break;
@@ -840,6 +839,36 @@ router.post("/orderConfimation", (req, res)=>{
         if (err) throw err;
     });
     
+});
+
+router.post("/sendNewOrderNotification", (req, res)=>{
+    var transporter = nodemailer.createTransport({
+        host: config.EMAIL_HOST,
+        port: config.EMAIL_PORT,
+        auth: {
+          user: config.EMAIL_ORDER_USER,
+          pass: config.EMAIL_ORDER_PASSWORD
+        },
+        tls: {
+            rejectUnauthorized:false
+        }
+    });
+      
+    var mailOptions = {
+        from: config.EMAIL_ORDER_USER,
+        to: config.EMAIL_ORDER_USER,
+        subject: 'Νέα παραγγελία. Κωδικός:'+ req.body.orderId,
+        html: '<p>Μόλις λάβατε μια νέα παραγγελία με κωδικό'+ req.body.orderId+'</p>'
+    };
+    
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
+    res.send("Success Email to Order Notification")
 });
 
 

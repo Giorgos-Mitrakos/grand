@@ -9,6 +9,8 @@ var _express = _interopRequireDefault(require("express"));
 
 var _connection = _interopRequireDefault(require("../connection"));
 
+var _util = require("../util");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -331,7 +333,7 @@ router.post("/compatibilities_by_category", /*#__PURE__*/function () {
     return _ref9.apply(this, arguments);
   };
 }());
-router.post("/products_by_category_admin", /*#__PURE__*/function () {
+router.post("/products_by_category_admin", _util.isAuth, _util.isAdmin, /*#__PURE__*/function () {
   var _ref10 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee10(req, res) {
     return regeneratorRuntime.wrap(function _callee10$(_context10) {
       while (1) {
@@ -340,18 +342,77 @@ router.post("/products_by_category_admin", /*#__PURE__*/function () {
             _connection["default"].getConnection(function (err, connection) {
               if (err) throw err; // not connected!
 
-              if (req.body.subcategory === '' || req.body.subcategory === 'Επέλεξε Υποκατηγορία' || req.body.subcategory === null || req.body.subcategory === undefined) {
-                connection.query('SELECT * FROM products WHERE category=?', [req.body.category, req.body.subcategory], function (err, result, fields) {
-                  if (err) throw err;
-                  console.log("Read products succeed");
-                  res.send(result);
-                });
+              if (req.body.supplier === '' || req.body.supplier === 'Επέλεξε Προμηθευτή' || req.body.supplier === null || req.body.supplier === undefined) {
+                if (req.body.subcategory === '' || req.body.subcategory === 'Επέλεξε Υποκατηγορία' || req.body.subcategory === null || req.body.subcategory === undefined) {
+                  connection.query('SELECT * FROM products WHERE category=? LIMIT 20 OFFSET ? ', [req.body.category, req.body.offset], function (err, result, fields) {
+                    if (err) throw err;
+                    var resp = result;
+                    connection.query('SELECT COUNT(*) AS count FROM products WHERE category=?', [req.body.category], function (err, result, fields) {
+                      if (err) throw err;
+                      var count = result;
+                      res.send({
+                        resp: resp,
+                        count: count
+                      });
+                    });
+                  });
+                } else {
+                  connection.query('SELECT * FROM products WHERE category=? && subcategory=? LIMIT 20 OFFSET ?', [req.body.category, req.body.subcategory, req.body.offset], function (err, result, fields) {
+                    if (err) throw err;
+                    var resp = result;
+                    connection.query('SELECT COUNT(*) AS count FROM products WHERE category=? && subcategory=?', [req.body.category, req.body.subcategory], function (err, result, fields) {
+                      if (err) throw err;
+                      var count = result;
+                      res.send({
+                        resp: resp,
+                        count: count
+                      });
+                    });
+                  });
+                }
               } else {
-                connection.query('SELECT * FROM products WHERE category=? && subcategory=?', [req.body.category, req.body.subcategory], function (err, result, fields) {
-                  if (err) throw err;
-                  console.log("Read products succeed");
-                  res.send(result);
-                });
+                if (req.body.category === '' || req.body.category === 'Επέλεξε Κατηγορία' || req.body.category === null || req.body.category === undefined) {
+                  connection.query('SELECT * FROM products WHERE  supplier=? LIMIT 20 OFFSET ?', [req.body.supplier, req.body.offset], function (err, result, fields) {
+                    if (err) throw err;
+                    var resp = result;
+                    connection.query('SELECT COUNT(*) AS count FROM products WHERE supplier=?', [req.body.supplier], function (err, result, fields) {
+                      if (err) throw err;
+                      var count = result;
+                      res.send({
+                        resp: resp,
+                        count: count
+                      });
+                    });
+                  });
+                } else {
+                  if (req.body.subcategory === '' || req.body.subcategory === 'Επέλεξε Υποκατηγορία' || req.body.subcategory === null || req.body.subcategory === undefined) {
+                    connection.query('SELECT * FROM products WHERE category=? && supplier=? LIMIT 20 OFFSET ?', [req.body.category, req.body.supplier, req.body.offset], function (err, result, fields) {
+                      if (err) throw err;
+                      var resp = result;
+                      connection.query('SELECT COUNT(*) AS count FROM products WHERE category=? && supplier=?', [req.body.category, req.body.supplier], function (err, result, fields) {
+                        if (err) throw err;
+                        var count = result;
+                        res.send({
+                          resp: resp,
+                          count: count
+                        });
+                      });
+                    });
+                  } else {
+                    connection.query('SELECT * FROM products WHERE category=? && subcategory=? && supplier=? LIMIT 20 OFFSET ?', [req.body.category, req.body.subcategory, req.body.supplier, req.body.offset], function (err, result, fields) {
+                      if (err) throw err;
+                      var resp = result;
+                      connection.query('SELECT COUNT(*) AS count FROM products WHERE category=? && subcategory=? && supplier=?', [req.body.category, req.body.subcategory, req.body.supplier], function (err, result, fields) {
+                        if (err) throw err;
+                        var count = result;
+                        res.send({
+                          resp: resp,
+                          count: count
+                        });
+                      });
+                    });
+                  }
+                }
               }
 
               connection.release(); // Handle error after the release.
@@ -466,6 +527,82 @@ router.post("/most_viewed", /*#__PURE__*/function () {
 
   return function (_x23, _x24) {
     return _ref12.apply(this, arguments);
+  };
+}());
+router.post("/searchForItems", /*#__PURE__*/function () {
+  var _ref13 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee13(req, res) {
+    return regeneratorRuntime.wrap(function _callee13$(_context13) {
+      while (1) {
+        switch (_context13.prev = _context13.next) {
+          case 0:
+            _connection["default"].getConnection(function (err, connection) {
+              var sp = req.body.searchText.trim().split(" ");
+              var search = '';
+
+              for (var i = 0; i < sp.length; i++) {
+                if (i !== 0) {
+                  search += ' && ';
+                }
+
+                search += 'name LIKE ' + "'%" + sp[i] + "%'";
+              }
+
+              ;
+              var filters = '';
+
+              if (req.body.filters !== null && req.body.filters.length !== 0) {
+                filters += '&&(';
+
+                for (var _i = 0; _i < req.body.filters.length; _i++) {
+                  if (_i !== 0) {
+                    filters += ' OR (category="' + req.body.filters[_i].category + '" && subcategory="' + req.body.filters[_i].subcategory + '")';
+                  } else {
+                    filters += ' (category="' + req.body.filters[_i].category + '" && subcategory="' + req.body.filters[_i].subcategory + '")';
+                  }
+                }
+
+                filters += ')';
+              }
+
+              if (err) throw err; // not connected!
+
+              connection.query("SELECT _id, name, category, brand, image, description,\n        countInStock, numReview, subcategory, weight, supplier, availability, \n        visibility, totalPrice FROM products \n        WHERE visibility=1 && \n        ".concat(search, " \n        ").concat(filters, "         \n        ORDER BY numReview DESC LIMIT ").concat(req.body.itemsPerPage, " OFFSET ").concat(req.body.offset), function (err, result, fields) {
+                if (err) throw err;
+                var resp = result;
+                connection.query("SELECT COUNT(*) AS count FROM products \n                    WHERE visibility=1 && \n                    ".concat(search, " \n                    ").concat(filters), function (err, result, fields) {
+                  if (err) throw err;
+                  var count = result;
+                  connection.query("SELECT DISTINCT category FROM products \n                            WHERE visibility=1 && \n                            ".concat(search), function (err, result, fields) {
+                    if (err) throw err;
+                    var categories = result;
+                    connection.query("SELECT DISTINCT category, subcategory FROM products \n                            WHERE visibility=1 && \n                            ".concat(search), function (err, result, fields) {
+                      if (err) throw err;
+                      var subcategories = result;
+                      res.send({
+                        resp: resp,
+                        count: count,
+                        categories: categories,
+                        subcategories: subcategories
+                      });
+                    });
+                  });
+                });
+                connection.release(); // Handle error after the release.
+
+                if (err) throw err;
+              });
+            });
+
+          case 1:
+          case "end":
+            return _context13.stop();
+        }
+      }
+    }, _callee13);
+  }));
+
+  return function (_x25, _x26) {
+    return _ref13.apply(this, arguments);
   };
 }());
 var _default = router;

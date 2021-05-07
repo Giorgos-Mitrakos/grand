@@ -180,6 +180,7 @@
     overflow: auto; /* Enable scroll if needed */
     background-color: rgb(0,0,0); /* Fallback color */
     background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    z-index: 103;
 }
 
   /* Modal Content */
@@ -278,16 +279,41 @@
     flex: 1;
 }
 
-.order-image>img{
-    width: 3rem;
+.order-image-img {
+    width: 4rem;
+    height: 4rem;
 }
 
-.order-items-total-cost{
+.admin-order-items-total-cost{
     display: flex;
-    justify-content: space-between;
+    justify-content: end;
     width: 100%;
     padding: 0 0.5rem 0 1rem;
     margin: 0.5rem;
+}
+
+.admin-order-items-total-cost-table{
+    width: 30%;
+}
+
+.admin-order-items-total-cost-table>tbody>tr>td{
+    text-align: left;
+}
+
+.delete-item-button{
+    border: none;
+    background-color: inherit;
+    color: inherit;
+    cursor: pointer;
+    
+}
+
+.delete-item-button:hover{
+    transform: scale(1.1);
+}
+
+.delete-item-button .material-icons{
+    font-size: 2rem;
 }
 
 @media only screen and (max-width: 1024px) {
@@ -308,7 +334,7 @@
         border-right: none;
     }
 
-    .order-items-total-cost{
+    .admin-order-items-total-cost{
         padding: 0 0.5rem 0 1rem;
         font-size: 0.9rem;
     }

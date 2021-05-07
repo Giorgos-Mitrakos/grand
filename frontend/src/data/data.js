@@ -39,7 +39,7 @@ export const categories = [
         linkto: 'products/προγραμματα-υπηρεσίες/Antivirus',
         imgSource: './images/categories/software.webp',
         altContent: 'Προγράμματα και Υπηρεσίες',
-        productCategory: 'Προγράμματα και Υπηρεσίες'
+        productCategory: 'Προγράμματα - Υπηρεσίες'
     },
     {
         linkto: 'products/Gaming/Παιχνίδια',

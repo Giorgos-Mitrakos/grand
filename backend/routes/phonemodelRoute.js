@@ -80,7 +80,7 @@ router.post("/insertbrand/", isAuth, isAdmin, async (req,res,next) =>{
     })  
   }); 
   
-router.post("/phoneModels", isAuth, isAdmin, async (req, res)=>{
+router.post("/phoneModels", async (req, res)=>{
 
     mysqlConnection.getConnection(function(err, connection) {
         if (err) throw err; // not connected!

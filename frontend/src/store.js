@@ -8,7 +8,7 @@ import { productListReducer, productDetailsReducer, mostViewedProductsReducer,
     featureTitlesByCategoryReducer, featureNamesByCategoryReducer, 
     productFeaturesReducer, sendingListReducer, paymentListReducer, 
     compatibilitiesByCategoryReducer, compatibilityCompaniesReducer, 
-    compatibilityModelsReducer, productCompatibilitiesReducer } from "./reducers/productReducer";
+    compatibilityModelsReducer, productCompatibilitiesReducer, suppliersListReducer, searchForItemsReducer, itemsPerPageReducer, textSearchReducer } from "./reducers/productReducer";
 import { modelListReducer, phoneModelListReducer, phonesBrandListReducer } from "./reducers/modelReducer";
 import { cartReducer } from "./reducers/cartReducer";
 import Cookie from 'js-cookie';
@@ -17,9 +17,9 @@ import { userSigninReducer, userRegisterReducer, userAccountInfoReducer,
 import { wishListReducer } from "./reducers/wishListReducer";
 import { orderReducer, orderListReducer, orderDetailsReducer, changeOrderStatusReducer,
      updateOrderStatusReducer, 
-     updateShippingAddressReducer, updateOrderReducer, deleteOrderItemReducer, customerOrderListReducer, customerOrderDetailsReducer } from "./reducers/orderReducer";
+     updateOrderReducer, deleteOrderItemReducer, customerOrderListReducer, customerOrderDetailsReducer } from "./reducers/orderReducer";
 import { collectionAdminReducer, collectionDetailsReducer, collectionListReducer, collectionRandomListReducer } from "./reducers/collectionReducer";
-import { emailAccountDeleteConfirmationReducer, emailAddNewsletterReducer, emailContactReducer, emailOrderCorfimationReducer, emailPassUpdateConfirmationReducer, emailRegisterReducer, 
+import { emailAccountDeleteConfirmationReducer, emailAddNewsletterReducer, emailContactReducer, emailOrderCorfimationReducer, emailOrderNotificationReducer, emailPassUpdateConfirmationReducer, emailRegisterReducer, 
     emailRemoveNewsletterReducer, emailResetPasswordReducer, updatePasswordReducer } from "./reducers/emailReducer";
 import { paymentMethodsListReducer, sendingMethodsListReducer } from "./reducers/paymentReducer";
 
@@ -48,7 +48,6 @@ const reducer=combineReducers({
     orderDetails:orderDetailsReducer,
     changeOrderStatus:changeOrderStatusReducer,
     updateOrderStatus:updateOrderStatusReducer,
-    updateShippingAddress:updateShippingAddressReducer,
     updateOrder:updateOrderReducer,
     deleteOrderItem:deleteOrderItemReducer,
     mostViewedProducts:mostViewedProductsReducer,
@@ -88,7 +87,12 @@ const reducer=combineReducers({
     emailAccountDeleteConfirmation:emailAccountDeleteConfirmationReducer,
     customerOrderList:customerOrderListReducer,
     customerOrderDetails:customerOrderDetailsReducer,
-    collectionRandomList:collectionRandomListReducer
+    collectionRandomList:collectionRandomListReducer,
+    suppliersList:suppliersListReducer,
+    emailOrderNotification:emailOrderNotificationReducer,
+    searchForItems:searchForItemsReducer,
+    perPageItems:itemsPerPageReducer,
+    textSearch:textSearchReducer
 })
 
 const composeEchancer= window._REDUX_DEVTOOLS_EXTENSION_COMPOSE_ || compose;

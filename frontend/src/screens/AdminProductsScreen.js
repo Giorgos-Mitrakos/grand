@@ -6,9 +6,10 @@ import {
     saveProduct, listManufacturers, listFeatureTitles, getFeatureNames, insertFeature,
     listFeatures, deleteFeature, listCategories, listSubcategories, changeVisibility,
     getProductsByCategoryAdmin, changeCategoryPercentage, listCompatibilityCompanies,
-    getCompatibilityModels, insertCompatibility, getProductCompatibilities, deleteProductCompatibility
+    getCompatibilityModels, insertCompatibility, getProductCompatibilities, deleteProductCompatibility, listSuppliers
 } from '../action/productActions';
 import LoadingSpinner from '../components/LoadingSpinner';
+import ReactPaginate from 'react-paginate';
 
 function AdminProductsScreen(props) {
 
@@ -18,22 +19,29 @@ function AdminProductsScreen(props) {
     const [featureName, setFeatureName] = useState('');
     const [id, setId] = useState('');
     const [name, setName] = useState('');
-    const [category, setCategory] = useState(' ');
-    const [brand, setBrand] = useState(' ');
+    const [category, setCategory] = useState('');
+    const [brand, setBrand] = useState('');
     const [subcategory, setSubcategory] = useState('');
+    const [supplier, setSupplier] = useState('');
     const [image, setImage] = useState('');
     const [price, setPrice] = useState('');
     const [pricePercentage, setPricePercentage] = useState('');
     const [description, setDescription] = useState('');
     const [compatibilityCompany, setCompatibilityCompany] = useState('');
     const [compatibilityCompanyId, setCompatibilityCompanyId] = useState('');
+    const [currentPage, setCurrentPage] = useState(0);
+    const [itemsPerPage, setItemsPerPage] = useState(20);
+    const [pageCount, setPageCount] = useState(0);
+    const offset = currentPage * itemsPerPage;
     const [compatibilityModel, setCompatibilityModel] = useState('');
     const productList = useSelector(state => state.productList);
-    const { products, loading, error, loadingSave: successSave, errorSave, successPercentageChange } = productList;
+    const { products, count, loading, error, loadingSave: successSave, errorSave, successPercentageChange } = productList;
     const categoryList = useSelector(state => state.categoryList);
     const { categories, loading: categoriesLoading, error: categoriesError } = categoryList;
     const subcategoryList = useSelector(state => state.subcategoryList);
     const { subcategories, loading: subcategoriesLoading, error: subcategoriesError } = subcategoryList;
+    const suppliersList = useSelector(state => state.suppliersList);
+    const { suppliers, loading: suppliersLoading, error: suppliersError } = suppliersList;
     const manufacturersList = useSelector(state => state.manufacturersList);
     const { manufacturers, loading: loadingManufacturer, error: errorManufacturer } = manufacturersList;
     const featureNameList = useSelector(state => state.featureNameList);
@@ -53,6 +61,7 @@ function AdminProductsScreen(props) {
 
     useEffect(() => {
         dispatch(listCategories());
+        dispatch(listSuppliers());
 
         return () => {
 
@@ -60,9 +69,17 @@ function AdminProductsScreen(props) {
     }, []);
 
     useEffect(() => {
+        dispatch(getProductsByCategoryAdmin(category, subcategory, supplier, offset));
+    }, [offset]);
+
+    useEffect(() => {
+        setPageCount(Math.ceil(count/itemsPerPage))
+    }, [count,itemsPerPage]);
+
+    useEffect(() => {
         if (successSave) {
             setModalVisible(false);
-            dispatch(getProductsByCategoryAdmin(category, subcategory));
+            dispatch(getProductsByCategoryAdmin(category, subcategory, supplier, offset));
         }
         return () => {
 
@@ -72,7 +89,7 @@ function AdminProductsScreen(props) {
     useEffect(() => {
         if (successPercentageChange === true) {
             setPercentageModal(false);
-            dispatch(getProductsByCategoryAdmin(category, subcategory));
+            dispatch(getProductsByCategoryAdmin(category, subcategory, supplier));
         }
         return () => {
 
@@ -98,6 +115,7 @@ function AdminProductsScreen(props) {
         setCategory(product.category);
         setBrand(product.brand);
         setSubcategory(product.subcategory);
+        setSupplier(product.supplier);
         setImage(product.image);
         setPrice(product.price);
         setPricePercentage(product.percentage);
@@ -115,6 +133,7 @@ function AdminProductsScreen(props) {
         product.append('name', name);
         product.append('category', category);
         product.append('brand', brand);
+        product.append('supplier', supplier);
         product.append('subcategory', subcategory);
         product.append('image', image);
         product.append('price', price);
@@ -153,11 +172,24 @@ function AdminProductsScreen(props) {
     }
 
     const searchHandler = () => {
-        dispatch(getProductsByCategoryAdmin(category, subcategory));
+        setCurrentPage(0)
+        dispatch(getProductsByCategoryAdmin(category, subcategory, supplier, offset));
     }
 
     const categoryPercentageHandler = () => {
-        dispatch(changeCategoryPercentage(pricePercentage, category, subcategory))
+        if (pricePercentage) {
+            if (isNaN(pricePercentage)) {
+                alert("Το ποσοστό πρέπει να είναι αριθμός")
+            }
+            else {
+                if ((category === "" || category === null || category === "Επέλεξε Κατηγορία") && (supplier === "" || supplier === null || supplier === "Επέλεξε Προμηθευτή")) {
+                    alert("Πρέπει να επιλέξετε τουλάχιστον κατηγορία ή προμηθευτή")
+                }
+                else {
+                    dispatch(changeCategoryPercentage(pricePercentage, category, subcategory, supplier))
+                }
+            }
+        }
     }
 
     const compatibilityCompaniesChangeHandler = (e) => {
@@ -175,6 +207,10 @@ function AdminProductsScreen(props) {
 
     const deleteCompatibilityHandler = (compatibilityId) => {
         dispatch(deleteProductCompatibility(compatibilityId));
+    }
+
+    function handlePageClick({ selected: selectedPage }) {
+        setCurrentPage(selectedPage);
     }
 
     return <div className="content content-margined">
@@ -209,6 +245,16 @@ function AdminProductsScreen(props) {
                                     </select>}
                         </li>
                         <li>
+                            <label htmlFor="product-subcategory">Προμηθευτής:</label>
+                            {suppliersLoading ? <div>Loading...</div> :
+                                suppliersError ? <div>{suppliersError}</div> :
+                                    <select className="product-subcategory" onChange={(e) => setSupplier(e.target.value)}>
+                                        <option>Επέλεξε Προμηθευτή</option>
+                                        {suppliers.map(sub =>
+                                            <option key={sub.supplier_id} id={sub.supplier_id} value={sub.supplier} selected={sub.supplier === supplier}>{sub.supplier}</option>)}
+                                    </select>}
+                        </li>
+                        <li>
                             <label htmlFor="percentage-input">Ποσοστό:</label>
                             <input name="percentage-input" id="percentage-input" typeof="text" maxLength="5" style={{ width: "4rem" }} onChange={(e) => setPricePercentage(e.target.value)} />
                             <label>%</label>
@@ -238,24 +284,27 @@ function AdminProductsScreen(props) {
                                     {errorSave && <div>{error}<br />Η σύνδεση έληξε, παρακαλώ συνδεθείτε ξανά!</div>}
                                 </li>
                                 <li>
+                                    Κωδικός Προϊόντος: {id}
+                                </li>
+                                <li>
                                     <label htmlFor="product-name">Όνομα:</label>
                                     <input type="text" name="product-name" id="product-name" value={name} required
                                         onChange={(e) => setName(e.target.value)}>
                                     </input>
                                 </li>
-                                <li>
+                                <li id="row">
                                     <label htmlFor="product-brand">Κατασκευαστής:</label>
                                     {loadingManufacturer ? <div>Loading...</div> :
                                         errorManufacturer ? <div>{errorManufacturer}</div> :
                                             <select className="select-model" onChange={(e) => setBrand(e.target.value)}>
                                                 <option> Επέλεξε Κατασκευαστή</option>
                                                 {manufacturers.map(manufacturer =>
-                                                    <option key={manufacturer.manufacturer_id} id={manufacturer.manufacturer_id} value={manufacturer.name} defaultValue={manufacturer.name === brand}> {manufacturer.name}
+                                                    <option key={manufacturer.manufacturer_id} id={manufacturer.manufacturer_id} value={manufacturer.name} selected={manufacturer.name === brand}> {manufacturer.name}
                                                     </option >
                                                 )}
                                             </select>}
                                 </li>
-                                <li>
+                                <li id="row">
                                     <label htmlFor="product-category">Κατηγορία:</label>
                                     {categoriesLoading ? <div>Loading...</div>
                                         : categoriesError ? <div>{categoriesError}</div>
@@ -263,10 +312,10 @@ function AdminProductsScreen(props) {
                                             <select className="select-model" name="product-category" onChange={(e) => categoryHandler(e)}>
                                                 <option>Επέλεξε Κατηγορία</option>
                                                 {categories.filter(cat => cat.parent_id === null).map(cat =>
-                                                    <option key={cat.category_id} id={cat.category_id} value={cat.category} defaultValue={cat.category === category}>{cat.category}</option>)}
+                                                    <option key={cat.category_id} id={cat.category_id} value={cat.category} selected={cat.category === category}>{cat.category}</option>)}
                                             </select>}
                                 </li>
-                                <li>
+                                <li id="row">
                                     <label htmlFor="product-subcategory">Υποκατηγορία:</label>
                                     {subcategoriesLoading ? <div>Loading...</div> :
                                         subcategoriesError ? <div>{subcategoriesError}</div> :
@@ -276,28 +325,42 @@ function AdminProductsScreen(props) {
                                                     <option id={sub.category_id} value={sub.category} selected={sub.category === subcategory}>{sub.category}</option>)}
                                             </select>}
                                 </li>
+                                <li id="row">
+                                    <label htmlFor="product-brand">Προμηθευτής:</label>
+                                    {suppliersLoading ? <div>Loading...</div> :
+                                        suppliersError ? <div>{suppliersError}</div> :
+                                            <select className="select-model" onChange={(e) => setSupplier(e.target.value)}>
+                                                <option> Επέλεξε Προμηθευτή</option>
+                                                {suppliers.map(sup =>
+                                                    <option key={sup.supplier_id} id={sup.supplier_id} value={sup.supplier} selected={sup.supplier === supplier}> {sup.supplier}
+                                                    </option >
+                                                )}
+                                            </select>}
+                                </li>
                                 {!id && <li>
                                     <label htmlFor="product-image">Φωτογραφία:</label>
                                     <input type="file" name="product-image" id="product-image" required
                                         accept=".jpg, .jpeg, .png, .webp" onChange={(e) => setImage(e.target.files[0])}>
                                     </input>
                                 </li>}
-                                <li>
+                                <li id="row">
                                     <label htmlFor="product-price">Τιμή:</label>
                                     <input type="text" name="product-price" id="product-price" value={price} required
                                         onChange={(e) => setPrice(e.target.value)}>
-                                    </input>
-                                </li>
-                                <li>
+                                    </input>€
                                     <label htmlFor="product-price-percentage">Ποσοστό Κέρδους:</label>
                                     <input type="text" name="product-price-percentage" id="product-price-percentage" value={pricePercentage} required
                                         onChange={(e) => setPricePercentage(e.target.value)}>
                                     </input>
+                                    %
+                                </li>
+                                <li className="format_price">
+                                    Τελική τιμή: {(price * (1 + pricePercentage / 100)).toFixed(2)} €
                                 </li>
                                 <li>
                                     <label htmlFor="product-description">Περιγραφή:</label>
                                     <textarea name="product-description" id="product-description" value={description}
-                                        onChange={(e) => setDescription(e.target.value)}>
+                                        onChange={(e) => setDescription(e.target.value)} rows={20}>
                                     </textarea>
                                 </li>
                                 <li>
@@ -344,9 +407,11 @@ function AdminProductsScreen(props) {
                             <li>
                                 <table>
                                     <thead>
+                                        <tr>
                                         <th>Εταιρία</th>
                                         <th>Μοντέλο</th>
                                         <th>Ενέργεια</th>
+                                        </tr>
                                     </thead>
                                     <tbody>
                                         {loadingProductCompatibilities ? <LoadingSpinner /> :
@@ -441,8 +506,36 @@ function AdminProductsScreen(props) {
                         {subcategories.map(sub =>
                             <option key={sub.category_id} id={sub.category_id} value={sub.category} defaultValue={sub.category === subcategory}>{sub.category}</option>)}
                     </select>}
+            {suppliersLoading ? <div>Loading...</div> :
+                suppliersError ? <div>{suppliersError}</div> :
+                    <select className="select-model" onChange={(e) => setSupplier(e.target.value)}>
+                        <option>Επέλεξε Προμηθευτή</option>
+                        {suppliers.map(sub =>
+                            <option key={sub.supplier_id} id={sub.supplier_id} value={sub.supplier} defaultValue={sub.supplier === supplier}>{sub.supplier}</option>)}
+                    </select>}
             <button className="button admin-button" onClick={searchHandler}>Αναζήτηση</button>
         </div>
+        <div className="paginationList">
+            <ReactPaginate
+                previousLabel={'<'}
+                nextLabel={'>'}
+                breakLabel={'...'}
+                breakClassName={'break-me'}
+                pageCount={pageCount}
+                marginPagesDisplayed={1}
+                pageRangeDisplayed={2}
+                onPageChange={handlePageClick}
+                containerClassName={'pagination'}
+                subContainerClassName={'pages pagination'}
+                activeClassName={'active'}
+                forcePage={currentPage}
+            /></div>
+            {/* <div>
+                {pageCount>0 && <select value={currentPage} onChange={(e)=>setCurrentPage(e.target.value)}>
+                {[...Array(pageCount).keys()].map(x =>
+                        <option key={x + 1} value={x}>{x + 1}</option>)}
+                </select>}
+            </div> */}
         <div className="product-list">
             <table className="product-table">
                 <thead>
@@ -462,8 +555,8 @@ function AdminProductsScreen(props) {
                     </tr>
                 </thead>
                 <tbody>
-                    {loading || successSave ? <LoadingSpinner /> :
-                        error || errorSave ? <div>{error}</div> :
+                    {loading || successSave ? <tr><td><LoadingSpinner /></td></tr> :
+                        error || errorSave ? <tr><td><div>{error}</div></td></tr> :
                             products.map(product => (
                                 <tr key={product._id}>
                                     <td>{product._id}</td>
@@ -489,6 +582,22 @@ function AdminProductsScreen(props) {
                 </tbody>
             </table>
         </div>
+        <div className="paginationList">
+            <ReactPaginate
+                previousLabel={'<<'}
+                nextLabel={'>>'}
+                breakLabel={'...'}
+                breakClassName={'break-me'}
+                pageCount={pageCount}
+                marginPagesDisplayed={1}
+                pageRangeDisplayed={2}
+                initialPage={currentPage}
+                onPageChange={handlePageClick}
+                containerClassName={'pagination'}
+                subContainerClassName={'pages pagination'}
+                activeClassName={'active'}
+                forcePage={currentPage}
+            /></div>        
     </div>
 }
 

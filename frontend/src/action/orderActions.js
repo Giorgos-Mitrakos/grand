@@ -3,7 +3,7 @@ import Cookie from 'js-cookie';
 import { ORDER_ADD_REQUEST, ORDER_ADD_SUCCESS, ORDER_ADD_FAIL, ORDER_LIST_REQUEST, ORDER_LIST_SUCCESS, ORDER_LIST_FAIL, ORDER_DETAIL_REQUEST, ORDER_DETAIL_SUCCESS, ORDER_DETAIL_FAIL, ORDER_CHANGE_STATUS_FAIL, ORDER_CHANGE_STATUS_SUCCESS, ORDER_CHANGE_STATUS_REQUEST, ORDER_UPDATE_STATUS_REQUEST, ORDER_UPDATE_STATUS_SUCCESS, ORDER_UPDATE_STATUS_FAIL, ORDER_DETAILS_CHANGE_REQUEST, ORDER_DETAILS_CHANGE_SUCCESS, ORDER_DETAILS_CHANGE_FAIL, ORDER_CHARGER_ADDRESS_UPDATE_REQUEST, ORDER_CHARGER_ADDRESS_UPDATE_SUCCESS, ORDER_CHARGER_ADDRESS_UPDATE_FAIL, ORDER_SHIPPING_ADDRESS_UPDATE_REQUEST, ORDER_SHIPPING_ADDRESS_UPDATE_SUCCESS, ORDER_SHIPPING_ADDRESS_UPDATE_FAIL, ORDER_UPDATE_REQUEST, ORDER_UPDATE_SUCCESS, ORDER_UPDATE_FAIL, ORDER_DELETED_ITEM_REQUEST, ORDER_DELETED_ITEM_SUCCESS, ORDER_DELETED_ITEM_FAIL, CUSTOMER_ORDER_LIST_REQUEST, CUSTOMER_ORDER_LIST_SUCCESS, CUSTOMER_ORDER_LIST_FAIL, CUSTOMER_ORDER_DETAIL_REQUEST, CUSTOMER_ORDER_DETAIL_SUCCESS, CUSTOMER_ORDER_DETAIL_FAIL} from '../constants/orderConstrains';
 
 const createOrder = (charger, company, shippingTo, methods, itemsCost) => async (dispatch, getState) =>{
-    try{console.log(company)
+    try{
         dispatch({type:ORDER_ADD_REQUEST,payload:{charger, company, shippingTo, methods}});                    
         const {userSignin:{userInfo}} = getState();
         if(userInfo)
@@ -83,12 +83,12 @@ const createOrder = (charger, company, shippingTo, methods, itemsCost) => async 
     }
 }
 
-const listOrders = () => async (dispatch, getState) => {
+const listOrders = (status,itemsPerPage, offset) => async (dispatch, getState) => {
 
     try {
       dispatch({ type: ORDER_LIST_REQUEST });
       const { userSignin: { userInfo } } = getState();
-      const { data } = await Axios.get("/api/orders", {
+      const { data } = await Axios.post("/api/orders", {status, itemsPerPage, offset},{
         headers:
           { Authorization: 'Bearer ' + userInfo.token }
       });
@@ -144,11 +144,11 @@ const changeOrderDetails = (orderId, sendingMethod, shippingPrice, paymentMethod
     try {
         dispatch({ type: ORDER_DETAILS_CHANGE_REQUEST});
         const { userSignin: { userInfo } } = getState();
-        await Axios.put("/api/orders/changeOrderDetails",{orderId, sendingMethod, shippingPrice, paymentMethod, paymentMethodCost, paymentType}, {
+        const data=await Axios.put("/api/orders/changeOrderDetails",{orderId, sendingMethod, shippingPrice, paymentMethod, paymentMethodCost, paymentType}, {
           headers:
             { Authorization: 'Bearer ' + userInfo.token }
         });
-        dispatch({ type: ORDER_DETAILS_CHANGE_SUCCESS, payload:{orderId, sendingMethod, shippingPrice, paymentMethod, paymentMethodCost, paymentType}  })
+        dispatch({ type: ORDER_DETAILS_CHANGE_SUCCESS, payload:data })
       } catch (error) {
         dispatch({ type: ORDER_DETAILS_CHANGE_FAIL, payload: error.message });
       }

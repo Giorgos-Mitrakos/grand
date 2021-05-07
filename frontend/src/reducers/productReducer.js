@@ -44,7 +44,26 @@ import { PRODUCT_LIST_SUCCESS, PRODUCT_LIST_FAIL,
        PRODUCT_COMPATIBILITIES_FAIL, INSERT_PRODUCT_COMPATIBILITY_REQUEST,
        INSERT_PRODUCT_COMPATIBILITY_SUCCESS, INSERT_PRODUCT_COMPATIBILITY_FAIL, 
        DELETE_PRODUCT_COMPATIBILITY_REQUEST, DELETE_PRODUCT_COMPATIBILITY_SUCCESS, 
-       DELETE_PRODUCT_COMPATIBILITY_FAIL} from '../constants/productConstant';
+       DELETE_PRODUCT_COMPATIBILITY_FAIL,
+       SUPPLIERS_LIST_REQUEST,
+       SUPPLIERS_LIST_SUCCESS,
+       SUPPLIERS_LIST_FAIL,
+       SUPPLIERS_INSERT_REQUEST,
+       SUPPLIERS_INSERT_SUCCESS,
+       SUPPLIERS_INSERT_FAIL,
+       SUPPLIERS_DELETE_REQUEST,
+       SUPPLIERS_DELETE_SUCCESS,
+       SUPPLIERS_DELETE_FAIL,
+       MANUFACTURER_DELETE_REQUEST,
+       MANUFACTURER_DELETE_SUCCESS,
+       MANUFACTURER_DELETE_FAIL,
+       SEARCH_FOR_ITEMS_REQUEST,
+       SEARCH_FOR_ITEMS_SUCCESS,
+       SEARCH_FOR_ITEMS_FAIL,
+       SELECT_ITEMS_PER_PAGE,
+       SET_SEARCH_TEXT,
+       SET_SEARCH_FILTERS,
+       RESET_SEARCH_FILTERS} from '../constants/productConstant';
 
 function sortCompanies( a, b ) {
 if ( a.company < b.company ){
@@ -93,7 +112,7 @@ function productListReducer(state={products:[]},action){
         case PRODUCT_LIST_BY_CATEGORY_ADMIN_REQUEST:
             return {loading:true, products: []};
         case PRODUCT_LIST_BY_CATEGORY_ADMIN_SUCCESS:
-            return {loading:false, products : action.payload};
+            return {loading:false, products : action.payload.resp, count: action.payload.count[0].count};
         case PRODUCT_LIST_BY_CATEGORY_ADMIN_FAIL:
             return {loading:false, error : action.payload};
         case PRODUCT_VISIBILITY_CHANGE_REQUEST:
@@ -140,6 +159,20 @@ function mostViewedProductsReducer(state={mostViewed:[]},action){
     }
 }
 
+function searchForItemsReducer(state={searchItems:[], categories:[], subcategories:[]},action){
+    switch(action.type){
+        case SEARCH_FOR_ITEMS_REQUEST:
+            return {loading:true, searchItems: [], categories:[], subcategories:[]};
+        case SEARCH_FOR_ITEMS_SUCCESS:
+            return {loading:false, searchItems : action.payload.resp, count:action.payload.count[0].count, 
+                categories: action.payload.categories,subcategories: action.payload.subcategories};
+        case SEARCH_FOR_ITEMS_FAIL:
+            return {loading:false, error : action.payload};
+        default:
+            return state;
+    }
+}
+
 function productDetailsReducer(state={product:{}},action){
     switch(action.type){
         case PRODUCT_DETAILS_REQUEST:
@@ -166,6 +199,12 @@ function manufacturersListReducer(state={manufacturers:[]},action){
         case MANUFACTURER_INSERT_SUCCESS:
             return {loading:false, manufacturers : action.payload};
         case MANUFACTURER_INSERT_FAIL:
+            return {loading:false, error : action.payload};
+        case MANUFACTURER_DELETE_REQUEST:
+            return {loading:true, manufacturers: []};
+        case MANUFACTURER_DELETE_SUCCESS:
+            return {loading:false, manufacturers : action.payload};
+        case MANUFACTURER_DELETE_FAIL:
             return {loading:false, error : action.payload};
         default:
             return state;
@@ -365,6 +404,31 @@ function subcategoryListReducer(state={subcategories:[]},action){
     }
 }
 
+function suppliersListReducer(state={suppliers:[]},action){
+    switch(action.type){
+        case SUPPLIERS_LIST_REQUEST:
+            return {loading:true, suppliers: []};
+        case SUPPLIERS_LIST_SUCCESS:
+            return {loading:false, suppliers : action.payload};
+        case SUPPLIERS_LIST_FAIL:
+            return {loading:false, error : action.payload}; 
+        case SUPPLIERS_INSERT_REQUEST:
+            return {loading:true, suppliers: []};
+        case SUPPLIERS_INSERT_SUCCESS:
+            return {loading:false, suppliers : action.payload};
+        case SUPPLIERS_INSERT_FAIL:
+            return {loading:false, error : action.payload};
+        case SUPPLIERS_DELETE_REQUEST:
+            return {loading:true, suppliers: []};
+        case SUPPLIERS_DELETE_SUCCESS:
+            return {loading:false, suppliers : action.payload};
+        case SUPPLIERS_DELETE_FAIL:
+            return {loading:false, error : action.payload};       
+        default:
+            return state;
+    }
+}
+
 function productFeaturesReducer(state={features:[]},action){
     switch(action.type){
         case GET_FEATURES_REQUEST:
@@ -453,7 +517,27 @@ function productCompatibilitiesReducer(state={productCompat:[]},action){
     }
 }
 
+function itemsPerPageReducer(state={itemsPerPage:20},action){
+    switch(action.type){
+        case SELECT_ITEMS_PER_PAGE:
+            return {itemsPerPage: action.payload}
+        default:
+            return state;
+    }
+}
 
+function textSearchReducer(state={searchText:'', filters: []},action){
+    switch(action.type){
+        case SET_SEARCH_TEXT:
+            return {...state, searchText: action.payload}
+        case SET_SEARCH_FILTERS:
+            return {...state, filters: action.payload}
+        case RESET_SEARCH_FILTERS:
+            return {...state,filters: []}
+        default:
+            return state;
+    }
+}
 
 
 
@@ -462,4 +546,5 @@ export {productListReducer, productDetailsReducer, mostViewedProductsReducer,
     featureListReducer, categoryListReducer, subcategoryListReducer, sendingListReducer,
     featureTitlesByCategoryReducer, featureNamesByCategoryReducer, productFeaturesReducer,
     paymentListReducer,compatibilitiesByCategoryReducer,compatibilityCompaniesReducer,
-    compatibilityModelsReducer,productCompatibilitiesReducer}
+    compatibilityModelsReducer,productCompatibilitiesReducer,suppliersListReducer,
+    searchForItemsReducer,itemsPerPageReducer,textSearchReducer}

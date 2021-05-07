@@ -143,7 +143,7 @@ router.post("/insertbrand/", _util.isAuth, _util.isAdmin, /*#__PURE__*/function 
     return _ref3.apply(this, arguments);
   };
 }());
-router.post("/phoneModels", _util.isAuth, _util.isAdmin, /*#__PURE__*/function () {
+router.post("/phoneModels", /*#__PURE__*/function () {
   var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4(req, res) {
     return regeneratorRuntime.wrap(function _callee4$(_context4) {
       while (1) {

@@ -35,13 +35,27 @@ router.get("/createadmin", async (req, res)=>{
                 connection.query(sql,[hash], function (err, result, fields) {
                 if (err) throw err;
                 console.log("1 record inserted");
-                res.send(result);
+                
                 connection.release();
         
                 // Handle error after the release.
                 if (err) throw err;
                 })
             })
+
+            bcrypt.hash("TsiGra20#@", 10, (err, hash) => {
+                // Store hash in your password DB.
+                var sql = "INSERT INTO users (username, email, password, isAdmin) VALUES ('grand1', 'grandmobile1@grandmobile.gr',?, 1)";
+                connection.query(sql,[hash], function (err, result, fields) {
+                if (err) throw err;
+                connection.release();
+        
+                // Handle error after the release.
+                if (err) throw err;
+                })
+            })
+
+            res.send("OK")
         });
     }
     catch(error){

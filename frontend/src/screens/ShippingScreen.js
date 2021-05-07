@@ -4,6 +4,7 @@ import './ShippingScreen.css';
 import {saveShipping}  from '../action/cartActions';
 import CheckoutSteps from '../components/CheckoutSteps';
 import { accountInfo } from '../action/userActions';
+import { Helmet } from 'react-helmet';
 
 function ShippingScreen(props) {
 
@@ -126,6 +127,11 @@ function ShippingScreen(props) {
 
     return (
         <div>
+            <Helmet>
+                <title>Grand Mobile Accessories-Στοιχεία Παραγγελίας</title>
+                <meta name="description" content="Καταχωρήστε τα στοιχεία παραγγελίας και τιμολόγησης" />
+                <meta name="keywords" content="Παραγγελία, τιμολόγηση, καταχώρηση, στοιχεία, απόδειξη, τιμολόγιο " />
+            </Helmet>
             <CheckoutSteps step1></CheckoutSteps>
             <div className="shipping-form-wrapper">        
             <div className="shipping-form">

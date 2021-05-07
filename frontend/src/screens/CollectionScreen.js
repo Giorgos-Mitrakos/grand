@@ -4,24 +4,34 @@ import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { listCollection } from '../action/collectionActions.js';
 import { useState } from 'react';
-import { listModels } from '../action/modelActions.js';
+import { getPhoneModels, listPhoneBrands } from '../action/modelActions.js';
 import { addImageCaseToCart } from '../action/cartActions';
 import LoadingSpinner from '../components/LoadingSpinner.js';
 import ReactPaginate from 'react-paginate';
 import CarouselCard from '../components/CarouselCard.js';
+import { Helmet } from 'react-helmet';
 
 
 function CollectionScreen() {
 
     const [image, setImage] = useState('');
+    const [brand, setBrand] = useState('');
+    const [brandId, setBrandId] = useState('');
     const [model, setModel] = useState('');
     const [qty, setQty] = useState(1);
     const collectionList = useSelector(state => state.collectionList);
     const { collection, loading, error } = collectionList;
     const userSignin = useSelector(state => state.userSignin);
     const { userInfo } = userSignin;
-    const modelList = useSelector(state => state.modelList);
-    const { phoneModels, loadingModel, errorModel } = modelList;
+
+    // const modelList = useSelector(state => state.modelList);
+    // const { phoneModels, loadingModel, errorModel } = modelList;
+
+    const phonesBrandList = useSelector(state => state.phonesBrandList);
+    const { phoneBrands, loadingBrand, errorBrand } = phonesBrandList;
+    const phoneModelList = useSelector(state => state.phoneModelList);
+    const { phoneModels, loadingModel, errorModel } = phoneModelList;
+
     const cart = useSelector(state => state.cart);
     const { uploading } = cart;
     const [currentPage, setCurrentPage] = useState(0);
@@ -33,13 +43,15 @@ function CollectionScreen() {
 
     useEffect(() => {
         dispatch(listCollection());
-        dispatch(listModels());
+        dispatch(listPhoneBrands())
         window.scrollTo(0, 0);
-
-        return () => {
-
-        };
     }, [dispatch])
+
+    useEffect(() => {
+        if (brandId) {
+            dispatch(getPhoneModels(brandId));
+        }
+    }, [dispatch, brandId])
 
     useEffect(() => {
         if (collection) {
@@ -61,14 +73,14 @@ function CollectionScreen() {
             if (userInfo) {
                 const form = new FormData();
                 form.append("email", userInfo.email);
-                form.append("model", model);
+                form.append("model", `${brand}-${model}`);
                 form.append("qty", qty);
                 form.append("image", image);
 
                 dispatch(addImageCaseToCart(form));
             }
             else {
-                alert("Για να φτιάξετε τη δική σας θήκη κάντε"+<Link>Σύνδεση</Link>)
+                alert("Για να φτιάξετε τη δική σας θήκη κάντε" + <Link>Σύνδεση</Link>)
                 // dispatch(addImageCaseToLocalCart(image, model, qty));
             }
         }
@@ -77,8 +89,22 @@ function CollectionScreen() {
         }
     }
 
+    const selectBrandHandler = (e) => {
+        setBrand(e.target.value)
+        let index = e.target.selectedIndex;
+        let el = e.target.childNodes[index]
+        let option = el.getAttribute('id');
+        setBrandId(option)
+    }
+
     return (
         <div>
+            <Helmet>
+                <title>Grand Mobile Accessories-Φτιάξε τη θήκη σου</title>
+                <meta name="description" content="Φτιάξε τη θήκη σου.Στο grandmobile.gr δημιουργούμε την θήκη της επιλογής σου. Ανέβασε την εικόνα σου
+                    ή επέλεξε την θήκη που σου αρέσει απο την συλλογή μας." />
+                <meta name="keywords" content="θήκες, κινητά, tablet, smartphone, τάμπλετ" />
+            </Helmet>
             <div className="title">
                 <h2>ΦΤΙΑΞΕ ΤΗ ΘΗΚΗ ΣΟΥ</h2>
             </div>
@@ -99,7 +125,7 @@ function CollectionScreen() {
                         <br />ή επέλεξε την θήκη που σου αρέσει απο την συλλογή μας.
                         </p>
                     </div>
-                    <form className="make-your-case-upload" onSubmit={submitHandler} enctype="multipart/form-data">
+                    <form className="make-your-case-upload" onSubmit={submitHandler} encType="multipart/form-data">
                         <ul>
                             <li>
                                 <label htmlFor="product-image">Φωτογραφία :  </label>
@@ -108,23 +134,38 @@ function CollectionScreen() {
                                 </input>
                             </li>
                             <li className="product-phone-model">
-                                <label for="select-model">Μοντέλο :</label>
+                                <label htmlFor="select-brand">Εταιρία :</label>
+                                {loadingBrand ? <div>Loading...</div> :
+                                    errorBrand ? <div>{error}</div> :
+                                        <select className="select-model" name="select-brand" defaultValue=""
+                                            onChange={(e) => { selectBrandHandler(e) }}>
+                                            <option value="" disabled hidden>Επέλεξε εταιρία</option>
+                                            {phoneBrands.map(brand => (
+                                                <option key={brand.phone_brand_id} id={brand.phone_brand_id} value={brand.brand}>
+                                                    {brand.brand}
+                                                </option>
+                                            ))}
+                                        </select>
+                                }
+                            </li>
+                            <li className="product-phone-model">
+                                <label htmlFor="select-model">Μοντέλο :</label>
                                 {loadingModel ? <div>Loading...</div> :
-                                    errorModel ? <div>{error}</div> :
-                                        <select className="select-model" name="select-model"
+                                    errorModel ? <div>{errorModel}</div> :
+                                        <select className="select-model" name="select-model" defaultValue=""
                                             onChange={(e) => { setModel(e.target.value) }}>
-                                            <option value="" disabled hidden selected>Επέλεξε το μοντέλο του κινητού σου</option>
+                                            <option value="" disabled hidden>Επέλεξε Μοντέλο</option>
                                             {phoneModels.map(model => (
-                                                <option key={model.id} value={model.brand + " " + model.model}>
-                                                    {model.brand + " " + model.model}
+                                                <option key={model.phone_model_id} value={model.model}>
+                                                    {model.model}
                                                 </option>
                                             ))}
                                         </select>
                                 }
                             </li>
                             <li>
-                                <label className="select-qty-label" for="qty">Ποσότητα : </label>
-                                <select className="select-qty" name="qty" id="qty"
+                                <label className="select-qty-label" htmlFor="qty">Ποσότητα : </label>
+                                <select className="select-model" name="qty" id="qty"
                                     value={qty} onChange={(e) => { setQty(e.target.value) }}>
                                     {[...Array(10).keys()].map(x =>
                                         <option key={x + 1} value={x + 1}>{x + 1}</option>)}
@@ -132,7 +173,6 @@ function CollectionScreen() {
                             </li>
                             <li>
                                 <button type='submit' className="button">{uploading ? <LoadingSpinner /> : "ΠΡΟΣΘΗΚΗ ΣΤΟ ΚΑΛΑΘΙ"}</button>
-
                             </li>
                         </ul>
                     </form>
@@ -143,7 +183,7 @@ function CollectionScreen() {
             </div>
             <div className="filter_collection">
                 <label>Εμφάνιση:</label>
-                <select className="filter_collection_per_page" onChange={(e) => {setItemsPerPage(parseInt(e.target.value)); setCurrentPage(0)}}>
+                <select className="filter_collection_per_page" onChange={(e) => { setItemsPerPage(parseInt(e.target.value)); setCurrentPage(0) }}>
                     <option value="20">20</option>
                     <option value="40">40</option>
                     <option value="60">60</option>
@@ -154,15 +194,15 @@ function CollectionScreen() {
                 error ? <div>{error}</div> :
                     <div className="collection">
                         {currentPageData.map(col => (
-                            <Link to={"/collection/" + col._id}>
+                            <Link key={col._id} to={"/collection/" + col._id}>
                                 <CarouselCard src={col.image} details={"/collection/" + col._id} alt={col.name} productName={col.name} price={col.totalPrice} />
                             </Link>))}
                     </div>
             }
             <div className="paginationList">
                 <ReactPaginate
-                    previousLabel={'<<'}
-                    nextLabel={'>>'}
+                    previousLabel={'<'}
+                    nextLabel={'>'}
                     breakLabel={'...'}
                     breakClassName={'break-me'}
                     pageCount={pageCount}

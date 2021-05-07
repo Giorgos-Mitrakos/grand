@@ -4,8 +4,9 @@ import './PlaceOrderScreen.css';
 import CheckoutSteps from '../components/CheckoutSteps';
 import { createOrder } from '../action/orderActions';
 import { emptyCart } from '../action/cartActions';
-import { sendEmailToConfirmOrder } from '../action/emailActions';
+import { sendEmailToConfirmOrder, sendNewOrderEmail } from '../action/emailActions';
 import LoadingSpinner from '../components/LoadingSpinner';
+import { Helmet } from 'react-helmet';
 
 function PlaceOrderScreen(props) {
 
@@ -72,6 +73,7 @@ const placeOrder = () => {
     useEffect(()=>{
         if(successOrdering===true){
             dispatch(sendEmailToConfirmOrder(orderId["order_id"]));
+            dispatch(sendNewOrderEmail(orderId["order_id"]));
         }
         else if(successOrdering===false)
         {
@@ -99,6 +101,11 @@ const placeOrder = () => {
 
     return (
         <div>
+            <Helmet>
+                <title>Grand Mobile Accessories-Καταχώρηση Παραγγελίας</title>
+                <meta name="description" content="Καταχωρήστε την παραγγελία σας και εμείς θα την επεξεργαστούμε και θα την αποστείλουμε στη διεύθυνση που επιθυμείτε." />
+                <meta name="keywords" content="Καταχώρηση, παραγγελία, order." />
+            </Helmet>
             <CheckoutSteps step1 step2 step3></CheckoutSteps>
             {shipping && payment &&
             <div className="placeorder">        

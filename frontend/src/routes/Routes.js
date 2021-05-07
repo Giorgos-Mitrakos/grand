@@ -8,6 +8,7 @@ const ProductsScreen = lazy(() => import('../screens/ProductsScreen'));
 const ContactUsScreen = lazy(() => import('../screens/ContactUsScreen'));
 const ProductDetailScreen = lazy(() => import('../screens/ProductDetailsScreen'));
 const CartScreen = lazy(() => import('../screens/CartScreen'));
+const SearchScreen = lazy(() => import('../screens/SearchScreen'));
 const SigninScreen = lazy(() => import('../screens/SigninScreen'));
 const AdminProductsScreen = lazy(() => import('../screens/AdminProductsScreen'));
 const RegisterScreen = lazy(() => import('../screens/RegisterScreen'));
@@ -60,6 +61,7 @@ function Routes() {
             <Route path="/Τρόποι-Αποστολής" component={SendingMethodsScreen} />
             <Route path="/ConditionsOfUse" component={ConditionsOfUse} />
             <Route path="/Return" component={ReturnPolicy} />
+            <Route path="/Search" component={SearchScreen} />
             <ProtectedRoute path="/admin/createproduct" component={AdminProductsScreen} />
             <ProtectedRoute path="/admin/orders" exact={true} component={AdminOrdersScreen} />
             <ProtectedRoute path="/admin/collection" component={AdminCollectionScreen} />

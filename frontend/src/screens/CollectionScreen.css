@@ -17,6 +17,8 @@
     flex-direction: row;
     justify-content: right;
     align-items: center;
+    padding-right: 1rem;
+    padding-bottom: 1rem;
 }
 
 .filter_collection_per_page{
@@ -75,6 +77,11 @@
 }
 .make-your-case-upload li>input{
     margin-top: 0.5rem;
+    margin-left: 0.5rem;
+    font-size: 0.8rem;
+    font-family: sans-serif;
+    font-weight: 500;
+    color: #312f8b;
 }
 
 @media only screen and (max-width: 1024px) {
@@ -85,5 +92,9 @@
 
     .title h2{
         text-align: center;
+    }
+
+    .make-your-case-wrapper{
+        display: flex;
     }
 }

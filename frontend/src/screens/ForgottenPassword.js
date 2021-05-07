@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { sendPasswordReset } from '../action/emailActions';
 import './ForgottenPassword.css';
+import { Helmet } from 'react-helmet';
 
 function ForgottenPassword(props) {
     const [email,setEmail]=useState("");
@@ -32,6 +33,12 @@ function ForgottenPassword(props) {
     
     return(
         <div className="reset-form">
+            <Helmet>
+                <title>Grand Mobile Accessories-Επαναφορά Κωδικού</title>
+                <meta name="description" content="Φτιάξε τη θήκη σου.Στο grandmobile.gr δημιουργούμε την θήκη της επιλογής σου. Ανέβασε την εικόνα σου
+                    ή επέλεξε την θήκη που σου αρέσει απο την συλλογή μας." />
+                <meta name="keywords" content="θήκες, κινητά, tablet, smartphone, τάμπλετ" />
+            </Helmet>
             <div className="reset-form-container">
             <h3>Επαναφορά Κωδικού</h3>
             {successSendingResetPassword ? (

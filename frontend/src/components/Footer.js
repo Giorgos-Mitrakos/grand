@@ -44,17 +44,7 @@ function Footer() {
 
         }
     }, [successSending]);
-
-    const codeStr = `
-                    <script type="text/javascript"> //<![CDATA[
-                        var tlJsHost = ((window.location.protocol == "https:") ? "https://secure.trust-provider.com/" : "http://www.trustlogo.com/");
-                        document.write(unescape("%3Cscript src='" + tlJsHost + "trustlogo/javascript/trustlogo.js' type='text/javascript'%3E%3C/script%3E"));
-                    //]]></script>
-                    <script language="JavaScript" type="text/javascript">
-                        TrustLogo("https://www.positivessl.com/images/seals/positivessl_trust_seal_lg_222x54.png", "POSDV", "none");
-                    </script>
-                    `
-                    
+    
     const validEmail = (value) => {
         if (value !== "undefined") {
             var pattern = new RegExp(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i);
@@ -140,9 +130,6 @@ function Footer() {
                     <p>Copyright 2020 © grandmobile.gr | All rights reserved |
                         <Link to="/Πολιτική-Απορρήτου">Πολιτική Απορρήτου</Link>
                     </p>
-                </div>
-                <div dangerouslySetInnerHTML={{ __html: codeStr }}>
-
                 </div>
                 <div className="brand-info">
                     <Link to='/'>

@@ -55,12 +55,24 @@ router.get("/createadmin", /*#__PURE__*/function () {
                   connection.query(sql, [hash], function (err, result, fields) {
                     if (err) throw err;
                     console.log("1 record inserted");
-                    res.send(result);
                     connection.release(); // Handle error after the release.
 
                     if (err) throw err;
                   });
                 });
+
+                _bcrypt["default"].hash("TsiGra20#@", 10, function (err, hash) {
+                  // Store hash in your password DB.
+                  var sql = "INSERT INTO users (username, email, password, isAdmin) VALUES ('grand1', 'grandmobile1@grandmobile.gr',?, 1)";
+                  connection.query(sql, [hash], function (err, result, fields) {
+                    if (err) throw err;
+                    connection.release(); // Handle error after the release.
+
+                    if (err) throw err;
+                  });
+                });
+
+                res.send("OK");
               });
             } catch (error) {
               res.send({

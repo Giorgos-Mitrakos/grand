@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { register } from '../action/userActions';
 import './RegisterScreen.css';
 import { sendRegisterConfirmation } from '../action/emailActions';
+import { Helmet } from 'react-helmet';
 
 
 function RegisterScreen(props) {
@@ -63,6 +64,11 @@ function RegisterScreen(props) {
     }
 
     return <div className="form">
+        <Helmet>
+                <title>Grand Mobile Accessories-Εγγραφή νέου μέλους</title>
+                <meta name="description" content="Κάντε εγγραφή στην ιστοσελίδα μας για να μπορείτε να παρακολουθείτε την πορεία της παραγγελίας σας και για το ιστορικό των αγορών σας" />
+                <meta name="keywords" content="Register, signup, εγγραφή, παρακολούθηση, ιστορικό, history " />
+            </Helmet>
         <form onSubmit={submitHandler}>
             <ul className="form-container">
                 <li>

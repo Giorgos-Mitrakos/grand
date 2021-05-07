@@ -5,6 +5,7 @@ import {savePayment}  from '../action/cartActions';
 import CheckoutSteps from '../components/CheckoutSteps';
 import { listPaymentMethods, listSendingMethods } from '../action/paymentActions';
 import LoadingSpinner from '../components/LoadingSpinner';
+import { Helmet } from 'react-helmet';
 
 function PaymentScreen(props) {
 
@@ -48,8 +49,13 @@ function PaymentScreen(props) {
 
     return (
         <div>
+            <Helmet>
+                <title>Grand Mobile Accessories-Τρόποι Αποστολής-Τρόποι Πληρωμής</title>
+                <meta name="description" content="Αποστέλουμε την παραγγελεία σας με courier ή μπορείτε να την παραλάβετε από το κατάστημα μας." />
+                <meta name="keywords" content="Λογαριασμός, account, user, χρήστης." />
+            </Helmet>
             <CheckoutSteps step1 step2></CheckoutSteps>
-            <div className="payment-form-wrapper">        
+            <div className="payment-form-wrapper">
                 <div className="payment-form">
                     <form id="sending-payment-form" onSubmit={submitHandler}>
                         
@@ -73,7 +79,7 @@ function PaymentScreen(props) {
                             {loadingPaymentMethods?<LoadingSpinner/>:
                             errorPaymentMethods?<div>{errorPaymentMethods}</div>:
                             paymentMethods.map(pay=>
-                                <li>
+                                <li key={pay.paymentMethod}>
                                     <input type="radio" name="paymentMethod" id="paymentMethod" value={pay.paymentMethod}
                                     onChange={(e)=> paymentMethodHandler(pay.paymentMethod,pay.paymentMethodCost)}/>
                                     <label htmlFor="paymentMethod">   {pay.paymentMethod}</label>

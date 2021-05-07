@@ -10,8 +10,8 @@ function MobileMenu(props) {
     return (
         <div className="mobile-menu">
             <ul onClick={() => dispatch(menuOpen())}>
-                {navigation.map(x =>
-                    <li><Link to={x.linkto}>{x.title}</Link></li>
+                {navigation.map((x,index) =>
+                    <li key={index}><Link to={x.linkto}>{x.title}</Link></li>
                 )}
             </ul>
         </div>

@@ -16,7 +16,9 @@ var _default = {
   EMAIL_SALES_USER: process.env.EMAIL_SALES_USER || 'sales@grandmobile.gr',
   EMAIL_SALES_PASSWORD: process.env.EMAIL_SALES_PASSWORD || 'Sal2020#%',
   EMAIL_CONTACT_USER: process.env.EMAIL_CONTACT_USER || 'contact@grandmobile.gr',
-  EMAIL_CONTACT_PASSWORD: process.env.EMAIL_CONTACT_PASSWORD || 'Con2020#%'
+  EMAIL_CONTACT_PASSWORD: process.env.EMAIL_CONTACT_PASSWORD || 'Con2020#%',
+  EMAIL_ORDER_USER: process.env.EMAIL_CONTACT_USER || 'orders@grandmobile.gr',
+  EMAIL_ORDER_PASSWORD: process.env.EMAIL_CONTACT_PASSWORD || 'Ord2020#%'
 };
 exports["default"] = _default;
 //# sourceMappingURL=config.js.map

@@ -3,13 +3,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { getPhoneModels, insertPhoneBrand, insertPhoneModel, listPhoneBrands } from '../action/modelActions';
 import {
-    createPaymentMethod, createSendingMethods, deletePaymentMethod,
-    deleteSendingMethod, editPaymentMethods, editSendingMethods, getCompatibilityModels, getFeatureNames,
+    createPaymentMethod, createSendingMethods, deleteManufacturer, deletePaymentMethod,
+    deleteSendingMethod, deleteSupplier, editPaymentMethods, editSendingMethods, getCompatibilityModels, getFeatureNames,
     insertCompatibilityCompany, insertCompatibilityModel,
     insertFeatureName, insertFeatureTitle, insertManufacturer,
+    insertSupplier,
     listCompatibilityCompanies,
     listFeatureTitles, listManufacturers,
-    listPaymentMethodsAdmin, listSendingMethods
+    listPaymentMethodsAdmin, listSendingMethods, listSuppliers
 } from '../action/productActions';
 import './AdminListsScreen.css';
 
@@ -33,8 +34,12 @@ function AdminListsScreen(props) {
     const { featureTitles, loading: featureTitleLoading, error: featureTitleError } = featureTitleList;
     const featureNameList = useSelector(state => state.featureNameList);
     const { featureNames, loading: featureNamesLoading, error: featureNamesError } = featureNameList;
+    const suppliersList = useSelector(state => state.suppliersList);
+    const { suppliers, loading: suppliersLoading, error: suppliersError } = suppliersList;
     const [phoneBrandModelModal, setPhoneBrandModelModal] = useState(false);
     const [compatibilityModal, setCompatibilityModal] = useState(false);
+    const [supplierModal, setSupplierModal] = useState(false);
+    const [newSupplier, setNewSupplier] = useState("")
     const [brandModal, setBrandModal] = useState(false);
     const [newBrand, setNewBrand] = useState("");
     const [phoneBrand, setPhoneBrand] = useState("");
@@ -72,6 +77,19 @@ function AdminListsScreen(props) {
     const insertManufacturerHandler = () => {
         dispatch(insertManufacturer(newManufacturer));
         setNewManufacturer("");
+    }
+
+    const removeManufacturerHandler =(id) =>{
+        dispatch(deleteManufacturer(id));
+    }
+
+    const insertSupplierHandler = () => {
+        dispatch(insertSupplier(newSupplier));
+        setNewSupplier("");
+    }
+
+    const removeSupplierHandler = (id) => {
+        dispatch(deleteSupplier(id));
     }
 
     const radioChangeHandler = (e) => {
@@ -175,6 +193,7 @@ function AdminListsScreen(props) {
         dispatch(listManufacturers());
         dispatch(listSendingMethods());
         dispatch(listCompatibilityCompanies());
+        dispatch(listSuppliers());
         return () => {
 
         }
@@ -453,6 +472,40 @@ function AdminListsScreen(props) {
 
             </div>
             <div className="color-wrapper">
+                <div className="card-list-header" onClick={() => setSupplierModal(!supplierModal)}>
+                    <h4 className="expand">Προμηθευτές</h4>
+                    <i className="material-icons expand">{!supplierModal ? "expand_more" : "expand_less"}</i>
+                </div>
+                {supplierModal &&
+                    <div className="color-info">
+                        <div className="auto-scroll">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Προμηθευτές</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {suppliersLoading ? <div>Loading...</div> :
+                                        suppliersError ? <div>{suppliersError}</div> :
+                                            suppliers.map(sup =>
+                                                <tr key={sup.supplier_id}>
+                                                    <td>{sup.supplier}</td>
+                                                    <td><button className="button radio-edit-button" onClick={() => removeSupplierHandler(sup.supplier_id)}>Διαγραφή</button></td>
+                                                </tr>)}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div>
+                            <label className="header-label">Νέος Προμηθευτής</label>
+                            <input type="text" value={newSupplier} onChange={(e) => setNewSupplier(e.target.value)} />
+                            <button className="button continuebtn" onClick={insertSupplierHandler} disabled={newSupplier === ""}>Προσθήκη Προμηθευτής</button>
+                        </div>
+                    </div>}
+            </div>
+
+            <div className="color-wrapper">
                 <div className="card-list-header" onClick={() => setBrandModal(!brandModal)}>
                     <h4 className="expand">Κατασκευαστές</h4>
                     <i className="material-icons expand">{!brandModal ? "expand_more" : "expand_less"}</i>
@@ -473,6 +526,7 @@ function AdminListsScreen(props) {
                                             manufacturers.map(manufacturer =>
                                                 <tr key={manufacturer.manufacturer_id}>
                                                     <td>{manufacturer.name}</td>
+                                                    <td><button className="button radio-edit-button" onClick={() => removeManufacturerHandler(manufacturer.manufacturer_id)}>Διαγραφή</button></td>
                                                 </tr>)}
                                 </tbody>
                             </table>

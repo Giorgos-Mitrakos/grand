@@ -418,7 +418,7 @@ router.post("/orderConfimation", function (req, res) {
                   htmltext = 'Έχουμε <strong>παραλάβει</strong> την παραγγελία σας και αναμένεται να επεξεργαστεί από άνθρωπο μας. Θα ενημερωθείτε <strong>άμεσα</strong> όταν επεξεργαστεί με νέο μήνυμα. Μείνετε συντονισμένοι!';
                   break;
 
-                case 'Επεξεργάζετε':
+                case 'Επεξεργάζεται':
                   emailTitle = 'Η Παραγγελία #' + orderId + ' επεξεργάζεται';
                   htmltext = '<strong>Επεξεργαζόμαστε</strong> την παραγγελία σας και συσκευάζουμε προσεκτικά τα προϊόντα σας. Θα ενημερωθείτε <strong>άμεσα</strong> όταν ολοκληρωθεί η διαδικασία με νέο μήνυμα. Μείνετε συντονισμένοι!';
                   break;
@@ -568,6 +568,33 @@ router.post("/orderConfimation", function (req, res) {
 
     if (err) throw err;
   });
+});
+router.post("/sendNewOrderNotification", function (req, res) {
+  var transporter = nodemailer.createTransport({
+    host: _config["default"].EMAIL_HOST,
+    port: _config["default"].EMAIL_PORT,
+    auth: {
+      user: _config["default"].EMAIL_ORDER_USER,
+      pass: _config["default"].EMAIL_ORDER_PASSWORD
+    },
+    tls: {
+      rejectUnauthorized: false
+    }
+  });
+  var mailOptions = {
+    from: _config["default"].EMAIL_ORDER_USER,
+    to: _config["default"].EMAIL_ORDER_USER,
+    subject: 'Νέα παραγγελία. Κωδικός:' + req.body.orderId,
+    html: '<p>Μόλις λάβατε μια νέα παραγγελία με κωδικό' + req.body.orderId + '</p>'
+  };
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('Email sent: ' + info.response);
+    }
+  });
+  res.send("Success Email to Order Notification");
 });
 var _default = router;
 exports["default"] = _default;

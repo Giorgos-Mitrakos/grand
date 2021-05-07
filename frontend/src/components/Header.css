@@ -118,6 +118,12 @@
     display: block;
 }
 
+.search-header-links{
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+}
+
 .header-links{
     flex: 1;
     display: flex;
@@ -191,6 +197,10 @@
     flex: 4;
     margin-left: 1rem;
     justify-content: flex-start;
+}
+
+.contacts-search-filter{
+    display: none;
 }
 
 

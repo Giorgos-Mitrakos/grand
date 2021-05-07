@@ -1,23 +1,35 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import ReactPaginate from 'react-paginate';
 import { useSelector, useDispatch } from 'react-redux';
 import './AdminOrdersScreen.css';
 import { listOrders } from '../action/orderActions';
 
 function AdminOrdersScreen(props) {
   const orderList = useSelector(state => state.orderList);
-  const { loading, orders, error } = orderList;
+  const { loading, orders, error, count } = orderList;
+  const [filter,setFilter]= useState("Όλες");
   const [filteredOrders,setFilteredOrders]= useState([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [itemsPerPage, setItemsPerPage] = useState(20);
+  const [pageCount, setPageCount] = useState(0);
+  const offset = currentPage * itemsPerPage;
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(listOrders());
+    dispatch(listOrders(filter,itemsPerPage, offset));
     window.scrollTo(0,0)
     
-    return () => {
-      //
-    };
   }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(listOrders(filter,itemsPerPage, offset));
+    
+  }, [filter,currentPage, offset]);
+
+  useEffect(() => {
+    setPageCount(Math.ceil(count/itemsPerPage))
+}, [count,itemsPerPage]);
 
   useEffect(()=>{
     if(orders)
@@ -33,7 +45,7 @@ function AdminOrdersScreen(props) {
         setFilteredOrders(orders.filter(order=> order.status=== "Καταχωρήθηκε"));
         break;
       case "proccessed_orders":
-        setFilteredOrders(orders.filter(order=> order.status=== "Επεξεργάζετε"));
+        setFilteredOrders(orders.filter(order=> order.status=== "Επεξεργάζεται"));
         break;
       case "waited_orders":
         setFilteredOrders(orders.filter(order=> order.status=== "Αναμονή"));
@@ -50,6 +62,10 @@ function AdminOrdersScreen(props) {
     }
   }
 
+  function handlePageClick({ selected: selectedPage }) {
+    setCurrentPage(selectedPage);
+}
+
   return loading ? <div>Loading...</div> :
         error?<div>{error}</div>:
         (
@@ -59,15 +75,31 @@ function AdminOrdersScreen(props) {
       </div>
       <div className="filter-container"> 
           <label htmlFor="canceled-orders">Αναζήτηση:</label>
-          <select className="filter_orders select-model" onChange={(e)=>orderFilterHandler(e.target.value)}>
-            <option value="all_orders" selected>Όλες</option>
-            <option value="new_entries_orders">Καταχωρήμένες</option>
-            <option value="proccessed_orders">Επεξεργασμένες</option>
-            <option value="waited_orders">Σε αναμονή</option>
-            <option value="completed_orders">Ολοκληρωμένες</option>
-            <option value="canceled_orders">Ακυρωμένες</option>
+          <select className="filter_orders select-model" value={filter} onChange={(e)=>setFilter(e.target.value)}>
+            <option value="Όλες">Όλες</option>
+            <option value="Καταχωρήθηκε">Καταχωρήμένες</option>
+            <option value="Επεξεργάζετε">Επεξεργασμένες</option>
+            <option value="Αναμονή">Σε αναμονή</option>
+            <option value="Ολοκληρώθηκε">Ολοκληρωμένες</option>
+            <option value="Ακυρώθηκε">Ακυρωμένες</option>
           </select>
       </div>
+      <div className="paginationList">
+                <ReactPaginate
+                    previousLabel={'<'}
+                    nextLabel={'>'}
+                    breakLabel={'...'}
+                    breakClassName={'break-me'}
+                    pageCount={pageCount}
+                    marginPagesDisplayed={1}
+                    pageRangeDisplayed={2}
+                    initialPage={currentPage}
+                    onPageChange={handlePageClick}
+                    containerClassName={'pagination'}
+                    subContainerClassName={'pages pagination'}
+                    activeClassName={'active'}
+                    forcePage={currentPage}
+                /></div>
       <div className="order-list">
         <table className="table">
           <thead>
@@ -84,7 +116,7 @@ function AdminOrdersScreen(props) {
             </tr>
           </thead>
           <tbody>
-            {filteredOrders.map(order => (<tr key={order.order_id}>
+            {orders.map(order => (<tr key={order.order_id}>
               <td>{order.order_id}</td>
               <td>{Intl.DateTimeFormat('en-GB',{
                     year: 'numeric', month: 'numeric', day: 'numeric',

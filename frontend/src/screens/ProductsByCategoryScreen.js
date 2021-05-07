@@ -9,6 +9,7 @@ import { productMenuToggle } from '../action/menuActions';
 import ReactPaginate from 'react-paginate';
 import LoadingSpinner from '../components/LoadingSpinner';
 import FilterContainer from '../components/FilterContainer';
+import { Helmet } from 'react-helmet';
 
 function ProductsByCategoryScreen(props) {
     const compatibilitiesByCategory = useSelector(state => state.compatibilitiesByCategory);
@@ -73,7 +74,6 @@ function ProductsByCategoryScreen(props) {
     useEffect(() => {
         if (data) {
             setCurrentPageData(data.slice(offset, offset + itemsPerPage))
-            console.log(data.slice(offset, offset + itemsPerPage))
         }
         return () => {
 
@@ -276,6 +276,11 @@ function ProductsByCategoryScreen(props) {
 
     return (
         <div className="products-by-category-wrapper">
+            <Helmet>
+                <title>{`Grand Mobile Accessories-${subcategory}`}</title>
+                <meta name="description" content={`Στο grandmobile.gr θα βρείτε μεγάλη ποικιλία από ${subcategory} στις καλύτερες τιμές! `}/>
+                <meta name="keywords" content={`${category},${subcategory}`} />
+            </Helmet>
             <div className="product-menu-sidebar" style={{ display: isProductMenuOpen ? "block" : "none" }}>
                 <ProductMenu />
             </div>
@@ -354,8 +359,8 @@ function ProductsByCategoryScreen(props) {
                 </div>
                 <div className="paginationList">
                     <ReactPaginate
-                        previousLabel={'<<'}
-                        nextLabel={'>>'}
+                        previousLabel={'<'}
+                        nextLabel={'>'}
                         breakLabel={'...'}
                         breakClassName={'break-me'}
                         pageCount={pageCount}

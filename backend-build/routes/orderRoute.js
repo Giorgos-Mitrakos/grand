@@ -731,7 +731,7 @@ router.post("/insert_no_user_order", /*#__PURE__*/function () {
     return _ref8.apply(this, arguments);
   };
 }());
-router.get("/", _util.isAuth, _util.isAdmin, /*#__PURE__*/function () {
+router.post("/", _util.isAuth, _util.isAdmin, /*#__PURE__*/function () {
   var _ref9 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee9(req, res) {
     return regeneratorRuntime.wrap(function _callee9$(_context9) {
       while (1) {
@@ -740,11 +740,38 @@ router.get("/", _util.isAuth, _util.isAdmin, /*#__PURE__*/function () {
             _connection["default"].getConnection(function (err, connection) {
               if (err) throw err; // not connected!
 
-              var sql = "SELECT * FROM orders ORDER BY orderDate DESC";
-              connection.query(sql, function (err, result) {
-                if (err) throw err;
-                res.send(result);
-              });
+              var sql = "";
+
+              if (req.body.status === "Όλες") {
+                sql = "SELECT * FROM orders ORDER BY orderDate DESC LIMIT ? OFFSET ?";
+                connection.query(sql, [req.body.itemsPerPage, req.body.offset], function (err, result) {
+                  if (err) throw err;
+                  var resp = result;
+                  connection.query('SELECT COUNT(*) AS count FROM orders', function (err, result, fields) {
+                    if (err) throw err;
+                    var count = result;
+                    res.send({
+                      resp: resp,
+                      count: count
+                    });
+                  });
+                });
+              } else {
+                sql = "SELECT * FROM orders WHERE status=? ORDER BY orderDate DESC LIMIT ? OFFSET ?";
+                connection.query(sql, [req.body.status, req.body.itemsPerPage, req.body.offset], function (err, result) {
+                  if (err) throw err;
+                  var resp = result;
+                  connection.query('SELECT COUNT(*) AS count FROM orders WHERE status=?', [req.body.status], function (err, result, fields) {
+                    if (err) throw err;
+                    var count = result;
+                    res.send({
+                      resp: resp,
+                      count: count
+                    });
+                  });
+                });
+              }
+
               connection.release(); // Handle error after the release.
 
               if (err) throw err;
@@ -1029,12 +1056,40 @@ router.put("/changeOrderDetails", _util.isAuth, _util.isAdmin, /*#__PURE__*/func
               _connection["default"].getConnection(function (err, connection) {
                 if (err) throw err; // not connected!
 
-                var sql = "UPDATE orders SET sendingMethod=?, shippingPrice=?, paymentMethod=?,paymentMethodPrice=?, paymentType=? WHERE order_id=?";
-                connection.query(sql, [req.body.sendingMethod, req.body.shippingPrice, req.body.paymentMethod, req.body.paymentMethodCost, req.body.paymentType, req.body.orderId], function (err, result, fields) {
-                  if (err) throw err;
-                  console.log("Order Details updated");
-                  res.status(200).send("OK");
-                  connection.release(); // Handle error after the release.
+                connection.beginTransaction(function (err) {
+                  if (err) {
+                    throw err;
+                  }
+
+                  var sql = "UPDATE orders SET sendingMethod=?, shippingPrice=?, paymentMethod=?,paymentMethodPrice=?, paymentType=? WHERE order_id=?";
+                  connection.query(sql, [req.body.sendingMethod, req.body.shippingPrice, req.body.paymentMethod, req.body.paymentMethodCost, req.body.paymentType, req.body.orderId], function (err, result, fields) {
+                    if (err) {
+                      connection.rollback(function () {
+                        throw err;
+                      });
+                    }
+
+                    sql = "SELECT * FROM orders WHERE order_id=?";
+                    connection.query(sql, [req.body.orderId], function (err, result) {
+                      if (err) {
+                        connection.rollback(function () {
+                          throw err;
+                        });
+                      }
+
+                      res.status(201).send(result);
+                      connection.commit(function (err) {
+                        if (err) {
+                          connection.rollback(function () {
+                            throw err;
+                          });
+                        }
+
+                        console.log('Transaction Completed Successfully.');
+                        connection.release();
+                      });
+                    });
+                  }); // Handle error after the release.
 
                   if (err) throw err;
                 });

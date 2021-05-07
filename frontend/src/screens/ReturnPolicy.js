@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import './Gdpr.css';
+import { Helmet } from 'react-helmet';
 
 function ReturnPolicy() {
 
@@ -13,6 +14,12 @@ function ReturnPolicy() {
 
     return(
         <div className="gdpr-container">
+            <Helmet>
+                <title>Grand Mobile Accessories-Πολιτική Επιστροφών</title>
+                <meta name="description" content="Φτιάξε τη θήκη σου.Στο grandmobile.gr δημιουργούμε την θήκη της επιλογής σου. Ανέβασε την εικόνα σου
+                    ή επέλεξε την θήκη που σου αρέσει απο την συλλογή μας." />
+                <meta name="keywords" content="Πολιτική, επιστροφών, χρέωση, δικαίωμα, υπαναχώρηση" />
+            </Helmet>
             <ul className="gdpr">
                 <li>
                     <h2 style={{textAlign:'center'}}>Πολιτική Επιστροφών</h2>

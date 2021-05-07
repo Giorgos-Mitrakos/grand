@@ -6,10 +6,10 @@ const MapContainer = () => {
     <div>
         <iframe className="google-map"
         title="google-map"
-        frameborder="0" 
-        allowfullscreen="" 
+        frameBorder="0" 
+        allowFullScreen="" 
         aria-hidden="false"
-        tabindex="0"
+        tabIndex="0"
         width="80%"
         height="400"
         style={{border:0}}

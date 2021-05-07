@@ -4,6 +4,7 @@ import config from './config';
 import path from 'path';
 import 'regenerator-runtime/runtime';
 import bodyParser from 'body-parser';
+import helmet from 'helmet';
 import userRoute from './routes/userRoute';
 import adminRoute from './routes/adminRoute';
 import productRoute from './routes/productRoute';
@@ -20,6 +21,12 @@ import getProductsFromHellasphone from './routes/getProductsFromHellasphone.js';
 dotenv.config();
 
 const app=express();
+// app.use(helmet.contentSecurityPolicy({
+//   directives:{
+//     defaultSrc:["'self'"],
+//     scriptSrc:["'self'","https://www.googletagmanager.com/gtag/js?id=G-2E0012DK1M", "'unsafe-inline'", "'unsafe-eval'"],
+//     fontSrc:["'self'",'https://fonts.googleapis.com/icon?family=Material+Icons'],
+//     imgSrc:["'self'"]}}));
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname + '/public')));

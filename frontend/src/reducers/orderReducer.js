@@ -25,12 +25,12 @@ function orderReducer (state={orderId:''}, action){
     }
 }
 
-function orderListReducer(state = { orders: [], searchItems:[],  }, action) {
+function orderListReducer(state = { orders: [],  }, action) {
     switch (action.type) {
       case ORDER_LIST_REQUEST:
         return { loading: true };
       case ORDER_LIST_SUCCESS:
-        return { loading: false, orders: action.payload };
+        return { loading: false, orders: action.payload.resp, count: action.payload.count[0].count };
       case ORDER_LIST_FAIL:
         return { loading: false, error: action.payload };
       default: return state;
@@ -49,7 +49,7 @@ function orderDetailsReducer(state={ order :{}, charger: {}, shippingTo: {}, pro
         case ORDER_DETAILS_CHANGE_REQUEST:
             return {loading:true};
         case ORDER_DETAILS_CHANGE_SUCCESS:
-            return {loading:false, success: true, order: state.order.map(x=>(x.order_id===action.payload.orderId)?(x.sendingMethod=action.payload.sendingMethod, x.paymentMethod=action.payload.paymentMethod, x.paymentType=action.payload.paymentType): x)};
+            return {loading:false, success: true, ...state, charger:{...state.charger},shippingTo:{...state}, order: action.payload.data};
         case ORDER_DETAILS_CHANGE_FAIL:
             return {loading:false, error : action.payload};
         case ORDER_CHARGER_ADDRESS_UPDATE_REQUEST:
@@ -64,6 +64,12 @@ function orderDetailsReducer(state={ order :{}, charger: {}, shippingTo: {}, pro
                 x.postalCode=action.payload.charger.postalCode,x.phoneNumber=action.payload.charger.phoneNumber,
                 x.comments=action.payload.charger.comments))};
         case ORDER_CHARGER_ADDRESS_UPDATE_FAIL:
+            return {loading:false, error : action.payload};
+        case ORDER_SHIPPING_ADDRESS_UPDATE_REQUEST:
+            return {loading:true};
+        case ORDER_SHIPPING_ADDRESS_UPDATE_SUCCESS:
+            return {loading:false, success: true, ...state, charger:{...state.charger},order:{...state.order}, shippingTo: action.payload.data};
+        case ORDER_SHIPPING_ADDRESS_UPDATE_FAIL:
             return {loading:false, error : action.payload};
       default:
           return state;
@@ -94,19 +100,6 @@ function updateOrderStatusReducer (state={}, action){
         default:
             return state;
 }
-}
-
-function updateShippingAddressReducer (state={}, action){
-    switch(action.type){
-        case ORDER_SHIPPING_ADDRESS_UPDATE_REQUEST:
-            return {loading:true};
-        case ORDER_SHIPPING_ADDRESS_UPDATE_SUCCESS:
-            return {loading:false, success: true, payload: []};
-        case ORDER_SHIPPING_ADDRESS_UPDATE_FAIL:
-            return {loading:false, error : action.payload};
-        default:
-            return state;
-    }
 }
 
 function updateOrderReducer (state={}, action){
@@ -165,6 +158,5 @@ function customerOrderDetailsReducer(state={ order :{}, charger: {}, shippingTo:
 
 export {orderReducer, orderListReducer, orderDetailsReducer,
      changeOrderStatusReducer, updateOrderStatusReducer,
-       updateShippingAddressReducer,
       deleteOrderItemReducer, updateOrderReducer, customerOrderListReducer, 
       customerOrderDetailsReducer}

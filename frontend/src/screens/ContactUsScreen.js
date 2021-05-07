@@ -3,6 +3,7 @@ import './ContactUsScreen.css';
 import MapContainer from '../components/MapContainer';
 import { useDispatch } from 'react-redux';
 import { sendEmailToContact } from '../action/emailActions';
+import { Helmet } from 'react-helmet';
 
 function ContactUsScreen (){
 
@@ -41,6 +42,14 @@ function ContactUsScreen (){
     
     return(
         <div className="contact-us-container">
+            <Helmet>
+                <title>Grand Mobile Accessories-Επικοινωνία</title>
+                <meta name="description" content="Η εταιρεία μας είναι παντα δίπλα στον πελάτη 
+                προσφέροντας την γρηγορότερη και πληρέστερη εξυπηρέτηση. Επικοινωνήστε μαζί μας 
+                και εμείς από την πλευρά μας θα σας απαντήσουμε το συντομότερο στα ερωτήματα 
+                και τις απορίες σας. Ευχαριστούμε για την προτίμηση σας" />
+                <meta name="keywords" content="Επικοινωνία, τηλέφωνο, email, διεύθυνση" />
+            </Helmet>
             <div className="map-container">
                 <MapContainer/>
             </div>
@@ -54,9 +63,9 @@ function ContactUsScreen (){
                         Ευχαριστούμε για την προτίμηση σας 
                         </p>
                     </div>
-                    <div><i class="material-icons">call</i><a href="tel:2221112505">2221112505</a> </div>
-                    <div><i class="material-icons">email</i> <a href="mailto:grandmobile@grandmobile.gr">grandmobile@grandmobile.gr</a></div>
-                    <div><i class="material-icons">place</i>Αβάντων 69 & Αποστόλη,<br/> Χαλκίδα 34100</div>
+                    <div><i className="material-icons">call</i><a href="tel:2221112505">2221112505</a> </div>
+                    <div><i className="material-icons">email</i> <a href="mailto:grandmobile@grandmobile.gr">grandmobile@grandmobile.gr</a></div>
+                    <div><i className="material-icons">place</i>Αβάντων 69 & Αποστόλη,<br/> Χαλκίδα 34100</div>
                 </div>
                 <div className="contact-us-email-container">
                     <form className="contact-us-email" onSubmit={submitHandler}>

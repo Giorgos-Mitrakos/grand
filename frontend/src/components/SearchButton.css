@@ -1,0 +1,44 @@
+.searchButtonForm input[type=text] {
+  padding: 10px;
+  font-size: 0.9rem;
+  border: 1px solid grey;
+  float: left;
+  width: 80%;
+  background: #f1f1f1;
+  border-radius: 1rem 0px 0px 1rem;
+}
+  
+.searchButtonForm button {
+  float: left;
+  width: 20%;
+  padding: 9px;
+  background: #312f8b;
+  color: white;
+  font-size: 0.9rem;
+  border: 1px solid grey;
+  border-left: none;
+  border-radius: 0rem 1rem 1rem 0rem;
+  cursor: pointer;
+}
+  
+.searchButtonForm button:hover {
+  background: #deccf0;
+}
+  
+.searchButtonForm::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+@media only screen and (max-width: 1024px) {
+
+  .searchButtonForm input[type=text] {
+    border-radius: 0rem;
+  }
+
+  .searchButtonForm button {
+    border-radius: 0rem;
+  }
+
+}

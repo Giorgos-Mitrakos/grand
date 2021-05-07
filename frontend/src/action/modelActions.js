@@ -55,13 +55,10 @@ const insertPhoneModel = (brandId,model) => async (dispatch, getState) => {
     }    
 }
 
-const getPhoneModels = (phoneBrandId) =>async (dispatch, getState)=> {
+const getPhoneModels = (phoneBrandId) =>async (dispatch)=> {
     try{
         dispatch({type:PHONE_MODEL_LIST_REQUEST});
-        const {userSignin:{userInfo}} = getState();
-        const {data}= await axios.post("/api/phoneModels/phoneModels", {phoneBrandId} ,{headers:{
-            'Authorization': 'Bearer ' + userInfo.token
-        }});
+        const {data}= await axios.post("/api/phoneModels/phoneModels", {phoneBrandId} );
         dispatch({type:PHONE_MODEL_LIST_SUCCESS, payload: data});
     }
     catch(error)

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import './AdminOrdersScreen.css';
 import { listCustomerOrders } from '../action/orderActions';
+import { Helmet } from 'react-helmet';
 
 function CustomerOrdersScreen(props) {
   const customerOrderList = useSelector(state => state.customerOrderList);
@@ -30,6 +31,11 @@ function CustomerOrdersScreen(props) {
         error?<div>{error}</div>:
         (
     <div className="content content-margined">
+      <Helmet>
+                <title>Grand Mobile Accessories-Οι παραγγελίες μου</title>
+                <meta name="description" content="Δείτε τις παραγγελίες σας. Δείτε την κατάσταση στην οποία βρίσκονται. Όπως επίσης και το ιστορικό των αγορών σας." />
+                <meta name="keywords" content="παραγγελίες, orders, order, history, ιστορικό" />
+            </Helmet>
       <div className="order-header">
         <h3>Οι παραγγελίες μου</h3>
       </div>

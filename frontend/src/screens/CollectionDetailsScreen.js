@@ -85,18 +85,18 @@ function CollectionDetailScreen (props){
                             <h2>{collection.name}</h2>
                         </li>
                         <li className="product-price-info">
-                            <label for="prod-price">Τιμή : </label>
+                            <label htmlFor="prod-price">Τιμή : </label>
                             <h3 className="prod-price" name="prod-price">  €{collection.totalPrice}</h3>
                         </li>                        
                         <li className="product-phone-model">
-                            <label for="select-model">Μοντέλο :</label>
+                            <label htmlFor="select-model">Μοντέλο :</label>
                             {loadingModel? <div>Loading...</div>:
                             errorModel?<div>{error}</div>:
-                            <select className="select-model" name="select-model"
+                            <select className="select-model" name="select-model" defaultValue=""
                             onChange={(e)=>{setModel(e.target.value)}}>
-                                <option value="" disabled hidden selected>Επέλεξε το μοντέλο του κινητού σου</option>
+                                <option value="" disabled hidden>Επέλεξε το μοντέλο του κινητού σου</option>
                                 {phoneModels.map(model=>(
-                                    <option key={model.id} value={model.brand + " "+ model.model}>
+                                    <option key={model.phone_model_id} value={model.brand + " "+ model.model}>
                                         {model.brand + " "+ model.model}
                                     </option>
                                 ))}
@@ -105,7 +105,7 @@ function CollectionDetailScreen (props){
                         </li>                        
                         <li>                        
                             <div className="qty-addbutton-wishlist">
-                                <label className="select-qty-label" for="qty">Ποσότητα: </label>
+                                <label className="select-qty-label" htmlFor="qty">Ποσότητα: </label>
                                 <select className="select-qty" name="qty" id="qty"
                                 value={qty} onChange={(e)=> {setQty(e.target.value)}}>
                                     {[...Array(collection.countInStock).keys()].map(x=>
@@ -117,7 +117,7 @@ function CollectionDetailScreen (props){
                                     </button>
                                     <button className="wish-list-link" onClick={handleAddToWishList} disabled={!collection.countInStock>0}
                                     data-tip data-for="my-wish-list">
-                                        <i class="material-icons wish-list-link">favorite_border</i>
+                                        <i className="material-icons wish-list-link">favorite_border</i>
                                     </button>
                                     <ReactTooltip backgroundColor="#deccf0" textColor="#312f8b" id="my-wish-list" place="bottom" effect="solid">
                                         Προσθήκη στα αγαπημένα μου.

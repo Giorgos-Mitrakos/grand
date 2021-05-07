@@ -5,9 +5,9 @@ function sendingMethodsListReducer(state = { sendingMethods: [] }, action) {
       case SENDING_METHODS_LIST_REQUEST:
         return { loading: true };
       case SENDING_METHODS_LIST_SUCCESS:
-        return { loading: false, sendingMethods: action.payload };
+        return { loading: false,success:true, sendingMethods: action.payload };
       case SENDING_METHODS_LIST_FAIL:
-        return { loading: false, error: action.payload };
+        return { loading: false, success:true, error: action.payload };
       default: return state;
     }
 }

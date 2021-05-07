@@ -4,6 +4,7 @@ import './MyAccountScreen.css';
 import { useSelector, useDispatch } from 'react-redux';
 import { saveAccountInfo, passwordChange, accountInfo, deleteAccount, signout } from '../action/userActions';
 import { sendAccountDeleteEmail } from '../action/emailActions';
+import { Helmet } from 'react-helmet';
 
 function MyaccountScreen(props){
 
@@ -130,6 +131,11 @@ function MyaccountScreen(props){
 
     return(
         <div>
+            <Helmet>
+                <title>Grand Mobile Accessories-Ο Λογαριασμός μου</title>
+                <meta name="description" content="Δημιούργησε λογαριασμό στο grandmobile.gr μείνε ενημερωμένος και επωφελήσου από τις προσφορές." />
+                <meta name="keywords" content="Λογαριασμός, account, user, χρήστης." />
+            </Helmet>
             <div>
                 <ul className="breadcrumb">
                     <li><Link to="/">Αρχική</Link></li>

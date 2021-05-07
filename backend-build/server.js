@@ -12,6 +12,8 @@ require("regenerator-runtime/runtime");
 
 var _bodyParser = _interopRequireDefault(require("body-parser"));
 
+var _helmet = _interopRequireDefault(require("helmet"));
+
 var _userRoute = _interopRequireDefault(require("./routes/userRoute"));
 
 var _adminRoute = _interopRequireDefault(require("./routes/adminRoute"));
@@ -41,6 +43,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "d
 _dotenv["default"].config();
 
 var app = (0, _express["default"])();
+app.use(_helmet["default"].contentSecurityPolicy({
+  directives: {
+    defaultSrc: ["'self'"],
+    scriptSrc: ["'self'", "https://www.googletagmanager.com/gtag/js?id=G-2E0012DK1M", "'unsafe-inline'", "'unsafe-eval'"],
+    fontSrc: ["'self'", 'https://fonts.googleapis.com/icon?family=Material+Icons'],
+    imgSrc: ["'self'"]
+  }
+}));
 app.use(_bodyParser["default"].urlencoded({
   extended: true
 }));

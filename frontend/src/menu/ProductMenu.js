@@ -85,8 +85,7 @@ function ProductMenu(props) {
                 <Link onClick={handleClik} to="/products/Kινητά/Καλώδια-Φόρτισης-Δεδομένων"><li>Καλώδια Φόρτισης-Δεδομένων</li></Link>
                 <Link onClick={handleClik} to="/products/Kινητά/Adapters-Φόρτισης-Δεδομένων"><li>Adapters Φόρτισης-Δεδομένων</li></Link>
                 <Link onClick={handleClik} to="/products/Tablet/Selfie-Sticks"><li>Selfie Sticks</li></Link>
-                <Link onClick={handleClik} to="/products/Tablet/Βάσεις-Στήριξης-tablet"><li>Βάσεις Στήριξης tablet</li></Link>
-                <Link onClick={handleClik} to="/products/taTabletblet/Διάφορα-αξεσουάρ"><li>Διάφορα αξεσουάρ</li></Link>
+                <Link onClick={handleClik} to="/products/Tablet/Διάφορα-αξεσουάρ"><li>Διάφορα αξεσουάρ</li></Link>
             </ul>}
             <div className="menu-header" onClick={() => setDesktopModal(!desktopModal)}>
                 <div>

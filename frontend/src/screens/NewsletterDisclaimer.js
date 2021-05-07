@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { sendNewsLetterMailDeletingConfirmation } from '../action/emailActions';
 import { removeFromNewsletterList } from '../action/userActions';
 import './Gdpr.css';
+import { Helmet } from 'react-helmet';
 
 function NewsletterDisclaimer(props) {
     
@@ -56,6 +57,11 @@ useEffect(()=>{
 
     return(
         <div className="gdpr-container">
+            <Helmet>
+                <title>Grand Mobile Accessories-Newsletter</title>
+                <meta name="description" content="Κάνε εγγραφή στα newsletters του grandmobile.gr μείνε ενημερωμένος και επωφελήσου από τις προσφορές." />
+                <meta name="keywords" content="newsletters, εμαιλ, email." />
+            </Helmet>
             <ul className="gdpr">
             <li>
                 <h3>ΔΗΛΩΣΗ ΕΝΗΜΕΡΩΜΕΝΗΣ ΣΥΓΚΑΤΑΘΕΣΗΣ ΓΙΑ NEWSLETTER</h3>

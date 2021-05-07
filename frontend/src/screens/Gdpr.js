@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import './Gdpr.css';
+import { Helmet } from 'react-helmet';
 
 function Gdpr() {
 
@@ -13,6 +14,12 @@ function Gdpr() {
 
     return(
         <div className="gdpr-container">
+            <Helmet>
+                <title>Grand Mobile Accessories-Ασφάλεια & Προσωπικά Δεδομένα</title>
+                <meta name="description" content="Φτιάξε τη θήκη σου.Στο grandmobile.gr δημιουργούμε την θήκη της επιλογής σου. Ανέβασε την εικόνα σου
+                    ή επέλεξε την θήκη που σου αρέσει απο την συλλογή μας." />
+                <meta name="keywords" content="Ασφάλεια, προσωπικά, δεδομένα, security, data, personal" />
+            </Helmet>
             <ul className="gdpr">
             <li>
                 <h3>Ασφάλεια & Προσωπικά Δεδομένα</h3>
