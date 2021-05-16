@@ -79,9 +79,14 @@ router.post("/createproduct", _util.isAuth, _util.isAdmin, upload.single('image'
             _connection["default"].getConnection(function (err, connection) {
               if (err) throw err; // not connected!
 
-              var sql = "INSERT INTO products (name, category, brand, subcategory, image, price, percentage, description, countInStock) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 10)";
-              connection.query(sql, [req.body.name, req.body.category, req.body.brand, req.body.subcategory, req.file.path.slice(15, req.file.path.length), req.body.price, req.body.percentage, req.body.description, req.body.countInStock], function (err, result, fields) {
+              var sql = "INSERT INTO products (name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 10)";
+              connection.query(sql, [req.body.name, req.body.category, req.body.brand, req.body.subcategory, req.body.supplier, req.file.path.slice(15, req.file.path.length), req.body.price, req.body.percentage, req.body.description, req.user.username, new Date(), req.body.countInStock], function (err, result, fields) {
                 if (err) throw err;
+                var insertedId = result.insertId;
+                sql = "INSERT INTO productshistory (product_id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock FROM products WHERE _id=?";
+                connection.query(sql, [insertedId], function (err, result, fields) {
+                  if (err) throw err;
+                });
                 res.status(201).send({
                   message: 'New product Created'
                 });
@@ -382,11 +387,16 @@ router.put("/createproduct/:id", _util.isAuth, _util.isAdmin, upload.single('ima
                   res.send({
                     message: 'Product not found'
                   });
+                  return;
                 }
               });
-              sql = "UPDATE products SET name=?, category=?, brand=?, subcategory=?, image=?, price=?, percentage=?, description=? WHERE _id=?";
-              connection.query(sql, [req.body.name, req.body.category, req.body.brand, req.body.subcategory, req.body.image, req.body.price, req.body.percentage, req.body.description, productId], function (err, result, fields) {
+              sql = "UPDATE products SET name=?, category=?, brand=?, subcategory=?, supplier=?, image=?, price=?, percentage=?, description=? WHERE _id=?";
+              connection.query(sql, [req.body.name, req.body.category, req.body.brand, req.body.subcategory, req.body.supplier, req.body.image, req.body.price, req.body.percentage, req.body.description, productId], function (err, result, fields) {
                 if (err) throw err;
+                sql = "INSERT INTO productshistory (product_id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock, UpdatedBy, UpdatedAt) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock, ?, ? FROM products WHERE _id=?";
+                connection.query(sql, [req.user.username, new Date(), productId], function (err, result, fields) {
+                  if (err) throw err;
+                });
               });
               sql = "SELECT * FROM products WHERE _id=?";
               connection.query(sql, [productId], function (err, result, fields) {

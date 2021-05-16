@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import './SearchButton.css'
 import { useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
-import { filtersStore, resetFiltersStore, searchForItem, searchTextStore } from '../action/productActions';
+import { resetFiltersStore, searchForItem, searchTextStore } from '../action/productActions';
 
 function SearchButton(props) {
     const perPageItems = useSelector(state => state.perPageItems);
@@ -13,10 +13,10 @@ function SearchButton(props) {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if (searchText.trim() !== "") {
+        if (searchText.trim() !== "" && searchText.trim() !== undefined && searchText.trim() !== null) {
             history.push("/Search");
         }
-        dispatch(searchForItem(searchText,itemsPerPage, 0,null));
+        
     }, [searchText]);
 
     const handleSearchText =(text)=>{

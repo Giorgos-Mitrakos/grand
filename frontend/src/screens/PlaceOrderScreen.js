@@ -52,7 +52,8 @@ const placeOrder = () => {
         district:shipping.shippingTo.district,
         city:shipping.shippingTo.city,
         address:shipping.shippingTo.address,
-        postalCode:shipping.shippingTo.postalCode
+        postalCode:shipping.shippingTo.postalCode,
+        phoneNumber:shipping.shippingTo.phone,
     };
 
     const methods = {
@@ -251,6 +252,10 @@ const placeOrder = () => {
                             <div>
                                 <label>Τ.Κ :</label>
                                 <div>{shipping.shippingTo.postalCode}</div> 
+                            </div>
+                            <div>
+                                <label>Τηλέφωνο :</label>
+                                <div>{shipping.shippingTo.phone}</div>
                             </div>
                             <div>
                                 

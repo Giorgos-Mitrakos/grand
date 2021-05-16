@@ -8,7 +8,7 @@ const getToken = (user) => {
         email: user.email,
         isAdmin: user.isAdmin
     }, config.JWT_SECRET, {
-        expiresIn:'24h'
+        expiresIn:'2h'
     }
     ))
 }
@@ -34,7 +34,18 @@ const isAuth = (req, res, next) =>{
 }
 
 const isAdmin = (req, res, next) =>{
-    if(req.user && parseInt(req.user.isAdmin) == 1){
+    if(req.user && (parseInt(req.user.isAdmin) == 1 || parseInt(req.user.isAdmin) == 2)){
+        return next();
+
+    }
+    else
+    {
+        return res.status(401).send({msg: ' Admin Token is not valid.'})
+    }
+}
+
+const isSuperAdmin = (req, res, next) =>{
+    if(req.user && parseInt(req.user.isAdmin) == 2){
         return next();
 
     }
@@ -45,4 +56,4 @@ const isAdmin = (req, res, next) =>{
 }
     
 
-export {getToken, isAuth, isAdmin}
+export {getToken, isAuth, isAdmin, isSuperAdmin}

@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import './AdminOrderDetails.css';
-import { detailsOrder, changeStatus, updateStatus, changeOrderDetails, updateChargerAddress, updateShippingToAddress, updateOrder, removeOrderItem } from '../action/orderActions';
+import { detailsOrder, changeStatus, updateStatus, changeOrderDetails, updateChargerAddress, updateShippingToAddress, updateOrderQuantity, removeOrderItem } from '../action/orderActions';
 import { useSelector, useDispatch } from 'react-redux';
 import { sendEmailToConfirmOrder } from '../action/emailActions';
 import { listPaymentMethods, listSendingMethods } from '../action/paymentActions';
@@ -16,6 +16,10 @@ function AdminOrdersDetailScreen(props) {
     const { loading, order, error, success, charger, shippingTo, products } = orderDetails;
     const updateOrderStatus = useSelector(state => state.updateOrderStatus);
     const { success: successUpdateStatus } = updateOrderStatus;
+    const updateOrder = useSelector(state => state.updateOrder);
+    const { success: successUpdate } = updateOrder;
+    const deleteOrderItem = useSelector(state => state.deleteOrderItem);
+    const { success: successDeleteOrderItem } = deleteOrderItem;
     const changeOrderStatus = useSelector(state => state.changeOrderStatus);
     const { successChangeStatus } = changeOrderStatus;
     const emailOrderCorfimation = useSelector(state => state.emailOrderCorfimation);
@@ -46,6 +50,7 @@ function AdminOrdersDetailScreen(props) {
     const [shippingState, setShippingState] = useState("");
     const [shippingCity, setShippingCity] = useState("");
     const [shippingAddress, setShippingAddress] = useState("");
+    const [shippingPhone, setShippingPhone] = useState("");
     const [shippingPostalCode, setShippingPostalCode] = useState("");
     const [orderStatusModal, setOrderStatusModal] = useState(false);
     const [orderEditModal, setOrderEditModal] = useState(false);
@@ -68,7 +73,7 @@ function AdminOrdersDetailScreen(props) {
             dispatch(listSendingMethods());
 
     }, [orderEditModal]);
-
+   
     useEffect(() => {
         if (sendingMethods && orderSendingMethod && sendingMethods.length !== 0) {
             const send = sendingMethods.find(x => x.sendingMethod === order.sendingMethod)
@@ -108,6 +113,14 @@ function AdminOrdersDetailScreen(props) {
     }, [successChangeStatus]);
 
     useEffect(() => {
+        if (successUpdate === true || successDeleteOrderItem===true)
+            dispatch(detailsOrder(props.match.params.id));
+        return () => {
+            //
+        };
+    }, [successUpdate,successDeleteOrderItem]);
+
+    useEffect(() => {
         if (success === true) {
             setOrderStatus(order.status);
             setNewOrderStatus(order.status);
@@ -137,6 +150,7 @@ function AdminOrdersDetailScreen(props) {
                 setShippingCity(shippingTo.city);
                 setShippingAddress(shippingTo.street);
                 setShippingPostalCode(shippingTo.postalCode);
+                setShippingPhone(shippingTo.phoneNumber);
             }
         }
         return () => {
@@ -233,7 +247,8 @@ function AdminOrdersDetailScreen(props) {
             district: shippingState,
             city: shippingCity,
             street: shippingAddress,
-            postalCode: shippingPostalCode
+            postalCode: shippingPostalCode,
+            phoneNumber: shippingPhone
         };
 
         dispatch(updateShippingToAddress(order.order_id, order.shippingAddress, shippingTo));
@@ -307,9 +322,8 @@ function AdminOrdersDetailScreen(props) {
         dispatch(detailsOrder(props.match.params.id));
     }
 
-    const updateCartHandler = (product_id, model, quantity) => {
-        dispatch(updateOrder(order.order_id, product_id, model, quantity));
-        dispatch(detailsOrder(props.match.params.id));
+    const updateCartHandler = (product_id, model, quantity) => {        
+        dispatch(updateOrderQuantity(order.order_id, product_id, model, quantity));
     }
     const orderStatusList = ["Καταχωρήθηκε", "Επεξεργάζεται", "Αναμονή", "Ολοκληρώθηκε", "Ακυρώθηκε"];
 
@@ -375,6 +389,12 @@ function AdminOrdersDetailScreen(props) {
                                             <label>Ημ. επεξεργασίας:</label>
                                             <div>
                                                 {order.proccessDate && convertDate(order.proccessDate)}
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <label>Ημ. αναμονής:</label>
+                                            <div>
+                                                {order.delayDate && convertDate(order.delayDate)}
                                             </div>
                                         </li>
                                         <li>
@@ -453,22 +473,22 @@ function AdminOrdersDetailScreen(props) {
                                                         </li>
                                                         <li>
                                                             <label>Τρόπος Αποστολής:</label>
-                                                            <select type="text" onChange={(e) => sendingMethodHandler(e)}>
-                                                                {loadingSendingMethods ? <option><LoadingSpinner /></option> :
-                                                                    errorSendingMethods ? <div>{errorSendingMethods}</div> :
-                                                                        sendingMethods.map(send =>
-                                                                            <option key={send.sendingMethod_id} id={send.sendingMethod_id} cost={send.sendingMethodCost} selected={send.sendingMethod === order.sendingMethod} value={send.sendingMethod}>{send.sendingMethod}</option>)}
-                                                            </select>
+                                                            {loadingSendingMethods ? <option><LoadingSpinner /></option> :
+                                                                errorSendingMethods ? <div>{errorSendingMethods}</div> :
+                                                                    <select type="text" onChange={(e) => sendingMethodHandler(e)} defaultValue={order.sendingMethod}>
+                                                                        {sendingMethods.map(send =>
+                                                                            <option key={send.sendingMethod_id} id={send.sendingMethod_id} cost={send.sendingMethodCost} value={send.sendingMethod}>{send.sendingMethod}</option>)}
+                                                                    </select>}
                                                         </li>
                                                         <li>
                                                             <label>Τρόπος Πληρωμής:</label>
-                                                            <select type="text" onChange={(e) => paymentMethodHandler(e)}>
-                                                                <option value="">Επέλεξε τρόπο πληρωμής</option>
-                                                                {loadingPaymentMethods ? <option><LoadingSpinner /></option> :
-                                                                    errorPaymentMethods ? <div>{errorPaymentMethods}</div> :
-                                                                        paymentMethods.map((pay, index) =>
-                                                                            <option key={index} id={pay.paymentMethod_id} cost={pay.paymentMethodCost} value={pay.paymentMethod} selected={pay.paymentMethod === order.paymentMethod}>{pay.paymentMethod}</option>)}
-                                                            </select>
+                                                            {loadingPaymentMethods ? <option><LoadingSpinner /></option> :
+                                                                errorPaymentMethods ? <div>{errorPaymentMethods}</div> :
+                                                                    <select type="text" onChange={(e) => paymentMethodHandler(e)} defaultValue={order.paymentMethod}>
+                                                                        <option value="">Επέλεξε τρόπο πληρωμής</option>
+                                                                        {paymentMethods.map((pay, index) =>
+                                                                            <option key={index} id={pay.paymentMethod_id} cost={pay.paymentMethodCost} value={pay.paymentMethod}>{pay.paymentMethod}</option>)}
+                                                                    </select>}
                                                         </li>
                                                         <li>
                                                             <label>Παραστατικό:</label>
@@ -629,8 +649,7 @@ function AdminOrdersDetailScreen(props) {
                                                                 onChange={(e) => setChargerPostalCode(e.target.value)} value={chargerPostalCode}>
                                                             </input>
                                                             <label>Τηλέφωνο:</label>
-                                                            <input type="tel" name="charger-phone" id="charger-phone"
-                                                                pattern="[0-9]{3}-[0-9]{4}-[0-9]{3}"
+                                                            <input type="tel" name="charger-phone" id="charger-phone" maxLength="10"
                                                                 required value={chargerPhone}
                                                                 onChange={(e) => setChargerPhone(e.target.value)}>
                                                             </input>
@@ -684,6 +703,10 @@ function AdminOrdersDetailScreen(props) {
                                                     <label>Τ.Κ. :</label>
                                                     <div>{shippingTo.postalCode}</div>
                                                 </li>
+                                                <li>
+                                                    <label>Τηλέφωνο :</label>
+                                                    <div>{shippingTo.phoneNumber}</div>
+                                                </li>
                                             </Fragment>}
                                         <li>
                                             <button className="button continuebtn" onClick={() => setShippingAddressEditModal(true)}>Επεξεργασία στοιχείων παράδοσης</button>
@@ -722,16 +745,21 @@ function AdminOrdersDetailScreen(props) {
                                                             <input type="text" name="shipping-city" id="shipping-city" required
                                                                 onChange={(e) => setShippingCity(e.target.value)} value={shippingCity}>
                                                             </input>
+                                                            <label htmlFor="shipping-postalCode">Τ.Κ:</label>
+                                                            <input type="text" name="shipping-postalCode" id="shipping-postalCode" required
+                                                                onChange={(e) => setShippingPostalCode(e.target.value)} value={shippingPostalCode}>
+                                                            </input>
                                                         </li>
                                                         <li>
                                                             <label>Διεύθυνση:</label>
                                                             <input type="text" name="shipping-address" id="shipping-address" required
                                                                 onChange={(e) => setShippingAddress(e.target.value)} value={shippingAddress}>
                                                             </input>
-                                                            <label htmlFor="shipping-postalCode">Τ.Κ:</label>
-                                                            <input type="text" name="shipping-postalCode" id="shipping-postalCode" required
-                                                                onChange={(e) => setShippingPostalCode(e.target.value)} value={shippingPostalCode}>
+                                                            <label>Τηλέφωνο:</label>
+                                                            <input type="text" name="shipping-phone" id="shipping-phone" required maxLength="10"
+                                                                onChange={(e) => setShippingPhone(e.target.value)} value={shippingPhone}>
                                                             </input>
+
                                                         </li>
                                                     </ul>
                                                     <div className="okCancelButton-wrapper">
@@ -762,7 +790,7 @@ function AdminOrdersDetailScreen(props) {
                                             <li className="order-item" key={item._id + item.model}>
                                                 <div className="order-image flex-column">
                                                     {item.category !== "Φτιάξε τη Θήκη σου" ?
-                                                        <img src={item.image} alt="product" /> :
+                                                        <img className="order-image-img" src={item.image} alt="product" /> :
                                                         <Fragment>
                                                             <a href={item.image_case} download={item.image_case.slice(35, item.image_case.length)}>
                                                                 <img className="order-image-img" src={item.image_case} alt="Φτιάξε τη θήκη σου" />
@@ -792,44 +820,44 @@ function AdminOrdersDetailScreen(props) {
                                                 </div>
                                                 <div className="order-total-price">
                                                     {(item.totalPrice * item.quantity).toFixed(2)} €
-                                </div>
+                                                </div>
                                             </li>)}
                                         <li className="admin-order-items-total-cost">
-                                            <div></div>                                            
+                                            <div></div>
                                             <table className="admin-order-items-total-cost-table">
                                                 <tbody>
-                                                <tr>
-                                                    <td>
-                                                        Κόστος Προϊόντων ( {products.reduce((a, c) => a + Number(c.quantity), 0)} τεμ.) :
+                                                    <tr>
+                                                        <td>
+                                                            Κόστος Προϊόντων ( {products.reduce((a, c) => a + Number(c.quantity), 0)} τεμ.) :
                                                     </td>
-                                                    <td>
-                                                        {products.reduce((a, c) => a + c.totalPrice * Number(c.quantity), 0).toFixed(2)} €
+                                                        <td>
+                                                            {products.reduce((a, c) => a + c.totalPrice * Number(c.quantity), 0).toFixed(2)} €
                                                     </td>
-                                                </tr>
-                                                {order.sendingMethod && <tr>
-                                                    <td>
-                                                        Κόστος Αποστολής :
+                                                    </tr>
+                                                    {order.sendingMethod && <tr>
+                                                        <td>
+                                                            Κόστος Αποστολής :
                                                     </td>
-                                                    <td>
-                                                        {order.shippingPrice} €
-                                                    </td>                                                    
-                                                </tr>}
-                                                {order.paymentMethod && <tr>
-                                                    <td>
-                                                        Κόστος Αποστολής :
+                                                        <td>
+                                                            {order.shippingPrice} €
                                                     </td>
-                                                    <td>
-                                                        {order.paymentMethodPrice} €
+                                                    </tr>}
+                                                    {order.paymentMethod && <tr>
+                                                        <td>
+                                                            Κόστος Αποστολής :
                                                     </td>
-                                                </tr>}
-                                                <tr>
-                                                    <td>
-                                                        <strong>Συνολικό Κόστος Παραγγελίας :</strong>
+                                                        <td>
+                                                            {order.paymentMethodPrice} €
                                                     </td>
-                                                    <td>
-                                                        <strong>{order.totalPrice} €</strong>
-                                                    </td>
-                                                </tr>
+                                                    </tr>}
+                                                    <tr>
+                                                        <td>
+                                                            <strong>Συνολικό Κόστος Παραγγελίας :</strong>
+                                                        </td>
+                                                        <td>
+                                                            <strong>{order.totalPrice} €</strong>
+                                                        </td>
+                                                    </tr>
                                                 </tbody>
                                             </table>
                                         </li>
@@ -877,17 +905,16 @@ function AdminOrdersDetailScreen(props) {
                                                                         </div>
                                                                         <div className="cart-item-price">
                                                                             {item.totalPrice} €
-                                                        </div>
+                                                                        </div>
                                                                         <div className="cart-name">
                                                                             <select className="cart-select-qty" name="cart-select-qty" id="cart-select-qty"
-                                                                                onChange={(e) => updateCartHandler(item._id, item.model, e.target.value)} >
+                                                                                onChange={(e) => updateCartHandler(item._id, item.model, e.target.value)} defaultValue={item.quantity}>
                                                                                 {[...Array(item.countInStock).keys()].map(x =>
-                                                                                    <option key={x + 1} value={x + 1} selected={x+1===item.quantity}>{x + 1}</option>)}
+                                                                                    <option key={x + 1} value={x + 1}>{x + 1}</option>)}
                                                                             </select>
                                                                         </div>
                                                                         <div className="cart-total-price">
-                                                                            {(item.totalPrice * item.quantity).toFixed(2)} €
-                                                        </div>
+                                                                            {(item.totalPrice * item.quantity).toFixed(2)} €                                                        </div>
                                                                         <div>
                                                                             <button className="delete-item-button" onClick={() => removeFromCartHandler(item._id, item.model)} >
                                                                                 <i className="material-icons">delete_forever</i>

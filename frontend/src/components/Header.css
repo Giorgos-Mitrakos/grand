@@ -125,7 +125,6 @@
 }
 
 .header-links{
-    flex: 1;
     display: flex;
     justify-content: flex-end;
     align-items: center;
@@ -184,7 +183,6 @@
 
 
 .header-links{
-    flex: 2;
     margin-right: 0.5rem;
     justify-content: flex-end;
 }
@@ -197,6 +195,10 @@
     flex: 4;
     margin-left: 1rem;
     justify-content: flex-start;
+}
+
+.search-header-links{
+flex: 1.5
 }
 
 .contacts-search-filter{

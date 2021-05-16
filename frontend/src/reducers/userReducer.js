@@ -1,4 +1,4 @@
-import { USER_SIGNIN_REQUEST, USER_SIGNIN_SUCCESS, USER_SIGNIN_FAIL, USER_REGISTER_REQUEST, USER_REGISTER_SUCCESS, USER_REGISTER_FAIL, USER_SIGNOUT_REQUEST, USER_SIGNOUT_SUCCESS, USER_SIGNOUT_FAIL, USER_PASSWORD_CHANGE_REQUEST, USER_PASSWORD_CHANGE_SUCCESS, USER_PASSWORD_CHANGE_FAIL, USER_ACCOUNT_ADDRESS_REQUEST, USER_ACCOUNT_ADDRESS_SUCCESS, USER_ACCOUNT_ADDRESS_FAIL, USER_SAVE_ACCOUNT_INFO_REQUEST, USER_SAVE_ACCOUNT_INFO_SUCCESS, USER_SAVE_ACCOUNT_INFO_FAIL, ADD_TO_NEWSLETTER_REQUEST, ADD_TO_NEWSLETTER_SUCCESS, ADD_TO_NEWSLETTER_FAIL, REMOVE_FROM_NEWSLETTER_REQUEST, REMOVE_FROM_NEWSLETTER_SUCCESS, REMOVE_FROM_NEWSLETTER_FAIL, DELETE_USER_ACCOUNT_REQUEST, DELETE_USER_ACCOUNT_SUCCESS, DELETE_USER_ACCOUNT_FAIL } from "../constants/userConstants";
+import { USER_SIGNIN_REQUEST, USER_SIGNIN_SUCCESS, USER_SIGNIN_FAIL, USER_REGISTER_REQUEST, USER_REGISTER_SUCCESS, USER_REGISTER_FAIL, USER_SIGNOUT_REQUEST, USER_SIGNOUT_SUCCESS, USER_SIGNOUT_FAIL, USER_PASSWORD_CHANGE_REQUEST, USER_PASSWORD_CHANGE_SUCCESS, USER_PASSWORD_CHANGE_FAIL, USER_ACCOUNT_ADDRESS_REQUEST, USER_ACCOUNT_ADDRESS_SUCCESS, USER_ACCOUNT_ADDRESS_FAIL, USER_SAVE_ACCOUNT_INFO_REQUEST, USER_SAVE_ACCOUNT_INFO_SUCCESS, USER_SAVE_ACCOUNT_INFO_FAIL, ADD_TO_NEWSLETTER_REQUEST, ADD_TO_NEWSLETTER_SUCCESS, ADD_TO_NEWSLETTER_FAIL, REMOVE_FROM_NEWSLETTER_REQUEST, REMOVE_FROM_NEWSLETTER_SUCCESS, REMOVE_FROM_NEWSLETTER_FAIL, DELETE_USER_ACCOUNT_REQUEST, DELETE_USER_ACCOUNT_SUCCESS, DELETE_USER_ACCOUNT_FAIL, ADMINS_LIST_REQUEST, ADMINS_LIST_SUCCESS, ADMINS_LIST_FAIL, INSERT_ADMIN_REQUEST, INSERT_ADMIN_SUCCESS, INSERT_ADMIN_FAIL, DELETE_ADMIN_REQUEST, DELETE_ADMIN_SUCCESS, DELETE_ADMIN_FAIL } from "../constants/userConstants";
 
 function userSigninReducer (state={userInfo:[]}, action){
     switch(action.type){
@@ -112,6 +112,31 @@ function removeFromNewsletterReducer (state={}, action){
     }
 }
 
+function adminsListReducer (state={admins:[]}, action){
+    switch(action.type){
+        case ADMINS_LIST_REQUEST:
+            return {loading:true};
+        case ADMINS_LIST_SUCCESS:
+            return {loading:false, admins: action.payload};
+        case ADMINS_LIST_FAIL:
+            return {loading:false, error : action.payload};
+        case INSERT_ADMIN_REQUEST:
+            return {loading:true};
+        case INSERT_ADMIN_SUCCESS:
+            return {loading:false, admins: action.payload};
+        case INSERT_ADMIN_FAIL:
+            return {loading:false, error : action.payload};
+        case DELETE_ADMIN_REQUEST:
+            return {loading:true};
+        case DELETE_ADMIN_SUCCESS:
+            return {loading:false, admins: action.payload};
+        case DELETE_ADMIN_FAIL:
+            return {loading:false, error : action.payload};
+        default:
+            return state;
+    }
+}
+
 export {userSigninReducer,userRegisterReducer,userSignoutReducer, 
     userAccountInfoReducer, userPasswordChangeReducer,userAccountAddressReducer,
-    addForNewsletterReducer, removeFromNewsletterReducer}
+    addForNewsletterReducer, removeFromNewsletterReducer, adminsListReducer}

@@ -44,10 +44,10 @@ function UpdatePassword(props) {
                     <div className="reset-password-form-sent-wrapper">
                         <p>
                             Ο κωδικός σας έχει αλλαχθεί.
-                </p>
+                        </p>
                         <Link to="/signin" className="ghost-btn">
                             Είσοδος
-                </Link>
+                        </Link>
                     </div>
                 ) :
                     successUpdate === false ? (

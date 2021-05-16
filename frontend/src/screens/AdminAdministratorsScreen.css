@@ -1,0 +1,78 @@
+.color-wrapper{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+.color-wrapper:last-child {
+    margin-bottom: 5rem;
+}
+
+.card-list-header{
+    justify-content: center;
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+    width: 80%;
+    align-self: center;
+    background-color: #ece2f7;
+    color: #312f8b;
+    padding: 1rem;
+    font-size: 1rem;
+    border: 1px #a6a5df solid;
+    cursor: pointer;
+}
+
+.admin-info{
+    width: 80%;
+    align-self: center;
+    border: 1px #a6a5df solid;
+    color: #312f8b;
+    display: flex;
+    flex-direction: column;
+}
+
+.add_new_admin{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.add_new_admin>div{
+    width: 50%;
+    display: flex;
+    align-items: center;
+}
+
+.add_new_admin>div>label{
+    flex: 1;
+    justify-self: end;
+}
+
+.add_new_admin>div>input{
+    flex: 4;    
+    margin: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 0.3rem;
+    font-size: 1rem;
+    color: #312f8b;
+}
+
+.admins_table{
+    width: 80%;
+    align-self: center;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.admins_table>h3{
+    align-self: center;
+}
+
+.continuebtn:disabled{    
+    color: #9291df;
+}

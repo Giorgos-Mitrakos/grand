@@ -37,12 +37,16 @@ function ProfileMenu(props){
             </Fragment>
             
             }
-            {userInfo && userInfo.isAdmin===1 &&
+            {userInfo && (userInfo.isAdmin===1 || userInfo.isAdmin===2) &&
             <Fragment>
             <li><Link to="/admin/orders">Παραγγελίες</Link></li>
             <li><Link to="/admin/createproduct">Προϊόντα</Link></li>
             <li><Link to="/admin/collection">Συλλογη</Link></li>
             <li><Link to="/admin/lists">Λίστες</Link></li>
+            </Fragment>}
+            {userInfo && userInfo.isAdmin===2 &&
+            <Fragment>
+            <li><Link to="/admin/administrators">Διαχειριστές</Link></li>
             </Fragment>}
             {userInfo && userInfo.isAdmin===0 &&
             <Fragment>

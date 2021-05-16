@@ -21,14 +21,14 @@ import getProductsFromHellasphone from './routes/getProductsFromHellasphone.js';
 dotenv.config();
 
 const app=express();
-// app.use(helmet.contentSecurityPolicy({
-//   directives:{
-//     defaultSrc:["'self'"],
-//     scriptSrc:["'self'","https://www.googletagmanager.com/gtag/js?id=G-2E0012DK1M", "'unsafe-inline'", "'unsafe-eval'"],
-//     fontSrc:["'self'",'https://fonts.googleapis.com/icon?family=Material+Icons'],
-//     imgSrc:["'self'"]}}));
-app.use(bodyParser.urlencoded({extended: true}))
-app.use(bodyParser.json());
+app.use(helmet.contentSecurityPolicy({
+  directives:{
+    defaultSrc:["'self'","'unsafe-inline'","https://fonts.googleapis.com/icon?family=Material+Icons","https://www.google-analytics.com"," https://www.google.com"],
+    scriptSrc:["'self'","https://www.googletagmanager.com/gtag/js?id=G-2E0012DK1M","https://secure.trust-provider.com", "http://www.trustlogo.com", "'unsafe-inline'", "'unsafe-eval'"],
+    fontSrc:["'self'",'https://fonts.googleapis.com/icon?family=Material+Icons', "https://fonts.gstatic.com/s/materialicons/v85/flUhRq6tzZclQEJ-Vdg-IuiaDsNZIhQ8tQ.ttf"],
+    imgSrc:["'self'","http://www.trustlogo.com", "https://secure.trust-provider.com","https://www.positivessl.com/","https://hellasphone.com.gr","http://www.hellasphone.com.gr/","https://www.wholesaling.gr/","https://www.isispc-eshop.gr/"]}}));
+app.use(bodyParser.urlencoded({extended: true, limit: '50mb'}))
+app.use(bodyParser.json({limit: '50mb'}));
 app.use(express.static(path.join(__dirname + '/public')));
 app.use("/api/users/", userRoute);
 app.use("/api/admin/", adminRoute);

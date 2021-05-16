@@ -13,7 +13,7 @@ import { modelListReducer, phoneModelListReducer, phonesBrandListReducer } from 
 import { cartReducer } from "./reducers/cartReducer";
 import Cookie from 'js-cookie';
 import { userSigninReducer, userRegisterReducer, userAccountInfoReducer, 
-    userPasswordChangeReducer, userAccountAddressReducer, addForNewsletterReducer, removeFromNewsletterReducer } from "./reducers/userReducer";
+    userPasswordChangeReducer, userAccountAddressReducer, addForNewsletterReducer, removeFromNewsletterReducer, adminsListReducer } from "./reducers/userReducer";
 import { wishListReducer } from "./reducers/wishListReducer";
 import { orderReducer, orderListReducer, orderDetailsReducer, changeOrderStatusReducer,
      updateOrderStatusReducer, 
@@ -92,7 +92,8 @@ const reducer=combineReducers({
     emailOrderNotification:emailOrderNotificationReducer,
     searchForItems:searchForItemsReducer,
     perPageItems:itemsPerPageReducer,
-    textSearch:textSearchReducer
+    textSearch:textSearchReducer,
+    adminsList:adminsListReducer
 })
 
 const composeEchancer= window._REDUX_DEVTOOLS_EXTENSION_COMPOSE_ || compose;

@@ -111,15 +111,15 @@
     padding-right: 1rem;
 }
 
-.charge-details-unordered-list li{
+.charge-details-unordered-list,.charge-details li{
     display: flex;
 }
 
-.charge-details-unordered-list li>label{
+.charge-details-unordered-list,.charge-details li>label{
     flex: 2;
 }
 
-.charge-details-unordered-list li>div{
+.charge-details-unordered-list,.charge-details li>div{
     flex: 3;
 }
 

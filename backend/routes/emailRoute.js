@@ -25,11 +25,11 @@ router.post("/registerConfirmation", (req, res)=>{
         subject: 'Εγγραφή στο grandmobile.gr',
         attachments: [{
             filename: 'PNG_FINAL64.png',
-            path: './frontend/public/PNG_FINAL64.png',
+            path: 'frontend/public/PNG_FINAL64.png',
             cid: 'logo' //same cid value as in the html img src
         },{
             filename: 'ΜΑΚΕΤΑ192.png',
-            path: './frontend/public/ΜΑΚΕΤΑ192.png',
+            path: 'frontend/public/ΜΑΚΕΤΑ192.png',
             cid: 'maketa' //same cid value as in the html img src,
         
         }],
@@ -69,11 +69,11 @@ router.post("/sendAccountDeleteConfirmation", (req, res)=>{
         subject: 'Διαγραφή λογαριασμού από το grandmobile.gr',
         attachments: [{
             filename: 'PNG_FINAL64.png',
-            path: './frontend/public/PNG_FINAL64.png',
+            path: 'frontend/public/PNG_FINAL64.png',
             cid: 'logo' //same cid value as in the html img src
         },{
             filename: 'ΜΑΚΕΤΑ192.png',
-            path: './frontend/public/ΜΑΚΕΤΑ192.png',
+            path: 'frontend/public/ΜΑΚΕΤΑ192.png',
             cid: 'maketa' //same cid value as in the html img src,
         
         }],
@@ -134,11 +134,11 @@ router.post("/resetpassword", (req, res)=>{
                     subject: 'Επαναφορά Password',
                     attachments: [{
                         filename: 'PNG_FINAL64.png',
-                        path: './frontend/public/PNG_FINAL64.png',
+                        path: 'frontend/public/PNG_FINAL64.png',
                         cid: 'logo' //same cid value as in the html img src
                     },{
                         filename: 'ΜΑΚΕΤΑ192.png',
-                        path: './frontend/public/ΜΑΚΕΤΑ192.png',
+                        path: 'frontend/public/ΜΑΚΕΤΑ192.png',
                         cid: 'maketa' //same cid value as in the html img src,
                     
                     }],
@@ -198,11 +198,11 @@ router.post("/updatepassconfirmation", (req, res)=>{
                     subject: 'Επιτυχής Αλλαγή Κωδικού',
                     attachments: [{
                         filename: 'PNG_FINAL64.png',
-                        path: './frontend/public/PNG_FINAL64.png',
+                        path: 'frontend/public/PNG_FINAL64.png',
                         cid: 'logo' //same cid value as in the html img src
                     },{
                         filename: 'ΜΑΚΕΤΑ192.png',
-                        path: './frontend/public/ΜΑΚΕΤΑ192.png',
+                        path: 'frontend/public/ΜΑΚΕΤΑ192.png',
                         cid: 'maketa' //same cid value as in the html img src,
                     
                     }],
@@ -252,11 +252,11 @@ router.post("/addToNewsletters", (req, res)=>{
         subject: 'Επιβεβαίωση Εγγραφής Στο Newsletter',
         attachments: [{
             filename: 'PNG_FINAL64.png',
-            path: './frontend/public/PNG_FINAL64.png',
+            path: 'frontend/public/PNG_FINAL64.png',
             cid: 'logo' //same cid value as in the html img src
         },{
             filename: 'ΜΑΚΕΤΑ192.png',
-            path: './frontend/public/ΜΑΚΕΤΑ192.png',
+            path: 'frontend/public/ΜΑΚΕΤΑ192.png',
             cid: 'maketa' //same cid value as in the html img src,
         
         }],
@@ -296,11 +296,11 @@ router.post("/removeFromNewsletters", (req, res)=>{
         subject: 'Επιβεβαίωση Διαγραφής Από Newsletter',
         attachments: [{
             filename: 'PNG_FINAL64.png',
-            path: './frontend/public/PNG_FINAL64.png',
+            path: 'frontend/public/PNG_FINAL64.png',
             cid: 'logo' //same cid value as in the html img src
         },{
             filename: 'ΜΑΚΕΤΑ192.png',
-            path: './frontend/public/ΜΑΚΕΤΑ192.png',
+            path: 'frontend/public/ΜΑΚΕΤΑ192.png',
             cid: 'maketa' //same cid value as in the html img src,
         }],
         html: '<h1 style="background-color:#4b4a9c;color:white;text-align:center;padding:1rem;"><img src="cid:logo"/>Grandmobile Accessories</h1>'+
@@ -498,11 +498,11 @@ router.post("/orderConfimation", (req, res)=>{
                                     subject: emailTitle,
                                     attachments: [{
                                         filename: 'PNG_FINAL64.png',
-                                        path: './frontend/public/PNG_FINAL64.png',
+                                        path: 'frontend/public/PNG_FINAL64.png',
                                         cid: 'logo' //same cid value as in the html img src,
                                     },{
                                         filename: 'ΜΑΚΕΤΑ192.png',
-                                        path: './frontend/public/ΜΑΚΕΤΑ192.png',
+                                        path: 'frontend/public/ΜΑΚΕΤΑ192.png',
                                         cid: 'maketa' //same cid value as in the html img src,
                                     
                                     }],
@@ -578,11 +578,11 @@ router.post("/orderConfimation", (req, res)=>{
                                     subject: emailTitle,
                                     attachments: [{
                                         filename: 'PNG_FINAL64.png',
-                                        path: './frontend/public/PNG_FINAL64.png',
+                                        path: 'frontend/public/PNG_FINAL64.png',
                                         cid: 'logo' //same cid value as in the html img src,
                                     },{
                                         filename: 'ΜΑΚΕΤΑ192.png',
-                                        path: './frontend/public/ΜΑΚΕΤΑ192.png',
+                                        path: 'frontend/public/ΜΑΚΕΤΑ192.png',
                                         cid: 'maketa' //same cid value as in the html img src,
                                     
                                     }],
@@ -661,11 +661,11 @@ router.post("/orderConfimation", (req, res)=>{
                                     subject: emailTitle,
                                     attachments: [{
                                         filename: 'PNG_FINAL64.png',
-                                        path: './frontend/public/PNG_FINAL64.png',
+                                        path: 'frontend/public/PNG_FINAL64.png',
                                         cid: 'logo' //same cid value as in the html img src,
                                     },{
                                         filename: 'ΜΑΚΕΤΑ192.png',
-                                        path: './frontend/public/ΜΑΚΕΤΑ192.png',
+                                        path: 'frontend/public/ΜΑΚΕΤΑ192.png',
                                         cid: 'maketa' //same cid value as in the html img src,
                                     
                                     }],
@@ -738,11 +738,11 @@ router.post("/orderConfimation", (req, res)=>{
                                     subject: emailTitle,
                                     attachments: [{
                                         filename: 'PNG_FINAL64.png',
-                                        path: './frontend/public/PNG_FINAL64.png',
+                                        path: 'frontend/public/PNG_FINAL64.png',
                                         cid: 'logo' //same cid value as in the html img src,
                                     },{
                                         filename: 'ΜΑΚΕΤΑ192.png',
-                                        path: './frontend/public/ΜΑΚΕΤΑ192.png',
+                                        path: 'frontend/public/ΜΑΚΕΤΑ192.png',
                                         cid: 'maketa' //same cid value as in the html img src,
                                     
                                     }],
@@ -857,8 +857,8 @@ router.post("/sendNewOrderNotification", (req, res)=>{
     var mailOptions = {
         from: config.EMAIL_ORDER_USER,
         to: config.EMAIL_ORDER_USER,
-        subject: 'Νέα παραγγελία. Κωδικός:'+ req.body.orderId,
-        html: '<p>Μόλις λάβατε μια νέα παραγγελία με κωδικό'+ req.body.orderId+'</p>'
+        subject: 'Νέα παραγγελία. Κωδικός: '+ req.body.orderId,
+        html: '<p>Μόλις λάβατε μια νέα παραγγελία με κωδικό '+ req.body.orderId+'</p>'
     };
     
     transporter.sendMail(mailOptions, function(error, info){

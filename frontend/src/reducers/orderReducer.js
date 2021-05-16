@@ -55,14 +55,15 @@ function orderDetailsReducer(state={ order :{}, charger: {}, shippingTo: {}, pro
         case ORDER_CHARGER_ADDRESS_UPDATE_REQUEST:
             return {loading:true};
         case ORDER_CHARGER_ADDRESS_UPDATE_SUCCESS:
-            return {loading:false, success: true, order: state.order.map(x=>(x.order_id===action.payload.orderId)?(x.paymentType=action.payload.paymentType): x),
+            return {loading:false, success: true,...state, order: state.order.map(x=>(x.order_id===action.payload.orderId)?(x.paymentType=action.payload.paymentType): x),
             charger: state.charger.map(x=>(x.afm=action.payload.charger.afm,x.companyName=action.payload.charger.companyName,
                 x.bussiness=action.payload.charger.bussiness,x.doy=action.payload.charger.doy,
                 x.name=action.payload.charger.name,x.subname=action.payload.charger.subname,
                 x.country=action.payload.charger.country,x.district=action.payload.charger.district,
                 x.city=action.payload.charger.city,x.street=action.payload.charger.street,
                 x.postalCode=action.payload.charger.postalCode,x.phoneNumber=action.payload.charger.phoneNumber,
-                x.comments=action.payload.charger.comments))};
+                x.comments=action.payload.charger.comments))
+                ,shippingTo:{...state}};
         case ORDER_CHARGER_ADDRESS_UPDATE_FAIL:
             return {loading:false, error : action.payload};
         case ORDER_SHIPPING_ADDRESS_UPDATE_REQUEST:

@@ -79,7 +79,7 @@ function AdminListsScreen(props) {
         setNewManufacturer("");
     }
 
-    const removeManufacturerHandler =(id) =>{
+    const removeManufacturerHandler = (id) => {
         dispatch(deleteManufacturer(id));
     }
 
@@ -504,7 +504,6 @@ function AdminListsScreen(props) {
                         </div>
                     </div>}
             </div>
-
             <div className="color-wrapper">
                 <div className="card-list-header" onClick={() => setBrandModal(!brandModal)}>
                     <h4 className="expand">Κατασκευαστές</h4>

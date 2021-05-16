@@ -27,6 +27,8 @@ function AdminProductsScreen(props) {
     const [price, setPrice] = useState('');
     const [pricePercentage, setPricePercentage] = useState('');
     const [description, setDescription] = useState('');
+    const [createdBy, setCreatedBy] = useState('');
+    const [createdAt, setCreatedAt] = useState('');
     const [compatibilityCompany, setCompatibilityCompany] = useState('');
     const [compatibilityCompanyId, setCompatibilityCompanyId] = useState('');
     const [currentPage, setCurrentPage] = useState(0);
@@ -73,8 +75,8 @@ function AdminProductsScreen(props) {
     }, [offset]);
 
     useEffect(() => {
-        setPageCount(Math.ceil(count/itemsPerPage))
-    }, [count,itemsPerPage]);
+        setPageCount(Math.ceil(count / itemsPerPage))
+    }, [count, itemsPerPage]);
 
     useEffect(() => {
         if (successSave) {
@@ -89,7 +91,7 @@ function AdminProductsScreen(props) {
     useEffect(() => {
         if (successPercentageChange === true) {
             setPercentageModal(false);
-            dispatch(getProductsByCategoryAdmin(category, subcategory, supplier));
+            dispatch(getProductsByCategoryAdmin(category, subcategory, supplier, offset));
         }
         return () => {
 
@@ -120,6 +122,8 @@ function AdminProductsScreen(props) {
         setPrice(product.price);
         setPricePercentage(product.percentage);
         setDescription(product.description);
+        setCreatedBy(product.CreatedBy);
+        setCreatedAt(product.CreatedAt);
         dispatch(listFeatures(product._id));
         dispatch(getProductCompatibilities(product._id));
         dispatch(listManufacturers());
@@ -228,30 +232,30 @@ function AdminProductsScreen(props) {
                             {categoriesLoading ? <div>Loading...</div>
                                 : categoriesError ? <div>{categoriesError}</div>
                                     :
-                                    <select name="product-category" onChange={(e) => categoryHandler(e)}>
+                                    <select name="product-category" onChange={(e) => categoryHandler(e)} defaultValue={category}>
                                         <option>Επέλεξε Κατηγορία</option>
                                         {categories.filter(cat => cat.parent_id === null).map(cat =>
-                                            <option key={cat.category_id} id={cat.category_id} value={cat.category} defaultValue={cat.category === category}>{cat.category}</option>)}
+                                            <option key={cat.category_id} id={cat.category_id} value={cat.category}>{cat.category}</option>)}
                                     </select>}
                         </li>
                         <li>
                             <label htmlFor="product-subcategory">Υποκατηγορία:</label>
                             {subcategoriesLoading ? <div>Loading...</div> :
                                 subcategoriesError ? <div>{subcategoriesError}</div> :
-                                    <select className="product-subcategory" disabled={category === "Επέλεξε Κατηγορία"} onChange={(e) => setSubcategory(e.target.value)}>
+                                    <select className="product-subcategory" disabled={category === "Επέλεξε Κατηγορία"} onChange={(e) => setSubcategory(e.target.value)} defaultValue={subcategory}>
                                         <option>Επέλεξε Υποκατηγορία</option>
                                         {subcategories.map(sub =>
-                                            <option key={sub.category_id} id={sub.category_id} value={sub.category} defaultValue={sub.category === subcategory}>{sub.category}</option>)}
+                                            <option key={sub.category_id} id={sub.category_id} value={sub.category}>{sub.category}</option>)}
                                     </select>}
                         </li>
                         <li>
                             <label htmlFor="product-subcategory">Προμηθευτής:</label>
                             {suppliersLoading ? <div>Loading...</div> :
                                 suppliersError ? <div>{suppliersError}</div> :
-                                    <select className="product-subcategory" onChange={(e) => setSupplier(e.target.value)}>
+                                    <select className="product-subcategory" onChange={(e) => setSupplier(e.target.value)} defaultValue={supplier}>
                                         <option>Επέλεξε Προμηθευτή</option>
                                         {suppliers.map(sub =>
-                                            <option key={sub.supplier_id} id={sub.supplier_id} value={sub.supplier} selected={sub.supplier === supplier}>{sub.supplier}</option>)}
+                                            <option key={sub.supplier_id} id={sub.supplier_id} value={sub.supplier}>{sub.supplier}</option>)}
                                     </select>}
                         </li>
                         <li>
@@ -283,9 +287,20 @@ function AdminProductsScreen(props) {
                                     {successSave && <div>Loading...</div>}
                                     {errorSave && <div>{error}<br />Η σύνδεση έληξε, παρακαλώ συνδεθείτε ξανά!</div>}
                                 </li>
-                                <li>
-                                    Κωδικός Προϊόντος: {id}
-                                </li>
+                                {id && <>
+                                    <li>
+                                        Κωδικός Προϊόντος: {id}
+                                    </li>
+                                    <li>
+                                        <div>Δημιουργήθηκε από: <strong>{createdBy}</strong></div>
+                                    </li>
+                                    <li>
+                                        <div>Στις : <strong>{Intl.DateTimeFormat('en-GB', {
+                                            year: 'numeric', month: 'numeric', day: 'numeric',
+                                            hour: 'numeric', minute: 'numeric', second: 'numeric',
+                                            hour12: false
+                                        }).format(Date.parse(createdAt))}</strong></div>
+                                    </li></>}
                                 <li>
                                     <label htmlFor="product-name">Όνομα:</label>
                                     <input type="text" name="product-name" id="product-name" value={name} required
@@ -296,10 +311,10 @@ function AdminProductsScreen(props) {
                                     <label htmlFor="product-brand">Κατασκευαστής:</label>
                                     {loadingManufacturer ? <div>Loading...</div> :
                                         errorManufacturer ? <div>{errorManufacturer}</div> :
-                                            <select className="select-model" onChange={(e) => setBrand(e.target.value)}>
+                                            <select className="select-model" onChange={(e) => setBrand(e.target.value)} defaultValue={brand}>
                                                 <option> Επέλεξε Κατασκευαστή</option>
                                                 {manufacturers.map(manufacturer =>
-                                                    <option key={manufacturer.manufacturer_id} id={manufacturer.manufacturer_id} value={manufacturer.name} selected={manufacturer.name === brand}> {manufacturer.name}
+                                                    <option key={manufacturer.manufacturer_id} id={manufacturer.manufacturer_id} value={manufacturer.name}> {manufacturer.name}
                                                     </option >
                                                 )}
                                             </select>}
@@ -309,30 +324,30 @@ function AdminProductsScreen(props) {
                                     {categoriesLoading ? <div>Loading...</div>
                                         : categoriesError ? <div>{categoriesError}</div>
                                             :
-                                            <select className="select-model" name="product-category" onChange={(e) => categoryHandler(e)}>
+                                            <select className="select-model" name="product-category" onChange={(e) => categoryHandler(e)} defaultValue={category}>
                                                 <option>Επέλεξε Κατηγορία</option>
                                                 {categories.filter(cat => cat.parent_id === null).map(cat =>
-                                                    <option key={cat.category_id} id={cat.category_id} value={cat.category} selected={cat.category === category}>{cat.category}</option>)}
+                                                    <option key={cat.category_id} id={cat.category_id} value={cat.category}>{cat.category}</option>)}
                                             </select>}
                                 </li>
                                 <li id="row">
                                     <label htmlFor="product-subcategory">Υποκατηγορία:</label>
                                     {subcategoriesLoading ? <div>Loading...</div> :
                                         subcategoriesError ? <div>{subcategoriesError}</div> :
-                                            <select className="select-model" disabled={category === "Επέλεξε Κατηγορία"} onChange={(e) => setSubcategory(e.target.value)}>
+                                            <select className="select-model" disabled={category === "Επέλεξε Κατηγορία"} onChange={(e) => setSubcategory(e.target.value)} defaultValue={subcategory}>
                                                 <option>Επέλεξε Υποκατηγορία</option>
                                                 {subcategories.map(sub =>
-                                                    <option id={sub.category_id} value={sub.category} selected={sub.category === subcategory}>{sub.category}</option>)}
+                                                    <option id={sub.category_id} value={sub.category}>{sub.category}</option>)}
                                             </select>}
                                 </li>
                                 <li id="row">
                                     <label htmlFor="product-brand">Προμηθευτής:</label>
                                     {suppliersLoading ? <div>Loading...</div> :
                                         suppliersError ? <div>{suppliersError}</div> :
-                                            <select className="select-model" onChange={(e) => setSupplier(e.target.value)}>
+                                            <select className="select-model" onChange={(e) => setSupplier(e.target.value)} defaultValue={supplier}>
                                                 <option> Επέλεξε Προμηθευτή</option>
                                                 {suppliers.map(sup =>
-                                                    <option key={sup.supplier_id} id={sup.supplier_id} value={sup.supplier} selected={sup.supplier === supplier}> {sup.supplier}
+                                                    <option key={sup.supplier_id} id={sup.supplier_id} value={sup.supplier}> {sup.supplier}
                                                     </option >
                                                 )}
                                             </select>}
@@ -378,27 +393,27 @@ function AdminProductsScreen(props) {
                             <li>
                                 <div>
                                     <label htmlFor="company-list">Εταιρία:</label>
-                                    <select className="select-model" id="company-list" name="company-list" onChange={(e) => compatibilityCompaniesChangeHandler(e)}>
-                                        <option>Επέλεξε Εταιρία</option>
-                                        {loadingcompatibilityCompanies ? <LoadingSpinner /> :
-                                            errorcompatibilityCompanies ? <div>{errorcompatibilityCompanies}</div> :
-                                                companies.map(comp =>
+                                    {loadingcompatibilityCompanies ? <LoadingSpinner /> :
+                                        errorcompatibilityCompanies ? <div>{errorcompatibilityCompanies}</div> :
+                                            <select className="select-model" id="company-list" name="company-list" onChange={(e) => compatibilityCompaniesChangeHandler(e)}>
+                                                <option>Επέλεξε Εταιρία</option>
+                                                {companies.map(comp =>
                                                     <option id={comp.compatibility_company_id} value={comp.company}> {comp.company}
                                                     </option >
                                                 )}
-                                    </select>
+                                            </select>}
                                 </div>
                                 <div>
                                     <label htmlFor="feature-list">Μοντέλο:</label>
-                                    <select className="select-model" id="feature-list" name="feature-list" onChange={(e) => setCompatibilityModel(e.target.value)}>
-                                        <option>Επέλεξε Μοντέλο</option>
-                                        {loadingCompatibilityModels ? <LoadingSpinner /> :
-                                            errorCompatibilityModels ? <div>{errorCompatibilityModels}</div> :
-                                                models.map(mod =>
+                                    {loadingCompatibilityModels ? <LoadingSpinner /> :
+                                        errorCompatibilityModels ? <div>{errorCompatibilityModels}</div> :
+                                            <select className="select-model" id="feature-list" name="feature-list" onChange={(e) => setCompatibilityModel(e.target.value)}>
+                                                <option>Επέλεξε Μοντέλο</option>
+                                                {models.map(mod =>
                                                     <option id={mod.compatibility_model_id} value={mod.model}> {mod.model}
                                                     </option >
                                                 )}
-                                    </select>
+                                            </select>}
                                 </div>
                                 <div>
                                     <button className="button continuebtn" onClick={addCompatibility} disabled={compatibilityModel === ""}>Προσθήκη</button>
@@ -408,14 +423,14 @@ function AdminProductsScreen(props) {
                                 <table>
                                     <thead>
                                         <tr>
-                                        <th>Εταιρία</th>
-                                        <th>Μοντέλο</th>
-                                        <th>Ενέργεια</th>
+                                            <th>Εταιρία</th>
+                                            <th>Μοντέλο</th>
+                                            <th>Ενέργεια</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {loadingProductCompatibilities ? <LoadingSpinner /> :
-                                            errorProductCompatibilities ? <div>{featureListError}</div> :
+                                        {loadingProductCompatibilities ? <tr><td><LoadingSpinner /></td></tr> :
+                                            errorProductCompatibilities ? <tr><td><div>{featureListError}</div></td></tr> :
                                                 productCompat.map(pr => (
                                                     <tr key={pr.compatibility_id}>
                                                         <td>{pr.compatibility_company}</td>
@@ -435,27 +450,27 @@ function AdminProductsScreen(props) {
                             <li>
                                 <div>
                                     <label htmlFor="feature-list">Τίτλος:</label>
-                                    <select className="select-model" id="feature-list" name="feature-list" onChange={(e) => featureTitleHandler(e)}>
-                                        <option>Τίτλος χαρακτηριστικού</option>
-                                        {featureTitleLoading ? <LoadingSpinner /> :
-                                            featureTitleError ? <div>{featureTitleError}</div> :
-                                                featureTitles.map(featureTitle =>
+                                    {featureTitleLoading ? <LoadingSpinner /> :
+                                        featureTitleError ? <div>{featureTitleError}</div> :
+                                            <select className="select-model" id="feature-list" name="feature-list" onChange={(e) => featureTitleHandler(e)}>
+                                                <option>Τίτλος χαρακτηριστικού</option>
+                                                {featureTitles.map(featureTitle =>
                                                     <option id={featureTitle.feature_title_id} value={featureTitle.feature_title}> {featureTitle.feature_title}
                                                     </option >
                                                 )}
-                                    </select>
+                                            </select>}
                                 </div>
                                 <div>
                                     <label htmlFor="feature-list">Χαρακτηριστικό:</label>
-                                    <select className="select-model" id="feature-list" name="feature-list" onChange={(e) => setFeatureName(e.target.value)}>
-                                        <option>Χαρακτηριστικό</option>
-                                        {featureNamesLoading ? <LoadingSpinner /> :
-                                            featureNamesError ? <div>{featureNamesError}</div> :
-                                                featureNames.map(featureName =>
+                                    {featureNamesLoading ? <LoadingSpinner /> :
+                                        featureNamesError ? <div>{featureNamesError}</div> :
+                                            <select className="select-model" id="feature-list" name="feature-list" onChange={(e) => setFeatureName(e.target.value)}>
+                                                <option>Χαρακτηριστικό</option>
+                                                {featureNames.map(featureName =>
                                                     <option id={featureName.feature_name_id} value={featureName.feature_name}> {featureName.feature_name}
                                                     </option >
                                                 )}
-                                    </select>
+                                            </select>}
                                 </div>
                                 <div>
                                     <button className="button continuebtn" onClick={addFeature} disabled={featureName === ""}>Προσθήκη</button>
@@ -464,13 +479,15 @@ function AdminProductsScreen(props) {
                             <li>
                                 <table>
                                     <thead>
-                                        <th>Τίτλος</th>
-                                        <th>Χαρακτηριστικό</th>
-                                        <th>Ενέργεια</th>
+                                        <tr>
+                                            <th>Τίτλος</th>
+                                            <th>Χαρακτηριστικό</th>
+                                            <th>Ενέργεια</th>
+                                        </tr>
                                     </thead>
                                     <tbody>
-                                        {featureListLoading ? <LoadingSpinner /> :
-                                            featureListError ? <div>{featureListError}</div> :
+                                        {featureListLoading ? <tr><td><LoadingSpinner /></td></tr> :
+                                            featureListError ? <tr><td><div>{featureListError}</div></td></tr> :
                                                 features.map(feature => (
                                                     <tr key={feature.features_id}>
                                                         <td>{feature.feature_title}</td>
@@ -530,7 +547,7 @@ function AdminProductsScreen(props) {
                 activeClassName={'active'}
                 forcePage={currentPage}
             /></div>
-            {/* <div>
+        {/* <div>
                 {pageCount>0 && <select value={currentPage} onChange={(e)=>setCurrentPage(e.target.value)}>
                 {[...Array(pageCount).keys()].map(x =>
                         <option key={x + 1} value={x}>{x + 1}</option>)}
@@ -597,7 +614,7 @@ function AdminProductsScreen(props) {
                 subContainerClassName={'pages pagination'}
                 activeClassName={'active'}
                 forcePage={currentPage}
-            /></div>        
+            /></div>
     </div>
 }
 

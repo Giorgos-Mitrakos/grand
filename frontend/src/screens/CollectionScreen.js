@@ -80,7 +80,7 @@ function CollectionScreen() {
                 dispatch(addImageCaseToCart(form));
             }
             else {
-                alert("Για να φτιάξετε τη δική σας θήκη κάντε" + <Link>Σύνδεση</Link>)
+                alert("Για να φτιάξετε τη δική σας θήκη πρέπει να συνδεθείτε με το λογαριασμό σας!")
                 // dispatch(addImageCaseToLocalCart(image, model, qty));
             }
         }

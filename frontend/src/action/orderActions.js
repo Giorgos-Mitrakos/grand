@@ -182,11 +182,11 @@ const updateShippingToAddress = (orderId,shippingAddress, shippingTo) => async (
     }
 }
 
-const updateOrder = (order_id,product_id, model,quantity) => async (dispatch, getState) => {
+const updateOrderQuantity = (order_id,product_id, model,quantity,itemsCost) => async (dispatch, getState) => {
   try {
       dispatch({ type: ORDER_UPDATE_REQUEST, payload: [] });
       const { userSignin: { userInfo } } = getState();
-      const { data } = await Axios.put("/api/orders/updateOrder",{order_id,product_id,model,quantity}, {
+      const { data } = await Axios.put("/api/orders/updateOrder",{order_id,product_id,model,quantity,itemsCost}, {
         headers:
           { Authorization: 'Bearer ' + userInfo.token }
       });
@@ -241,4 +241,4 @@ const detailsCustomerOrder = (orderID) => async (dispatch, getState) => {
 
 export {createOrder, listOrders, detailsOrder, changeStatus, updateStatus,
      changeOrderDetails, updateChargerAddress, updateShippingToAddress,
-     updateOrder, removeOrderItem, listCustomerOrders, detailsCustomerOrder}
+     updateOrderQuantity, removeOrderItem, listCustomerOrders, detailsCustomerOrder}

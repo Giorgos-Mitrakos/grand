@@ -2,7 +2,9 @@ import React, { Suspense, lazy } from 'react';
 import { Route, Switch } from "react-router-dom";
 import MainScreen from '../screens/MainScreen';
 import ProtectedRoute from '../components/ProtectedRoute';
+import SuperProtectedRoute from '../components/SuperProtectedRoute';
 import ProductsByCategoryScreen from '../screens/ProductsByCategoryScreen';
+import AdminAdministratorsScreen from '../screens/AdminAdministratorsScreen';
 const CollectionScreen = lazy(() => import('../screens/CollectionScreen'));
 const ProductsScreen = lazy(() => import('../screens/ProductsScreen'));
 const ContactUsScreen = lazy(() => import('../screens/ContactUsScreen'));
@@ -67,6 +69,7 @@ function Routes() {
             <ProtectedRoute path="/admin/collection" component={AdminCollectionScreen} />
             <ProtectedRoute path="/admin/order/:id" component={AdminOrdersDetailScreen} />
             <ProtectedRoute path="/admin/lists" component={AdminListsScreen} />
+            <SuperProtectedRoute path="/admin/administrators" component={AdminAdministratorsScreen} />            
         </Switch>
         </Suspense>
     );

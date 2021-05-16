@@ -225,7 +225,8 @@ const saveShipping = (typeOfPayment,company,charger,shippingTo,comments) => (dis
                     district:shippingTo.district,
                     city:shippingTo.city,
                     address:shippingTo.address,
-                    postalCode:shippingTo.postalCode
+                    postalCode:shippingTo.postalCode,
+                    phone:shippingTo.phone,
                 },
                 comments
             }});

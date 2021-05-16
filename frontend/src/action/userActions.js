@@ -1,6 +1,6 @@
 import Axios from 'axios';
 import Cookie from 'js-cookie';
-import { USER_SIGNIN_REQUEST, USER_SIGNIN_SUCCESS, USER_SIGNIN_FAIL, USER_REGISTER_REQUEST, USER_REGISTER_SUCCESS, USER_REGISTER_FAIL, USER_SIGNOUT_REQUEST, USER_SIGNOUT_SUCCESS, USER_SIGNOUT_FAIL, USER_PASSWORD_CHANGE_REQUEST, USER_PASSWORD_CHANGE_SUCCESS, USER_PASSWORD_CHANGE_FAIL, USER_ACCOUNT_ADDRESS_REQUEST, USER_ACCOUNT_ADDRESS_SUCCESS, USER_ACCOUNT_ADDRESS_FAIL, USER_SAVE_ACCOUNT_INFO_REQUEST, USER_SAVE_ACCOUNT_INFO_SUCCESS, USER_SAVE_ACCOUNT_INFO_FAIL, ADD_TO_NEWSLETTER_REQUEST, ADD_TO_NEWSLETTER_SUCCESS, ADD_TO_NEWSLETTER_FAIL, REMOVE_FROM_NEWSLETTER_REQUEST, REMOVE_FROM_NEWSLETTER_SUCCESS, REMOVE_FROM_NEWSLETTER_FAIL, DELETE_USER_ACCOUNT_REQUEST, DELETE_USER_ACCOUNT_SUCCESS, DELETE_USER_ACCOUNT_FAIL } from '../constants/userConstants';
+import { USER_SIGNIN_REQUEST, USER_SIGNIN_SUCCESS, USER_SIGNIN_FAIL, USER_REGISTER_REQUEST, USER_REGISTER_SUCCESS, USER_REGISTER_FAIL, USER_SIGNOUT_REQUEST, USER_SIGNOUT_SUCCESS, USER_SIGNOUT_FAIL, USER_PASSWORD_CHANGE_REQUEST, USER_PASSWORD_CHANGE_SUCCESS, USER_PASSWORD_CHANGE_FAIL, USER_ACCOUNT_ADDRESS_REQUEST, USER_ACCOUNT_ADDRESS_SUCCESS, USER_ACCOUNT_ADDRESS_FAIL, USER_SAVE_ACCOUNT_INFO_REQUEST, USER_SAVE_ACCOUNT_INFO_SUCCESS, USER_SAVE_ACCOUNT_INFO_FAIL, ADD_TO_NEWSLETTER_REQUEST, ADD_TO_NEWSLETTER_SUCCESS, ADD_TO_NEWSLETTER_FAIL, REMOVE_FROM_NEWSLETTER_REQUEST, REMOVE_FROM_NEWSLETTER_SUCCESS, REMOVE_FROM_NEWSLETTER_FAIL, DELETE_USER_ACCOUNT_REQUEST, DELETE_USER_ACCOUNT_SUCCESS, DELETE_USER_ACCOUNT_FAIL, ADMINS_LIST_REQUEST, ADMINS_LIST_SUCCESS, ADMINS_LIST_FAIL, INSERT_ADMIN_REQUEST, INSERT_ADMIN_SUCCESS, INSERT_ADMIN_FAIL, DELETE_ADMIN_REQUEST, DELETE_ADMIN_SUCCESS, DELETE_ADMIN_FAIL } from '../constants/userConstants';
 
 const signin = (email, password) =>async (dispatch) =>{
     dispatch({type: USER_SIGNIN_REQUEST, payload: {email,password}});
@@ -132,9 +132,51 @@ const removeFromNewsletterList = (email) =>async (dispatch)=>{
     }
 }
 
+const listAdmins = () =>async (dispatch, getState) =>{    
+    try{
+        dispatch({type: ADMINS_LIST_REQUEST, payload: {}});
+        const {userSignin:{userInfo}} = getState();
+        const {data} = await Axios.post("/api/admin/getAdmins", {},
+        {headers:{
+            'Authorization': 'Bearer ' + userInfo.token
+        }});
+        dispatch({type: ADMINS_LIST_SUCCESS, payload: data});        
+    }
+    catch(error){
+        dispatch({type: ADMINS_LIST_FAIL, payload: error.message});
+    }
+}
 
+const insertAdmin = (username, email, password) =>async (dispatch, getState) =>{    
+    try{
+        dispatch({type: INSERT_ADMIN_REQUEST, payload: {}});
+        const {userSignin:{userInfo}} = getState();
+        const {data} = await Axios.post("/api/admin/insertAdmin", {username, email, password},
+        {headers:{
+            'Authorization': 'Bearer ' + userInfo.token
+        }});
+        dispatch({type: INSERT_ADMIN_SUCCESS, payload: data});        
+    }
+    catch(error){
+        dispatch({type: INSERT_ADMIN_FAIL, payload: error.message});
+    }
+}
 
-
+const deleteAdmin = ( email) =>async (dispatch, getState) =>{    
+    try{
+        dispatch({type: DELETE_ADMIN_REQUEST, payload: {}});
+        const {userSignin:{userInfo}} = getState();
+        const {data} = await Axios.post("/api/admin/deleteAdmin", { email },
+        {headers:{
+            'Authorization': 'Bearer ' + userInfo.token
+        }});
+        dispatch({type: DELETE_ADMIN_SUCCESS, payload: data});        
+    }
+    catch(error){
+        dispatch({type: DELETE_ADMIN_FAIL, payload: error.message});
+    }
+}
 
 export {signin, signout, register, saveAccountInfo, accountInfo, passwordChange,
-    addToNewsletterList, removeFromNewsletterList,deleteAccount}
+    addToNewsletterList, removeFromNewsletterList, deleteAccount, listAdmins, 
+    insertAdmin, deleteAdmin}

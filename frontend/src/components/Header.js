@@ -52,7 +52,7 @@ function Header() {
                         </div>
                     </div>
                     <div>
-                        {(userInfo && userInfo.isAdmin === 1) ? "" : <Link className="my-cart-link" to="/cart" data-tip data-for="my-cart">
+                        {(userInfo && (userInfo.isAdmin === 1 || userInfo.isAdmin === 2)) ? "" : <Link className="my-cart-link" to="/cart" data-tip data-for="my-cart">
                             <i className="material-icons">shopping_cart</i>
                             <div className="total-items-in-cart">
                                 {cartItems && cartItems.reduce((a, c) => a + Number(c.quantity), 0)}

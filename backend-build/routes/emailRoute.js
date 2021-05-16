@@ -584,8 +584,8 @@ router.post("/sendNewOrderNotification", function (req, res) {
   var mailOptions = {
     from: _config["default"].EMAIL_ORDER_USER,
     to: _config["default"].EMAIL_ORDER_USER,
-    subject: 'Νέα παραγγελία. Κωδικός:' + req.body.orderId,
-    html: '<p>Μόλις λάβατε μια νέα παραγγελία με κωδικό' + req.body.orderId + '</p>'
+    subject: 'Νέα παραγγελία. Κωδικός: ' + req.body.orderId,
+    html: '<p>Μόλις λάβατε μια νέα παραγγελία με κωδικό ' + req.body.orderId + '</p>'
   };
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {

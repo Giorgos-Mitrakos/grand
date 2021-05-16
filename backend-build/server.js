@@ -45,16 +45,19 @@ _dotenv["default"].config();
 var app = (0, _express["default"])();
 app.use(_helmet["default"].contentSecurityPolicy({
   directives: {
-    defaultSrc: ["'self'"],
-    scriptSrc: ["'self'", "https://www.googletagmanager.com/gtag/js?id=G-2E0012DK1M", "'unsafe-inline'", "'unsafe-eval'"],
-    fontSrc: ["'self'", 'https://fonts.googleapis.com/icon?family=Material+Icons'],
-    imgSrc: ["'self'"]
+    defaultSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com/icon?family=Material+Icons", "https://www.google-analytics.com", " https://www.google.com"],
+    scriptSrc: ["'self'", "https://www.googletagmanager.com/gtag/js?id=G-2E0012DK1M", "https://secure.trust-provider.com", "http://www.trustlogo.com", "'unsafe-inline'", "'unsafe-eval'"],
+    fontSrc: ["'self'", 'https://fonts.googleapis.com/icon?family=Material+Icons', "https://fonts.gstatic.com/s/materialicons/v85/flUhRq6tzZclQEJ-Vdg-IuiaDsNZIhQ8tQ.ttf"],
+    imgSrc: ["'self'", "http://www.trustlogo.com", "https://secure.trust-provider.com", "https://www.positivessl.com/", "https://hellasphone.com.gr", "http://www.hellasphone.com.gr/", "https://www.wholesaling.gr/", "https://www.isispc-eshop.gr/"]
   }
 }));
 app.use(_bodyParser["default"].urlencoded({
-  extended: true
+  extended: true,
+  limit: '50mb'
 }));
-app.use(_bodyParser["default"].json());
+app.use(_bodyParser["default"].json({
+  limit: '50mb'
+}));
 app.use(_express["default"]["static"](_path["default"].join(__dirname + '/public')));
 app.use("/api/users/", _userRoute["default"]);
 app.use("/api/admin/", _adminRoute["default"]);
