@@ -57,6 +57,8 @@ function AdminOrdersDetailScreen(props) {
     const [chargerAddressEditModal, setChargerAddressEditModal] = useState(false);
     const [shippingAddressEditModal, setShippingAddressEditModal] = useState(false);
     const [cartEditModal, setCartEditModal] = useState(false);
+    const userSignin = useSelector(state=>state.userSignin);
+    const {userInfo} = userSignin;
 
     const dispatch = useDispatch();
 
@@ -346,12 +348,19 @@ function AdminOrdersDetailScreen(props) {
         setOrderPaymentMethodPrice(cost);
     }
 
+    const orderHistoryHandler = () =>{
+        props.history.push(`/admin/orderHistory/${props.match.params.id}`)
+    }
+
     return (
         <div>
             {loading ? <div>loading...</div> :
                 error ? <div>{error.message}</div> :
                     (
                         <div className="order_details-wrapper">
+                            <div className="order_history_wrapper">
+                            <button className="button continuebtn" onClick={orderHistoryHandler}>Ιστορικό παραγγελίας</button>
+                            </div>
                             <div className="order_details">
                                 <div>
                                     <ul>
@@ -778,8 +787,9 @@ function AdminOrdersDetailScreen(props) {
                                         <li>
                                             <h3>Παραγγελία</h3>
                                         </li>
-                                        <li className="order-list-header">
+                                        <li className="order-list-header">                                            
                                             <div></div>
+                                            <div>Κωδ. Προϊόντος</div>
                                             <div>Προϊόν</div>
                                             <div>Κατηγορία</div>
                                             <div>Μοντέλο</div>
@@ -787,7 +797,7 @@ function AdminOrdersDetailScreen(props) {
                                             <div>Σύνολο</div>
                                         </li>
                                         {products.map(item =>
-                                            <li className="order-item" key={item._id + item.model}>
+                                            <li className="order-item" key={item._id + item.model}>                                                
                                                 <div className="order-image flex-column">
                                                     {item.category !== "Φτιάξε τη Θήκη σου" ?
                                                         <img className="order-image-img" src={item.image} alt="product" /> :
@@ -799,6 +809,9 @@ function AdminOrdersDetailScreen(props) {
                                                                 <button className="button download-button">Λήψη</button>
                                                             </a>
                                                         </Fragment>}
+                                                </div>
+                                                <div>
+                                                    {item._id}
                                                 </div>
                                                 <div className="order-name-model">
                                                     <div className="order-name">

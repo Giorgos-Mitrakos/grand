@@ -312,6 +312,13 @@
     transform: scale(1.1);
 }
 
+.order_history_wrapper{
+    display: flex;
+    justify-content: end;
+    padding-top: 1rem;
+    padding-right: 1rem;
+}
+
 .delete-item-button .material-icons{
     font-size: 2rem;
 }

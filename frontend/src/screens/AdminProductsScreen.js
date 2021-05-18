@@ -25,10 +25,12 @@ function AdminProductsScreen(props) {
     const [supplier, setSupplier] = useState('');
     const [image, setImage] = useState('');
     const [price, setPrice] = useState('');
+    const [availability, setAvailability] = useState('');
     const [pricePercentage, setPricePercentage] = useState('');
     const [description, setDescription] = useState('');
     const [createdBy, setCreatedBy] = useState('');
     const [createdAt, setCreatedAt] = useState('');
+    const [oldProduct, setOldProduct] = useState({});
     const [compatibilityCompany, setCompatibilityCompany] = useState('');
     const [compatibilityCompanyId, setCompatibilityCompanyId] = useState('');
     const [currentPage, setCurrentPage] = useState(0);
@@ -58,6 +60,8 @@ function AdminProductsScreen(props) {
     const { models, loading: loadingCompatibilityModels, error: errorCompatibilityModels } = compatibilityModels;
     const productCompatibilities = useSelector(state => state.productCompatibilities);
     const { productCompat, loading: loadingProductCompatibilities, error: errorProductCompatibilities } = productCompatibilities;
+    const userSignin = useSelector(state=>state.userSignin);
+    const {userInfo} = userSignin;
 
     const dispatch = useDispatch();
 
@@ -112,6 +116,7 @@ function AdminProductsScreen(props) {
 
     const openModal = (product) => {
         setModalVisible(true);
+        setOldProduct(product);
         setId(product._id);
         setName(product.name);
         setCategory(product.category);
@@ -120,6 +125,7 @@ function AdminProductsScreen(props) {
         setSupplier(product.supplier);
         setImage(product.image);
         setPrice(product.price);
+        setAvailability(product.availability);
         setPricePercentage(product.percentage);
         setDescription(product.description);
         setCreatedBy(product.CreatedBy);
@@ -132,19 +138,31 @@ function AdminProductsScreen(props) {
     }
 
     const submitHandler = (e) => {
-        const product = new FormData();
-        product.append('_id', id);
-        product.append('name', name);
-        product.append('category', category);
-        product.append('brand', brand);
-        product.append('supplier', supplier);
-        product.append('subcategory', subcategory);
-        product.append('image', image);
-        product.append('price', price);
-        product.append('percentage', pricePercentage);
-        product.append('description', description);
-        e.preventDefault();
-        dispatch(saveProduct(id, product));
+        if (id === oldProduct._id
+            && name === oldProduct.name
+            && category === oldProduct.category
+            && subcategory === oldProduct.subcategory
+            && brand === subcategory.brand
+            && supplier === subcategory.supplier
+            && price === supplier.price
+            && pricePercentage === oldProduct.pricePercentage
+            && availability === oldProduct.availability
+            && description === oldProduct.description) {
+            const product = new FormData();
+            product.append('_id', id);
+            product.append('name', name);
+            product.append('category', category);
+            product.append('brand', brand);
+            product.append('supplier', supplier);
+            product.append('subcategory', subcategory);
+            product.append('image', image);
+            product.append('price', price);
+            product.append('percentage', pricePercentage);
+            product.append('availability', availability);
+            product.append('description', description);
+            e.preventDefault();
+            dispatch(saveProduct(id, product));
+        }
     }
 
     const featureTitleHandler = (e) => {
@@ -178,6 +196,10 @@ function AdminProductsScreen(props) {
     const searchHandler = () => {
         setCurrentPage(0)
         dispatch(getProductsByCategoryAdmin(category, subcategory, supplier, offset));
+    }
+
+    const productHistoryHandler = () =>{
+        props.history.push(`/admin/productHistory/${id}`)
     }
 
     const categoryPercentageHandler = () => {
@@ -295,11 +317,11 @@ function AdminProductsScreen(props) {
                                         <div>Δημιουργήθηκε από: <strong>{createdBy}</strong></div>
                                     </li>
                                     <li>
-                                        <div>Στις : <strong>{Intl.DateTimeFormat('en-GB', {
+                                        {createdAt && <div>Στις : <strong>{Intl.DateTimeFormat('en-GB', {
                                             year: 'numeric', month: 'numeric', day: 'numeric',
                                             hour: 'numeric', minute: 'numeric', second: 'numeric',
                                             hour12: false
-                                        }).format(Date.parse(createdAt))}</strong></div>
+                                        }).format(Date.parse(createdAt))}</strong></div>}
                                     </li></>}
                                 <li>
                                     <label htmlFor="product-name">Όνομα:</label>
@@ -371,6 +393,12 @@ function AdminProductsScreen(props) {
                                 </li>
                                 <li className="format_price">
                                     Τελική τιμή: {(price * (1 + pricePercentage / 100)).toFixed(2)} €
+                                </li>
+                                <li>
+                                    <label htmlFor="product-availability">Διαθεσιμότητα:</label>
+                                    <input type="text" name="product-availability" id="product-availability" value={availability}
+                                        onChange={(e) => setAvailability(e.target.value)} maxLength={50}>
+                                    </input>
                                 </li>
                                 <li>
                                     <label htmlFor="product-description">Περιγραφή:</label>
@@ -500,6 +528,9 @@ function AdminProductsScreen(props) {
                                     </tbody>
                                 </table>
                             </li>
+                            {userInfo && userInfo.isAdmin===2 && <li className="history_button">
+                                <button className="button" onClick={productHistoryHandler}>Ιστορικό</button>
+                            </li>}
                         </ul>}
                     </div>
                 </div>

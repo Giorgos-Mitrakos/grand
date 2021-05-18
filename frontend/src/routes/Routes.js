@@ -5,6 +5,8 @@ import ProtectedRoute from '../components/ProtectedRoute';
 import SuperProtectedRoute from '../components/SuperProtectedRoute';
 import ProductsByCategoryScreen from '../screens/ProductsByCategoryScreen';
 import AdminAdministratorsScreen from '../screens/AdminAdministratorsScreen';
+import ProductHistoryScreen from '../screens/ProductHistoryScreen';
+import OrderHistoryScreen from '../screens/OrderHistoryScreen';
 const CollectionScreen = lazy(() => import('../screens/CollectionScreen'));
 const ProductsScreen = lazy(() => import('../screens/ProductsScreen'));
 const ContactUsScreen = lazy(() => import('../screens/ContactUsScreen'));
@@ -69,7 +71,9 @@ function Routes() {
             <ProtectedRoute path="/admin/collection" component={AdminCollectionScreen} />
             <ProtectedRoute path="/admin/order/:id" component={AdminOrdersDetailScreen} />
             <ProtectedRoute path="/admin/lists" component={AdminListsScreen} />
-            <SuperProtectedRoute path="/admin/administrators" component={AdminAdministratorsScreen} />            
+            <SuperProtectedRoute path="/admin/administrators" component={AdminAdministratorsScreen} />
+            <SuperProtectedRoute path="/admin/productHistory/:id" component={ProductHistoryScreen} />
+            <SuperProtectedRoute path="/admin/orderHistory/:id" component={OrderHistoryScreen} />            
         </Switch>
         </Suspense>
     );

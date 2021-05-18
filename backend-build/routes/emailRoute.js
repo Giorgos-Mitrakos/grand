@@ -37,12 +37,12 @@ router.post("/registerConfirmation", function (req, res) {
     subject: 'Εγγραφή στο grandmobile.gr',
     attachments: [{
       filename: 'PNG_FINAL64.png',
-      path: './frontend/public/PNG_FINAL64.png',
+      path: 'frontend/public/PNG_FINAL64.png',
       cid: 'logo' //same cid value as in the html img src
 
     }, {
       filename: 'ΜΑΚΕΤΑ192.png',
-      path: './frontend/public/ΜΑΚΕΤΑ192.png',
+      path: 'frontend/public/ΜΑΚΕΤΑ192.png',
       cid: 'maketa' //same cid value as in the html img src,
 
     }],
@@ -75,12 +75,12 @@ router.post("/sendAccountDeleteConfirmation", function (req, res) {
     subject: 'Διαγραφή λογαριασμού από το grandmobile.gr',
     attachments: [{
       filename: 'PNG_FINAL64.png',
-      path: './frontend/public/PNG_FINAL64.png',
+      path: 'frontend/public/PNG_FINAL64.png',
       cid: 'logo' //same cid value as in the html img src
 
     }, {
       filename: 'ΜΑΚΕΤΑ192.png',
-      path: './frontend/public/ΜΑΚΕΤΑ192.png',
+      path: 'frontend/public/ΜΑΚΕΤΑ192.png',
       cid: 'maketa' //same cid value as in the html img src,
 
     }],
@@ -134,12 +134,12 @@ router.post("/resetpassword", function (req, res) {
           subject: 'Επαναφορά Password',
           attachments: [{
             filename: 'PNG_FINAL64.png',
-            path: './frontend/public/PNG_FINAL64.png',
+            path: 'frontend/public/PNG_FINAL64.png',
             cid: 'logo' //same cid value as in the html img src
 
           }, {
             filename: 'ΜΑΚΕΤΑ192.png',
-            path: './frontend/public/ΜΑΚΕΤΑ192.png',
+            path: 'frontend/public/ΜΑΚΕΤΑ192.png',
             cid: 'maketa' //same cid value as in the html img src,
 
           }],
@@ -187,12 +187,12 @@ router.post("/updatepassconfirmation", function (req, res) {
           subject: 'Επιτυχής Αλλαγή Κωδικού',
           attachments: [{
             filename: 'PNG_FINAL64.png',
-            path: './frontend/public/PNG_FINAL64.png',
+            path: 'frontend/public/PNG_FINAL64.png',
             cid: 'logo' //same cid value as in the html img src
 
           }, {
             filename: 'ΜΑΚΕΤΑ192.png',
-            path: './frontend/public/ΜΑΚΕΤΑ192.png',
+            path: 'frontend/public/ΜΑΚΕΤΑ192.png',
             cid: 'maketa' //same cid value as in the html img src,
 
           }],
@@ -232,12 +232,12 @@ router.post("/addToNewsletters", function (req, res) {
     subject: 'Επιβεβαίωση Εγγραφής Στο Newsletter',
     attachments: [{
       filename: 'PNG_FINAL64.png',
-      path: './frontend/public/PNG_FINAL64.png',
+      path: 'frontend/public/PNG_FINAL64.png',
       cid: 'logo' //same cid value as in the html img src
 
     }, {
       filename: 'ΜΑΚΕΤΑ192.png',
-      path: './frontend/public/ΜΑΚΕΤΑ192.png',
+      path: 'frontend/public/ΜΑΚΕΤΑ192.png',
       cid: 'maketa' //same cid value as in the html img src,
 
     }],
@@ -271,12 +271,12 @@ router.post("/removeFromNewsletters", function (req, res) {
     subject: 'Επιβεβαίωση Διαγραφής Από Newsletter',
     attachments: [{
       filename: 'PNG_FINAL64.png',
-      path: './frontend/public/PNG_FINAL64.png',
+      path: 'frontend/public/PNG_FINAL64.png',
       cid: 'logo' //same cid value as in the html img src
 
     }, {
       filename: 'ΜΑΚΕΤΑ192.png',
-      path: './frontend/public/ΜΑΚΕΤΑ192.png',
+      path: 'frontend/public/ΜΑΚΕΤΑ192.png',
       cid: 'maketa' //same cid value as in the html img src,
 
     }],
@@ -462,12 +462,12 @@ router.post("/orderConfimation", function (req, res) {
                     subject: emailTitle,
                     attachments: [{
                       filename: 'PNG_FINAL64.png',
-                      path: './frontend/public/PNG_FINAL64.png',
+                      path: 'frontend/public/PNG_FINAL64.png',
                       cid: 'logo' //same cid value as in the html img src,
 
                     }, {
                       filename: 'ΜΑΚΕΤΑ192.png',
-                      path: './frontend/public/ΜΑΚΕΤΑ192.png',
+                      path: 'frontend/public/ΜΑΚΕΤΑ192.png',
                       cid: 'maketa' //same cid value as in the html img src,
 
                     }],
@@ -482,12 +482,12 @@ router.post("/orderConfimation", function (req, res) {
                     subject: emailTitle,
                     attachments: [{
                       filename: 'PNG_FINAL64.png',
-                      path: './frontend/public/PNG_FINAL64.png',
+                      path: 'frontend/public/PNG_FINAL64.png',
                       cid: 'logo' //same cid value as in the html img src,
 
                     }, {
                       filename: 'ΜΑΚΕΤΑ192.png',
-                      path: './frontend/public/ΜΑΚΕΤΑ192.png',
+                      path: 'frontend/public/ΜΑΚΕΤΑ192.png',
                       cid: 'maketa' //same cid value as in the html img src,
 
                     }],
@@ -504,12 +504,12 @@ router.post("/orderConfimation", function (req, res) {
                     subject: emailTitle,
                     attachments: [{
                       filename: 'PNG_FINAL64.png',
-                      path: './frontend/public/PNG_FINAL64.png',
+                      path: 'frontend/public/PNG_FINAL64.png',
                       cid: 'logo' //same cid value as in the html img src,
 
                     }, {
                       filename: 'ΜΑΚΕΤΑ192.png',
-                      path: './frontend/public/ΜΑΚΕΤΑ192.png',
+                      path: 'frontend/public/ΜΑΚΕΤΑ192.png',
                       cid: 'maketa' //same cid value as in the html img src,
 
                     }],
@@ -524,12 +524,12 @@ router.post("/orderConfimation", function (req, res) {
                     subject: emailTitle,
                     attachments: [{
                       filename: 'PNG_FINAL64.png',
-                      path: './frontend/public/PNG_FINAL64.png',
+                      path: 'frontend/public/PNG_FINAL64.png',
                       cid: 'logo' //same cid value as in the html img src,
 
                     }, {
                       filename: 'ΜΑΚΕΤΑ192.png',
-                      path: './frontend/public/ΜΑΚΕΤΑ192.png',
+                      path: 'frontend/public/ΜΑΚΕΤΑ192.png',
                       cid: 'maketa' //same cid value as in the html img src,
 
                     }],

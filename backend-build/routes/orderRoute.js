@@ -66,35 +66,70 @@ router.post("/insert_order_company_shippingTo", _util.isAuth, /*#__PURE__*/funct
                         }
 
                         var order_id = result.insertId;
-                        sql = "INSERT INTO order_products (order_id, product_id, model, quantity, image_case) SELECT ?, cart.product_id, cart.model, cart.quantity, cart.image_case FROM cart WHERE user_email=?";
-                        connection.query(sql, [order_id, req.body.charger.email], function (err, result) {
+                        sql = "INSERT INTO ordersendingpaymenthistory (order_id, sendingMethod, paymentMethod, paymentType, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?)";
+                        connection.query(sql, [order_id, req.body.methods.sendingMethod, req.body.methods.paymentMethod, req.body.methods.typeOfPayment, req.user.email, new Date()], function (err, result, fields) {
                           if (err) {
                             connection.rollback(function () {
                               throw err;
                             });
                           }
 
-                          sql = "DELETE FROM cart WHERE user_email=?";
-                          connection.query(sql, [req.body.charger.email], function (err, result) {
+                          sql = "INSERT INTO billingAddressHistory (order_id, companyName, bussiness, afm, doy, country, district, city, street, phoneNumber, postalCode, comments, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                          connection.query(sql, [order_id, req.body.company.companyName, req.body.company.bussiness, req.body.company.afm, req.body.company.doy, req.body.charger.country, req.body.charger.district, req.body.charger.city, req.body.charger.address, req.body.charger.phoneNumber, req.body.charger.postalCode, req.body.charger.comments, req.user.username, new Date()], function (err, result, fields) {
                             if (err) {
                               connection.rollback(function () {
                                 throw err;
                               });
                             }
 
-                            connection.commit(function (err) {
+                            sql = "INSERT INTO shippingAddressHistory (order_id, name, subname, country, district, city, street, phoneNumber, postalCode, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                            connection.query(sql, [order_id, req.body.shippingTo.name, req.body.shippingTo.subname, req.body.shippingTo.country, req.body.shippingTo.district, req.body.shippingTo.city, req.body.shippingTo.address, req.body.shippingTo.phoneNumber, req.body.shippingTo.postalCode, req.user.username, new Date()], function (err, result, fields) {
                               if (err) {
                                 connection.rollback(function () {
                                   throw err;
                                 });
                               }
 
-                              console.log('Transaction Completed Successfully.');
-                              var response = {
-                                order_id: order_id
-                              };
-                              res.status(200).send(response);
-                              connection.release();
+                              sql = "INSERT INTO order_products (order_id, product_id, model, quantity, image_case) SELECT ?, cart.product_id, cart.model, cart.quantity, cart.image_case FROM cart WHERE user_email=?";
+                              connection.query(sql, [order_id, req.body.charger.email], function (err, result) {
+                                if (err) {
+                                  connection.rollback(function () {
+                                    throw err;
+                                  });
+                                }
+
+                                sql = "INSERT INTO orderProductHistory (order_id, product_id, model, quantity, image_case, UpdatedBy, UpdatedAt, actions) SELECT ?, cart.product_id, cart.model, cart.quantity, cart.image_case, ?, ?, ? FROM cart WHERE user_email=?";
+                                connection.query(sql, [order_id, req.body.charger.email, new Date(), "Αρχική Παραγγελία", req.body.charger.email], function (err, result) {
+                                  if (err) {
+                                    connection.rollback(function () {
+                                      throw err;
+                                    });
+                                  }
+
+                                  sql = "DELETE FROM cart WHERE user_email=?";
+                                  connection.query(sql, [req.body.charger.email], function (err, result) {
+                                    if (err) {
+                                      connection.rollback(function () {
+                                        throw err;
+                                      });
+                                    }
+
+                                    connection.commit(function (err) {
+                                      if (err) {
+                                        connection.rollback(function () {
+                                          throw err;
+                                        });
+                                      }
+
+                                      console.log('Transaction Completed Successfully.');
+                                      var response = {
+                                        order_id: order_id
+                                      };
+                                      res.status(200).send(response);
+                                    });
+                                  });
+                                });
+                              });
                             });
                           });
                         });
@@ -102,6 +137,9 @@ router.post("/insert_order_company_shippingTo", _util.isAuth, /*#__PURE__*/funct
                     });
                   });
                 });
+                connection.release(); // Handle error after the release.
+
+                if (err) throw err;
               });
               /* End transaction */
             });
@@ -157,40 +195,89 @@ router.post("/insert_no_user_order_company_shippingTo", /*#__PURE__*/function ()
                       }
 
                       var order_id = result.insertId;
-                      var mapCartItems = req.body.cartItems.map(function (x) {
-                        var rObj = [];
-                        rObj[0] = order_id;
-                        rObj[1] = x._id;
-                        rObj[2] = x.model;
-                        rObj[3] = x.quantity;
-                        return rObj;
-                      });
-                      sql = "INSERT INTO order_products (order_id,product_id,model,quantity) VALUES ?";
-                      connection.query(sql, [mapCartItems], function (err, result) {
+                      sql = "INSERT INTO ordersendingpaymenthistory (order_id, sendingMethod, paymentMethod, paymentType, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?)";
+                      connection.query(sql, [order_id, req.body.methods.sendingMethod, req.body.methods.paymentMethod, req.body.methods.typeOfPayment, req.body.charger.email, new Date()], function (err, result, fields) {
                         if (err) {
                           connection.rollback(function () {
                             throw err;
                           });
                         }
 
-                        connection.commit(function (err) {
+                        sql = "INSERT INTO billingAddressHistory (order_id, companyName, bussiness, afm, doy, country, district, city, street, phoneNumber, postalCode, comments, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                        connection.query(sql, [order_id, req.body.company.companyName, req.body.company.bussiness, req.body.company.afm, req.body.company.doy, req.body.charger.country, req.body.charger.district, req.body.charger.city, req.body.charger.address, req.body.charger.phoneNumber, req.body.charger.postalCode, req.body.charger.comments, req.body.charger.email, new Date()], function (err, result, fields) {
                           if (err) {
                             connection.rollback(function () {
                               throw err;
                             });
                           }
 
-                          console.log('Transaction Completed Successfully.');
-                          var response = {
-                            order_id: order_id
-                          };
-                          res.status(200).send(response);
-                          connection.release();
+                          sql = "INSERT INTO shippingAddressHistory (order_id, name, subname, country, district, city, street, phoneNumber, postalCode, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                          connection.query(sql, [order_id, req.body.shippingTo.name, req.body.shippingTo.subname, req.body.shippingTo.country, req.body.shippingTo.district, req.body.shippingTo.city, req.body.shippingTo.address, req.body.shippingTo.phoneNumber, req.body.shippingTo.postalCode, req.body.charger.email, new Date()], function (err, result, fields) {
+                            if (err) {
+                              connection.rollback(function () {
+                                throw err;
+                              });
+                            }
+
+                            var mapCartItems = req.body.cartItems.map(function (x) {
+                              var rObj = [];
+                              rObj[0] = order_id;
+                              rObj[1] = x._id;
+                              rObj[2] = x.model;
+                              rObj[3] = x.quantity;
+                              return rObj;
+                            });
+                            sql = "INSERT INTO order_products (order_id,product_id,model,quantity) VALUES ?";
+                            connection.query(sql, [mapCartItems], function (err, result) {
+                              if (err) {
+                                connection.rollback(function () {
+                                  throw err;
+                                });
+                              }
+
+                              var mapCartItemsHistory = req.body.cartItems.map(function (x) {
+                                var rObj = [];
+                                rObj[0] = order_id;
+                                rObj[1] = x._id;
+                                rObj[2] = x.model;
+                                rObj[3] = x.quantity;
+                                rObj[4] = req.body.charger.email;
+                                rObj[5] = new Date();
+                                rObj[6] = "Αρχική Παραγγελία";
+                                return rObj;
+                              });
+                              sql = "INSERT INTO orderProductHistory (order_id, product_id, model, quantity, UpdatedBy, UpdatedAt, actions) VALUES ?";
+                              connection.query(sql, [mapCartItemsHistory], function (err, result) {
+                                if (err) {
+                                  connection.rollback(function () {
+                                    throw err;
+                                  });
+                                }
+
+                                connection.commit(function (err) {
+                                  if (err) {
+                                    connection.rollback(function () {
+                                      throw err;
+                                    });
+                                  }
+
+                                  console.log('Transaction Completed Successfully.');
+                                  var response = {
+                                    order_id: order_id
+                                  };
+                                  res.status(200).send(response);
+                                });
+                              });
+                            });
+                          });
                         });
                       });
                     });
                   });
                 });
+                connection.release(); // Handle error after the release.
+
+                if (err) throw err;
               });
               /* End transaction */
             });
@@ -245,41 +332,70 @@ router.post("/insert_order_company", _util.isAuth, /*#__PURE__*/function () {
                       }
 
                       var order_id = result.insertId;
-                      sql = "INSERT INTO order_products (order_id, product_id, model, quantity, image_case) SELECT ?, cart.product_id, cart.model, cart.quantity, cart.image_case FROM cart WHERE user_email=?";
-                      connection.query(sql, [order_id, req.body.charger.email], function (err, result) {
+                      sql = "INSERT INTO ordersendingpaymenthistory (order_id, sendingMethod, paymentMethod, paymentType, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?)";
+                      connection.query(sql, [order_id, req.body.methods.sendingMethod, req.body.methods.paymentMethod, req.body.methods.typeOfPayment, req.user.email, new Date()], function (err, result, fields) {
                         if (err) {
                           connection.rollback(function () {
                             throw err;
                           });
                         }
 
-                        sql = "DELETE FROM cart WHERE user_email=?";
-                        connection.query(sql, [req.body.charger.email], function (err, result) {
+                        sql = "INSERT INTO billingAddressHistory (order_id, companyName, bussiness, afm, doy, country, district, city, street, phoneNumber, postalCode, comments, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                        connection.query(sql, [order_id, req.body.company.companyName, req.body.company.bussiness, req.body.company.afm, req.body.company.doy, req.body.charger.country, req.body.charger.district, req.body.charger.city, req.body.charger.address, req.body.charger.phoneNumber, req.body.charger.postalCode, req.body.charger.comments, req.user.username, new Date()], function (err, result, fields) {
                           if (err) {
                             connection.rollback(function () {
                               throw err;
                             });
                           }
 
-                          connection.commit(function (err) {
+                          sql = "INSERT INTO order_products (order_id, product_id, model, quantity, image_case) SELECT ?, cart.product_id, cart.model, cart.quantity, cart.image_case FROM cart WHERE user_email=?";
+                          connection.query(sql, [order_id, req.body.charger.email], function (err, result) {
                             if (err) {
                               connection.rollback(function () {
                                 throw err;
                               });
                             }
 
-                            console.log('Transaction Completed Successfully.');
-                            var response = {
-                              order_id: order_id
-                            };
-                            res.status(200).send(response);
-                            connection.release();
+                            sql = "INSERT INTO orderProductHistory (order_id, product_id, model, quantity, image_case, UpdatedBy, UpdatedAt, actions) SELECT ?, cart.product_id, cart.model, cart.quantity, cart.image_case, ?, ?, ? FROM cart WHERE user_email=?";
+                            connection.query(sql, [order_id, req.body.charger.email, new Date(), "Αρχική Παραγγελία", req.body.charger.email], function (err, result) {
+                              if (err) {
+                                connection.rollback(function () {
+                                  throw err;
+                                });
+                              }
+
+                              sql = "DELETE FROM cart WHERE user_email=?";
+                              connection.query(sql, [req.body.charger.email], function (err, result) {
+                                if (err) {
+                                  connection.rollback(function () {
+                                    throw err;
+                                  });
+                                }
+
+                                connection.commit(function (err) {
+                                  if (err) {
+                                    connection.rollback(function () {
+                                      throw err;
+                                    });
+                                  }
+
+                                  console.log('Transaction Completed Successfully.');
+                                  var response = {
+                                    order_id: order_id
+                                  };
+                                  res.status(200).send(response);
+                                });
+                              });
+                            });
                           });
                         });
                       });
                     });
                   });
                 });
+                connection.release(); // Handle error after the release.
+
+                if (err) throw err;
               });
               /* End transaction */
             });
@@ -326,39 +442,79 @@ router.post("/insert_no_user_order_company", /*#__PURE__*/function () {
                     }
 
                     var order_id = result.insertId;
-                    var mapCartItems = req.body.cartItems.map(function (x) {
-                      var rObj = [];
-                      rObj[0] = order_id;
-                      rObj[1] = x._id;
-                      rObj[2] = x.model;
-                      rObj[3] = x.quantity;
-                      return rObj;
-                    });
-                    sql = "INSERT INTO order_products (order_id,product_id,model,quantity) VALUES ?";
-                    connection.query(sql, [mapCartItems], function (err, result) {
+                    sql = "INSERT INTO ordersendingpaymenthistory (order_id, sendingMethod, paymentMethod, paymentType, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?)";
+                    connection.query(sql, [order_id, req.body.methods.sendingMethod, req.body.methods.paymentMethod, req.body.methods.typeOfPayment, req.body.charger.email, new Date()], function (err, result, fields) {
                       if (err) {
                         connection.rollback(function () {
                           throw err;
                         });
                       }
 
-                      connection.commit(function (err) {
+                      sql = "INSERT INTO billingAddressHistory (order_id, companyName, bussiness, afm, doy, country, district, city, street, phoneNumber, postalCode, comments, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                      connection.query(sql, [order_id, req.body.company.companyName, req.body.company.bussiness, req.body.company.afm, req.body.company.doy, req.body.charger.country, req.body.charger.district, req.body.charger.city, req.body.charger.address, req.body.charger.phoneNumber, req.body.charger.postalCode, req.body.charger.comments, req.body.charger.email, new Date()], function (err, result, fields) {
                         if (err) {
                           connection.rollback(function () {
                             throw err;
                           });
                         }
 
-                        console.log('Transaction Completed Successfully.');
-                        var response = {
-                          order_id: order_id
-                        };
-                        res.status(200).send(response);
-                        connection.release();
+                        var mapCartItems = req.body.cartItems.map(function (x) {
+                          var rObj = [];
+                          rObj[0] = order_id;
+                          rObj[1] = x._id;
+                          rObj[2] = x.model;
+                          rObj[3] = x.quantity;
+                          return rObj;
+                        });
+                        sql = "INSERT INTO order_products (order_id,product_id,model,quantity) VALUES ?";
+                        connection.query(sql, [mapCartItems], function (err, result) {
+                          if (err) {
+                            connection.rollback(function () {
+                              throw err;
+                            });
+                          }
+
+                          var mapCartItemsHistory = req.body.cartItems.map(function (x) {
+                            var rObj = [];
+                            rObj[0] = order_id;
+                            rObj[1] = x._id;
+                            rObj[2] = x.model;
+                            rObj[3] = x.quantity;
+                            rObj[4] = req.body.charger.email;
+                            rObj[5] = new Date();
+                            rObj[6] = "Αρχική Παραγγελία";
+                            return rObj;
+                          });
+                          sql = "INSERT INTO orderProductHistory (order_id, product_id, model, quantity, UpdatedBy, UpdatedAt, actions) VALUES ?";
+                          connection.query(sql, [mapCartItemsHistory], function (err, result) {
+                            if (err) {
+                              connection.rollback(function () {
+                                throw err;
+                              });
+                            }
+
+                            connection.commit(function (err) {
+                              if (err) {
+                                connection.rollback(function () {
+                                  throw err;
+                                });
+                              }
+
+                              console.log('Transaction Completed Successfully.');
+                              var response = {
+                                order_id: order_id
+                              };
+                              res.status(200).send(response);
+                            });
+                          });
+                        });
                       });
                     });
                   });
                 });
+                connection.release(); // Handle error after the release.
+
+                if (err) throw err;
               });
               /* End transaction */
             });
@@ -422,35 +578,70 @@ router.post("/insert_order_shippingTo", _util.isAuth, /*#__PURE__*/function () {
                         }
 
                         var order_id = result.insertId;
-                        sql = "INSERT INTO order_products (order_id, product_id, model, quantity, image_case) SELECT ?, cart.product_id, cart.model, cart.quantity, cart.image_case FROM cart WHERE user_email=?";
-                        connection.query(sql, [order_id, req.body.charger.email], function (err, result) {
+                        sql = "INSERT INTO ordersendingpaymenthistory (order_id, sendingMethod, paymentMethod, paymentType, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?)";
+                        connection.query(sql, [order_id, req.body.methods.sendingMethod, req.body.methods.paymentMethod, req.body.methods.typeOfPayment, req.user.email, new Date()], function (err, result, fields) {
                           if (err) {
                             connection.rollback(function () {
                               throw err;
                             });
                           }
 
-                          sql = "DELETE FROM cart WHERE user_email=?";
-                          connection.query(sql, [req.body.charger.email], function (err, result) {
+                          sql = "INSERT INTO billingAddressHistory (order_id, name, subname, country, district, city, street, phoneNumber, postalCode, comments, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                          connection.query(sql, [order_id, req.body.charger.name, req.body.charger.subname, req.body.charger.country, req.body.charger.district, req.body.charger.city, req.body.charger.address, req.body.charger.phoneNumber, req.body.charger.postalCode, req.body.methods.comments, req.body.charger.email, new Date()], function (err, result, fields) {
                             if (err) {
                               connection.rollback(function () {
                                 throw err;
                               });
                             }
 
-                            connection.commit(function (err) {
+                            sql = "INSERT INTO shippingAddressHistory (order_id, name, subname, country, district, city, street, phoneNumber, postalCode, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                            connection.query(sql, [order_id, req.body.shippingTo.name, req.body.shippingTo.subname, req.body.shippingTo.country, req.body.shippingTo.district, req.body.shippingTo.city, req.body.shippingTo.address, req.body.shippingTo.phoneNumber, req.body.shippingTo.postalCode, req.user.username, new Date()], function (err, result, fields) {
                               if (err) {
                                 connection.rollback(function () {
                                   throw err;
                                 });
                               }
 
-                              console.log('Transaction Completed Successfully.');
-                              var response = {
-                                order_id: order_id
-                              };
-                              res.status(200).send(response);
-                              connection.release();
+                              sql = "INSERT INTO order_products (order_id, product_id, model, quantity, image_case) SELECT ?, cart.product_id, cart.model, cart.quantity, cart.image_case FROM cart WHERE user_email=?";
+                              connection.query(sql, [order_id, req.body.charger.email], function (err, result) {
+                                if (err) {
+                                  connection.rollback(function () {
+                                    throw err;
+                                  });
+                                }
+
+                                sql = "INSERT INTO orderProductHistory (order_id, product_id, model, quantity, image_case, UpdatedBy, UpdatedAt, actions) SELECT ?, cart.product_id, cart.model, cart.quantity, cart.image_case, ?, ?, ? FROM cart WHERE user_email=?";
+                                connection.query(sql, [order_id, req.body.charger.email, new Date(), "Αρχική Παραγγελία", req.body.charger.email], function (err, result) {
+                                  if (err) {
+                                    connection.rollback(function () {
+                                      throw err;
+                                    });
+                                  }
+
+                                  sql = "DELETE FROM cart WHERE user_email=?";
+                                  connection.query(sql, [req.body.charger.email], function (err, result) {
+                                    if (err) {
+                                      connection.rollback(function () {
+                                        throw err;
+                                      });
+                                    }
+
+                                    connection.commit(function (err) {
+                                      if (err) {
+                                        connection.rollback(function () {
+                                          throw err;
+                                        });
+                                      }
+
+                                      console.log('Transaction Completed Successfully.');
+                                      var response = {
+                                        order_id: order_id
+                                      };
+                                      res.status(200).send(response);
+                                    });
+                                  });
+                                });
+                              });
                             });
                           });
                         });
@@ -458,6 +649,9 @@ router.post("/insert_order_shippingTo", _util.isAuth, /*#__PURE__*/function () {
                     });
                   });
                 });
+                connection.release(); // Handle error after the release.
+
+                if (err) throw err;
               });
               /* End transaction */
             });
@@ -513,40 +707,89 @@ router.post("/insert_no_user_order_shippingTo", /*#__PURE__*/function () {
                       }
 
                       var order_id = result.insertId;
-                      var mapCartItems = req.body.cartItems.map(function (x) {
-                        var rObj = [];
-                        rObj[0] = order_id;
-                        rObj[1] = x._id;
-                        rObj[2] = x.model;
-                        rObj[3] = x.quantity;
-                        return rObj;
-                      });
-                      sql = "INSERT INTO order_products (order_id,product_id,model,quantity) VALUES ?";
-                      connection.query(sql, [mapCartItems], function (err, result) {
+                      sql = "INSERT INTO ordersendingpaymenthistory (order_id, sendingMethod, paymentMethod, paymentType, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?)";
+                      connection.query(sql, [order_id, req.body.methods.sendingMethod, req.body.methods.paymentMethod, req.body.methods.typeOfPayment, req.body.charger.email, new Date()], function (err, result, fields) {
                         if (err) {
                           connection.rollback(function () {
                             throw err;
                           });
                         }
 
-                        connection.commit(function (err) {
+                        sql = "INSERT INTO billingAddressHistory (order_id, name, subname, country, district, city, street, phoneNumber, postalCode, comments, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                        connection.query(sql, [order_id, req.body.charger.name, req.body.charger.subname, req.body.charger.country, req.body.charger.district, req.body.charger.city, req.body.charger.address, req.body.charger.phoneNumber, req.body.charger.postalCode, req.body.methods.comments, req.body.charger.email, new Date()], function (err, result, fields) {
                           if (err) {
                             connection.rollback(function () {
                               throw err;
                             });
                           }
 
-                          console.log('Transaction Completed Successfully.');
-                          var response = {
-                            order_id: order_id
-                          };
-                          res.status(200).send(response);
-                          connection.release();
+                          sql = "INSERT INTO shippingAddressHistory (order_id, name, subname, country, district, city, street, phoneNumber, postalCode, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                          connection.query(sql, [order_id, req.body.shippingTo.name, req.body.shippingTo.subname, req.body.shippingTo.country, req.body.shippingTo.district, req.body.shippingTo.city, req.body.shippingTo.address, req.body.shippingTo.phoneNumber, req.body.shippingTo.postalCode, req.body.charger.email, new Date()], function (err, result, fields) {
+                            if (err) {
+                              connection.rollback(function () {
+                                throw err;
+                              });
+                            }
+
+                            var mapCartItems = req.body.cartItems.map(function (x) {
+                              var rObj = [];
+                              rObj[0] = order_id;
+                              rObj[1] = x._id;
+                              rObj[2] = x.model;
+                              rObj[3] = x.quantity;
+                              return rObj;
+                            });
+                            sql = "INSERT INTO order_products (order_id,product_id,model,quantity) VALUES ?";
+                            connection.query(sql, [mapCartItems], function (err, result) {
+                              if (err) {
+                                connection.rollback(function () {
+                                  throw err;
+                                });
+                              }
+
+                              var mapCartItemsHistory = req.body.cartItems.map(function (x) {
+                                var rObj = [];
+                                rObj[0] = order_id;
+                                rObj[1] = x._id;
+                                rObj[2] = x.model;
+                                rObj[3] = x.quantity;
+                                rObj[4] = req.body.charger.email;
+                                rObj[5] = new Date();
+                                rObj[6] = "Αρχική Παραγγελία";
+                                return rObj;
+                              });
+                              sql = "INSERT INTO orderProductHistory (order_id, product_id, model, quantity, UpdatedBy, UpdatedAt, actions) VALUES ?";
+                              connection.query(sql, [mapCartItemsHistory], function (err, result) {
+                                if (err) {
+                                  connection.rollback(function () {
+                                    throw err;
+                                  });
+                                }
+
+                                connection.commit(function (err) {
+                                  if (err) {
+                                    connection.rollback(function () {
+                                      throw err;
+                                    });
+                                  }
+
+                                  console.log('Transaction Completed Successfully.');
+                                  var response = {
+                                    order_id: order_id
+                                  };
+                                  res.status(200).send(response);
+                                });
+                              });
+                            });
+                          });
                         });
                       });
                     });
                   });
                 });
+                connection.release(); // Handle error after the release.
+
+                if (err) throw err;
               });
               /* End transaction */
             });
@@ -601,41 +844,70 @@ router.post("/insert_order", _util.isAuth, /*#__PURE__*/function () {
                       }
 
                       var order_id = result.insertId;
-                      sql = "INSERT INTO order_products (order_id, product_id, model, quantity, image_case) SELECT ?, cart.product_id, cart.model, cart.quantity, cart.image_case FROM cart WHERE user_email=?";
-                      connection.query(sql, [order_id, req.body.charger.email], function (err, result) {
+                      sql = "INSERT INTO ordersendingpaymenthistory (order_id, sendingMethod, paymentMethod, paymentType, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?)";
+                      connection.query(sql, [order_id, req.body.methods.sendingMethod, req.body.methods.paymentMethod, req.body.methods.typeOfPayment, req.user.email, new Date()], function (err, result, fields) {
                         if (err) {
                           connection.rollback(function () {
                             throw err;
                           });
                         }
 
-                        sql = "DELETE FROM cart WHERE user_email=?";
-                        connection.query(sql, [req.body.charger.email], function (err, result) {
+                        sql = "INSERT INTO billingAddressHistory (order_id, name, subname, country, district, city, street, phoneNumber, postalCode, comments, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                        connection.query(sql, [order_id, req.body.charger.name, req.body.charger.subname, req.body.charger.country, req.body.charger.district, req.body.charger.city, req.body.charger.address, req.body.charger.phoneNumber, req.body.charger.postalCode, req.body.methods.comments, req.body.charger.email, new Date()], function (err, result, fields) {
                           if (err) {
                             connection.rollback(function () {
                               throw err;
                             });
                           }
 
-                          connection.commit(function (err) {
+                          sql = "INSERT INTO order_products (order_id, product_id, model, quantity, image_case) SELECT ?, cart.product_id, cart.model, cart.quantity, cart.image_case FROM cart WHERE user_email=?";
+                          connection.query(sql, [order_id, req.body.charger.email], function (err, result) {
                             if (err) {
                               connection.rollback(function () {
                                 throw err;
                               });
                             }
 
-                            console.log('Transaction Completed Successfully.');
-                            var response = {
-                              order_id: order_id
-                            };
-                            res.status(200).send(response);
-                            connection.release();
+                            sql = "INSERT INTO orderProductHistory (order_id, product_id, model, quantity, image_case, UpdatedBy, UpdatedAt, actions) SELECT ?, cart.product_id, cart.model, cart.quantity, cart.image_case, ?, ?, ? FROM cart WHERE user_email=?";
+                            connection.query(sql, [order_id, req.body.charger.email, new Date(), "Αρχική Παραγγελία", req.body.charger.email], function (err, result) {
+                              if (err) {
+                                connection.rollback(function () {
+                                  throw err;
+                                });
+                              }
+
+                              sql = "DELETE FROM cart WHERE user_email=?";
+                              connection.query(sql, [req.body.charger.email], function (err, result) {
+                                if (err) {
+                                  connection.rollback(function () {
+                                    throw err;
+                                  });
+                                }
+
+                                connection.commit(function (err) {
+                                  if (err) {
+                                    connection.rollback(function () {
+                                      throw err;
+                                    });
+                                  }
+
+                                  console.log('Transaction Completed Successfully.');
+                                  var response = {
+                                    order_id: order_id
+                                  };
+                                  res.status(200).send(response);
+                                });
+                              });
+                            });
                           });
                         });
                       });
                     });
                   });
                 });
+                connection.release(); // Handle error after the release.
+
+                if (err) throw err;
               });
               /* End transaction */
             });
@@ -682,40 +954,80 @@ router.post("/insert_no_user_order", /*#__PURE__*/function () {
                     }
 
                     var order_id = result.insertId;
-                    var mapCartItems = req.body.cartItems.map(function (x) {
-                      var rObj = [];
-                      rObj[0] = order_id;
-                      rObj[1] = x._id;
-                      rObj[2] = x.model;
-                      rObj[3] = x.quantity;
-                      return rObj;
-                    });
-                    sql = "INSERT INTO order_products (order_id,product_id,model,quantity) VALUES ?";
-                    connection.query(sql, [mapCartItems], function (err, result) {
+                    sql = "INSERT INTO ordersendingpaymenthistory (order_id, sendingMethod, paymentMethod, paymentType, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?)";
+                    connection.query(sql, [order_id, req.body.methods.sendingMethod, req.body.methods.paymentMethod, req.body.methods.typeOfPayment, req.body.charger.email, new Date()], function (err, result, fields) {
                       if (err) {
                         connection.rollback(function () {
                           throw err;
                         });
                       }
 
-                      connection.commit(function (err) {
+                      sql = "INSERT INTO billingAddressHistory (order_id, name, subname, country, district, city, street, phoneNumber, postalCode, comments, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                      connection.query(sql, [order_id, req.body.charger.name, req.body.charger.subname, req.body.charger.country, req.body.charger.district, req.body.charger.city, req.body.charger.address, req.body.charger.phoneNumber, req.body.charger.postalCode, req.body.methods.comments, req.body.charger.email, new Date()], function (err, result, fields) {
                         if (err) {
                           connection.rollback(function () {
                             throw err;
                           });
                         }
 
-                        console.log('Transaction Completed Successfully.');
-                        var response = {
-                          order_id: order_id
-                        };
-                        res.status(200).send(response);
-                        connection.release();
+                        var mapCartItems = req.body.cartItems.map(function (x) {
+                          var rObj = [];
+                          rObj[0] = order_id;
+                          rObj[1] = x._id;
+                          rObj[2] = x.model;
+                          rObj[3] = x.quantity;
+                          return rObj;
+                        });
+                        sql = "INSERT INTO order_products (order_id,product_id,model,quantity) VALUES ?";
+                        connection.query(sql, [mapCartItems], function (err, result) {
+                          if (err) {
+                            connection.rollback(function () {
+                              throw err;
+                            });
+                          }
+
+                          var mapCartItemsHistory = req.body.cartItems.map(function (x) {
+                            var rObj = [];
+                            rObj[0] = order_id;
+                            rObj[1] = x._id;
+                            rObj[2] = x.model;
+                            rObj[3] = x.quantity;
+                            rObj[4] = req.body.charger.email;
+                            rObj[5] = new Date();
+                            rObj[6] = "Αρχική Παραγγελία";
+                            return rObj;
+                          });
+                          sql = "INSERT INTO orderProductHistory (order_id, product_id, model, quantity, UpdatedBy, UpdatedAt, actions) VALUES ?";
+                          connection.query(sql, [mapCartItemsHistory], function (err, result) {
+                            if (err) {
+                              connection.rollback(function () {
+                                throw err;
+                              });
+                            }
+
+                            connection.commit(function (err) {
+                              if (err) {
+                                connection.rollback(function () {
+                                  throw err;
+                                });
+                              }
+
+                              console.log('Transaction Completed Successfully.');
+                              var response = {
+                                order_id: order_id
+                              };
+                              res.status(200).send(response);
+                            });
+                          });
+                        });
                       });
                     });
                   });
                 });
               });
+              connection.release(); // Handle error after the release.
+
+              if (err) throw err;
               /* End transaction */
             });
 
@@ -896,11 +1208,35 @@ router.put("/changeStatus", _util.isAuth, _util.isAdmin, /*#__PURE__*/function (
 
                 switch (req.body.dates.dateIndex) {
                   case 0:
-                    var sql = "UPDATE orders SET status=?, proccessDate=?, delayDate=?, shippingDate=?, cancelDate=? WHERE order_id=?";
-                    connection.query(sql, [req.body.newStatus, req.body.dates.proccessDate, req.body.dates.delayDate, req.body.dates.shippingDate, req.body.dates.cancelDate, req.body.orderId], function (err, result, fields) {
-                      if (err) throw err;
-                      console.log("Order Status updated");
-                      res.status(200).send("OK");
+                    connection.beginTransaction(function (err) {
+                      var sql = "UPDATE orders SET status=?, proccessDate=?, delayDate=?, shippingDate=?, cancelDate=? WHERE order_id=?";
+                      connection.query(sql, [req.body.newStatus, req.body.dates.proccessDate, req.body.dates.delayDate, req.body.dates.shippingDate, req.body.dates.cancelDate, req.body.orderId], function (err, result, fields) {
+                        if (err) {
+                          connection.rollback(function () {
+                            throw err;
+                          });
+                        }
+
+                        var sql = "INSERT INTO orderstatushistory (order_id, status, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?)";
+                        connection.query(sql, [req.body.orderId, req.body.newStatus, req.user.username, new Date()], function (err, result, fields) {
+                          if (err) {
+                            connection.rollback(function () {
+                              throw err;
+                            });
+                          }
+
+                          connection.commit(function (err) {
+                            if (err) {
+                              connection.rollback(function () {
+                                throw err;
+                              });
+                            }
+
+                            console.log("Order Status updated");
+                            res.status(200).send("OK");
+                          });
+                        });
+                      });
                       connection.release(); // Handle error after the release.
 
                       if (err) throw err;
@@ -908,11 +1244,35 @@ router.put("/changeStatus", _util.isAuth, _util.isAdmin, /*#__PURE__*/function (
                     break;
 
                   case 1:
-                    var sql = "UPDATE orders SET status=?, delayDate=?, shippingDate=?, cancelDate=? WHERE order_id=?";
-                    connection.query(sql, [req.body.newStatus, req.body.dates.delayDate, req.body.dates.shippingDate, req.body.dates.cancelDate, req.body.orderId], function (err, result, fields) {
-                      if (err) throw err;
-                      console.log("Order Status updated");
-                      res.status(200).send("OK");
+                    connection.beginTransaction(function (err) {
+                      var sql = "UPDATE orders SET status=?, delayDate=?, shippingDate=?, cancelDate=? WHERE order_id=?";
+                      connection.query(sql, [req.body.newStatus, req.body.dates.delayDate, req.body.dates.shippingDate, req.body.dates.cancelDate, req.body.orderId], function (err, result, fields) {
+                        if (err) {
+                          connection.rollback(function () {
+                            throw err;
+                          });
+                        }
+
+                        var sql = "INSERT INTO orderstatushistory (order_id, status, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?)";
+                        connection.query(sql, [req.body.orderId, req.body.newStatus, req.user.username, new Date()], function (err, result, fields) {
+                          if (err) {
+                            connection.rollback(function () {
+                              throw err;
+                            });
+                          }
+
+                          connection.commit(function (err) {
+                            if (err) {
+                              connection.rollback(function () {
+                                throw err;
+                              });
+                            }
+
+                            console.log("Order Status updated");
+                            res.status(200).send("OK");
+                          });
+                        });
+                      });
                       connection.release(); // Handle error after the release.
 
                       if (err) throw err;
@@ -920,11 +1280,35 @@ router.put("/changeStatus", _util.isAuth, _util.isAdmin, /*#__PURE__*/function (
                     break;
 
                   case 2:
-                    var sql = "UPDATE orders SET status=?, shippingDate=?, cancelDate=? WHERE order_id=?";
-                    connection.query(sql, [req.body.newStatus, req.body.dates.shippingDate, req.body.dates.cancelDate, req.body.orderId], function (err, result, fields) {
-                      if (err) throw err;
-                      console.log("Order Status updated");
-                      res.status(200).send("OK");
+                    connection.beginTransaction(function (err) {
+                      var sql = "UPDATE orders SET status=?, shippingDate=?, cancelDate=? WHERE order_id=?";
+                      connection.query(sql, [req.body.newStatus, req.body.dates.shippingDate, req.body.dates.cancelDate, req.body.orderId], function (err, result, fields) {
+                        if (err) {
+                          connection.rollback(function () {
+                            throw err;
+                          });
+                        }
+
+                        var sql = "INSERT INTO orderstatushistory (order_id, status, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?)";
+                        connection.query(sql, [req.body.orderId, req.body.newStatus, req.user.username, new Date()], function (err, result, fields) {
+                          if (err) {
+                            connection.rollback(function () {
+                              throw err;
+                            });
+                          }
+
+                          connection.commit(function (err) {
+                            if (err) {
+                              connection.rollback(function () {
+                                throw err;
+                              });
+                            }
+
+                            console.log("Order Status updated");
+                            res.status(200).send("OK");
+                          });
+                        });
+                      });
                       connection.release(); // Handle error after the release.
 
                       if (err) throw err;
@@ -932,11 +1316,35 @@ router.put("/changeStatus", _util.isAuth, _util.isAdmin, /*#__PURE__*/function (
                     break;
 
                   case 3:
-                    var sql = "UPDATE orders SET status=?, cancelDate=? WHERE order_id=?";
-                    connection.query(sql, [req.body.newStatus, req.body.dates.cancelDate, req.body.orderId], function (err, result, fields) {
-                      if (err) throw err;
-                      console.log("Order Status updated");
-                      res.status(200).send("OK");
+                    connection.beginTransaction(function (err) {
+                      var sql = "UPDATE orders SET status=?, cancelDate=? WHERE order_id=?";
+                      connection.query(sql, [req.body.newStatus, req.body.dates.cancelDate, req.body.orderId], function (err, result, fields) {
+                        if (err) {
+                          connection.rollback(function () {
+                            throw err;
+                          });
+                        }
+
+                        var sql = "INSERT INTO orderstatushistory (order_id, status, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?)";
+                        connection.query(sql, [req.body.orderId, req.body.newStatus, req.user.username, new Date()], function (err, result, fields) {
+                          if (err) {
+                            connection.rollback(function () {
+                              throw err;
+                            });
+                          }
+
+                          connection.commit(function (err) {
+                            if (err) {
+                              connection.rollback(function () {
+                                throw err;
+                              });
+                            }
+
+                            console.log("Order Status updated");
+                            res.status(200).send("OK");
+                          });
+                        });
+                      });
                       connection.release(); // Handle error after the release.
 
                       if (err) throw err;
@@ -977,11 +1385,35 @@ router.put("/updateStatus", _util.isAuth, _util.isAdmin, /*#__PURE__*/function (
 
                 switch (req.body.StatusIndex) {
                   case 1:
-                    var sql = "UPDATE orders SET status=?, proccessDate=? WHERE order_id=?";
-                    connection.query(sql, [req.body.newStatus, new Date(), req.body.orderId], function (err, result, fields) {
-                      if (err) throw err;
-                      console.log("Order Status updated");
-                      res.status(200).send("OK");
+                    connection.beginTransaction(function (err) {
+                      var sql = "UPDATE orders SET status=?, proccessDate=? WHERE order_id=?";
+                      connection.query(sql, [req.body.newStatus, new Date(), req.body.orderId], function (err, result, fields) {
+                        if (err) {
+                          connection.rollback(function () {
+                            throw err;
+                          });
+                        }
+
+                        var sql = "INSERT INTO orderstatushistory (order_id, status, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?)";
+                        connection.query(sql, [req.body.orderId, req.body.newStatus, req.user.username, new Date()], function (err, result, fields) {
+                          if (err) {
+                            connection.rollback(function () {
+                              throw err;
+                            });
+                          }
+
+                          connection.commit(function (err) {
+                            if (err) {
+                              connection.rollback(function () {
+                                throw err;
+                              });
+                            }
+
+                            console.log("Order Status updated");
+                            res.status(200).send("OK");
+                          });
+                        });
+                      });
                       connection.release(); // Handle error after the release.
 
                       if (err) throw err;
@@ -989,11 +1421,35 @@ router.put("/updateStatus", _util.isAuth, _util.isAdmin, /*#__PURE__*/function (
                     break;
 
                   case 2:
-                    var sql = "UPDATE orders SET status=?, delayDate=? WHERE order_id=?";
-                    connection.query(sql, [req.body.newStatus, new Date(), req.body.orderId], function (err, result, fields) {
-                      if (err) throw err;
-                      console.log("Order Status updated");
-                      res.status(200).send("OK");
+                    connection.beginTransaction(function (err) {
+                      var sql = "UPDATE orders SET status=?, delayDate=? WHERE order_id=?";
+                      connection.query(sql, [req.body.newStatus, new Date(), req.body.orderId], function (err, result, fields) {
+                        if (err) {
+                          connection.rollback(function () {
+                            throw err;
+                          });
+                        }
+
+                        var sql = "INSERT INTO orderstatushistory (order_id, status, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?)";
+                        connection.query(sql, [req.body.orderId, req.body.newStatus, req.user.username, new Date()], function (err, result, fields) {
+                          if (err) {
+                            connection.rollback(function () {
+                              throw err;
+                            });
+                          }
+
+                          connection.commit(function (err) {
+                            if (err) {
+                              connection.rollback(function () {
+                                throw err;
+                              });
+                            }
+
+                            console.log("Order Status updated");
+                            res.status(200).send("OK");
+                          });
+                        });
+                      });
                       connection.release(); // Handle error after the release.
 
                       if (err) throw err;
@@ -1001,11 +1457,35 @@ router.put("/updateStatus", _util.isAuth, _util.isAdmin, /*#__PURE__*/function (
                     break;
 
                   case 3:
-                    var sql = "UPDATE orders SET status=?, shippingDate=? WHERE order_id=?";
-                    connection.query(sql, [req.body.newStatus, new Date(), req.body.orderId], function (err, result, fields) {
-                      if (err) throw err;
-                      console.log("Order Status updated");
-                      res.status(200).send("OK");
+                    connection.beginTransaction(function (err) {
+                      var sql = "UPDATE orders SET status=?, shippingDate=? WHERE order_id=?";
+                      connection.query(sql, [req.body.newStatus, new Date(), req.body.orderId], function (err, result, fields) {
+                        if (err) {
+                          connection.rollback(function () {
+                            throw err;
+                          });
+                        }
+
+                        var sql = "INSERT INTO orderstatushistory (order_id, status, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?)";
+                        connection.query(sql, [req.body.orderId, req.body.newStatus, req.user.username, new Date()], function (err, result, fields) {
+                          if (err) {
+                            connection.rollback(function () {
+                              throw err;
+                            });
+                          }
+
+                          connection.commit(function (err) {
+                            if (err) {
+                              connection.rollback(function () {
+                                throw err;
+                              });
+                            }
+
+                            console.log("Order Status updated");
+                            res.status(200).send("OK");
+                          });
+                        });
+                      });
                       connection.release(); // Handle error after the release.
 
                       if (err) throw err;
@@ -1013,11 +1493,35 @@ router.put("/updateStatus", _util.isAuth, _util.isAdmin, /*#__PURE__*/function (
                     break;
 
                   case 4:
-                    var sql = "UPDATE orders SET status=?, cancelDate=? WHERE order_id=?";
-                    connection.query(sql, [req.body.newStatus, new Date(), req.body.orderId], function (err, result, fields) {
-                      if (err) throw err;
-                      console.log("Order Status updated");
-                      res.status(200).send("OK");
+                    connection.beginTransaction(function (err) {
+                      var sql = "UPDATE orders SET status=?, cancelDate=? WHERE order_id=?";
+                      connection.query(sql, [req.body.newStatus, new Date(), req.body.orderId], function (err, result, fields) {
+                        if (err) {
+                          connection.rollback(function () {
+                            throw err;
+                          });
+                        }
+
+                        var sql = "INSERT INTO orderstatushistory (order_id, status, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?)";
+                        connection.query(sql, [req.body.orderId, req.body.newStatus, req.user.username, new Date()], function (err, result, fields) {
+                          if (err) {
+                            connection.rollback(function () {
+                              throw err;
+                            });
+                          }
+
+                          connection.commit(function (err) {
+                            if (err) {
+                              connection.rollback(function () {
+                                throw err;
+                              });
+                            }
+
+                            console.log("Order Status updated");
+                            res.status(200).send("OK");
+                          });
+                        });
+                      });
                       connection.release(); // Handle error after the release.
 
                       if (err) throw err;
@@ -1069,27 +1573,36 @@ router.put("/changeOrderDetails", _util.isAuth, _util.isAdmin, /*#__PURE__*/func
                       });
                     }
 
-                    sql = "SELECT * FROM orders WHERE order_id=?";
-                    connection.query(sql, [req.body.orderId], function (err, result) {
+                    sql = "INSERT INTO ordersendingpaymenthistory (order_id, sendingMethod, paymentMethod, paymentType, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?)";
+                    connection.query(sql, [req.body.orderId, req.body.sendingMethod, req.body.paymentMethod, req.body.paymentType, req.user.username, new Date()], function (err, result, fields) {
                       if (err) {
                         connection.rollback(function () {
                           throw err;
                         });
                       }
 
-                      res.status(201).send(result);
-                      connection.commit(function (err) {
+                      sql = "SELECT * FROM orders WHERE order_id=?";
+                      connection.query(sql, [req.body.orderId], function (err, result) {
                         if (err) {
                           connection.rollback(function () {
                             throw err;
                           });
                         }
 
-                        console.log('Transaction Completed Successfully.');
-                        connection.release();
+                        connection.commit(function (err) {
+                          if (err) {
+                            connection.rollback(function () {
+                              throw err;
+                            });
+                          }
+
+                          res.status(201).send(result);
+                          console.log('Transaction Completed Successfully.');
+                        });
                       });
                     });
-                  }); // Handle error after the release.
+                  });
+                  connection.release(); // Handle error after the release.
 
                   if (err) throw err;
                 });
@@ -1123,21 +1636,77 @@ router.put("/updateChargerAddress", _util.isAuth, _util.isAdmin, /*#__PURE__*/fu
                 if (err) throw err; // not connected!
 
                 if (req.body.paymentType === 'Τιμολόγιο') {
-                  var sql = "UPDATE addresses INNER JOIN orders ON addresses.address_id=orders.billingAddress SET companyName=?, bussiness=?, afm=?, doy=?, country=?, district=?, city=?, street=?, phoneNumber=?, postalCode=?, comments=? WHERE orders.order_id=?";
-                  connection.query(sql, [req.body.charger.companyName, req.body.charger.bussiness, req.body.charger.afm, req.body.charger.doy, req.body.charger.country, req.body.charger.district, req.body.charger.city, req.body.charger.street, req.body.charger.phoneNumber, req.body.charger.postalCode, req.body.charger.comments, req.body.orderId], function (err, result, fields) {
-                    if (err) throw err;
-                    console.log("Order Details updated");
-                    res.status(200).send("OK");
+                  connection.beginTransaction(function (err) {
+                    if (err) {
+                      throw err;
+                    }
+
+                    var sql = "UPDATE addresses INNER JOIN orders ON addresses.address_id=orders.billingAddress SET companyName=?, bussiness=?, afm=?, doy=?, country=?, district=?, city=?, street=?, phoneNumber=?, postalCode=?, comments=? WHERE orders.order_id=?";
+                    connection.query(sql, [req.body.charger.companyName, req.body.charger.bussiness, req.body.charger.afm, req.body.charger.doy, req.body.charger.country, req.body.charger.district, req.body.charger.city, req.body.charger.street, req.body.charger.phoneNumber, req.body.charger.postalCode, req.body.charger.comments, req.body.orderId], function (err, result, fields) {
+                      if (err) {
+                        connection.rollback(function () {
+                          throw err;
+                        });
+                      }
+
+                      sql = "INSERT INTO billingAddressHistory (order_id, companyName, bussiness, afm, doy, country, district, city, street, phoneNumber, postalCode, comments, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                      connection.query(sql, [req.body.orderId, req.body.charger.companyName, req.body.charger.bussiness, req.body.charger.afm, req.body.charger.doy, req.body.charger.country, req.body.charger.district, req.body.charger.city, req.body.charger.street, req.body.charger.phoneNumber, req.body.charger.postalCode, req.body.charger.comments, req.user.username, new Date()], function (err, result, fields) {
+                        if (err) {
+                          connection.rollback(function () {
+                            throw err;
+                          });
+                        }
+
+                        connection.commit(function (err) {
+                          if (err) {
+                            connection.rollback(function () {
+                              throw err;
+                            });
+                          }
+
+                          res.status(200).send("OK");
+                          console.log('Transaction Completed Successfully.');
+                        });
+                      });
+                    });
                     connection.release(); // Handle error after the release.
 
                     if (err) throw err;
                   });
                 } else if (req.body.paymentType === 'Απόδειξη') {
-                  var sql = "UPDATE addresses INNER JOIN orders ON addresses.address_id=orders.billingAddress SET name=?, subname=?, country=?, district=?, city=?, street=?, phoneNumber=?, postalCode=?, comments=? WHERE orders.order_id=?";
-                  connection.query(sql, [req.body.charger.name, req.body.charger.subname, req.body.charger.country, req.body.charger.district, req.body.charger.city, req.body.charger.street, req.body.charger.phoneNumber, req.body.charger.postalCode, req.body.charger.comments, req.body.orderId], function (err, result, fields) {
-                    if (err) throw err;
-                    console.log("Order Details updated");
-                    res.status(200).send("OK");
+                  connection.beginTransaction(function (err) {
+                    if (err) {
+                      throw err;
+                    }
+
+                    var sql = "UPDATE addresses INNER JOIN orders ON addresses.address_id=orders.billingAddress SET name=?, subname=?, country=?, district=?, city=?, street=?, phoneNumber=?, postalCode=?, comments=? WHERE orders.order_id=?";
+                    connection.query(sql, [req.body.charger.name, req.body.charger.subname, req.body.charger.country, req.body.charger.district, req.body.charger.city, req.body.charger.street, req.body.charger.phoneNumber, req.body.charger.postalCode, req.body.charger.comments, req.body.orderId], function (err, result, fields) {
+                      if (err) {
+                        connection.rollback(function () {
+                          throw err;
+                        });
+                      }
+
+                      sql = "INSERT INTO billingAddressHistory (order_id, name, subname, country, district, city, street, phoneNumber, postalCode, comments, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                      connection.query(sql, [req.body.orderId, req.body.charger.name, req.body.charger.subname, req.body.charger.country, req.body.charger.district, req.body.charger.city, req.body.charger.street, req.body.charger.phoneNumber, req.body.charger.postalCode, req.body.charger.comments, req.user.username, new Date()], function (err, result, fields) {
+                        if (err) {
+                          connection.rollback(function () {
+                            throw err;
+                          });
+                        }
+
+                        connection.commit(function (err) {
+                          if (err) {
+                            connection.rollback(function () {
+                              throw err;
+                            });
+                          }
+
+                          res.status(200).send("OK");
+                          console.log('Transaction Completed Successfully.');
+                        });
+                      });
+                    });
                     connection.release(); // Handle error after the release.
 
                     if (err) throw err;
@@ -1173,11 +1742,39 @@ router.put("/updateShippingAddress", _util.isAuth, _util.isAdmin, /*#__PURE__*/f
                 if (err) throw err; // not connected!
 
                 if (req.body.shippingAddress) {
-                  var sql = "UPDATE addresses INNER JOIN orders ON addresses.address_id=orders.shippingAddress SET name=?, subname=?, country=?, district=?, city=?, street=?, postalCode=? WHERE orders.order_id=?";
-                  connection.query(sql, [req.body.shippingTo.name, req.body.shippingTo.subname, req.body.shippingTo.country, req.body.shippingTo.district, req.body.shippingTo.city, req.body.shippingTo.street, req.body.shippingTo.postalCode, req.body.orderId], function (err, result, fields) {
-                    if (err) throw err;
-                    console.log("Order Details updated");
-                    res.status(200).send("OK");
+                  connection.beginTransaction(function (err) {
+                    if (err) {
+                      throw err;
+                    }
+
+                    var sql = "UPDATE addresses INNER JOIN orders ON addresses.address_id=orders.shippingAddress SET name=?, subname=?, country=?, district=?, city=?, street=?, postalCode=? WHERE orders.order_id=?";
+                    connection.query(sql, [req.body.shippingTo.name, req.body.shippingTo.subname, req.body.shippingTo.country, req.body.shippingTo.district, req.body.shippingTo.city, req.body.shippingTo.street, req.body.shippingTo.postalCode, req.body.orderId], function (err, result, fields) {
+                      if (err) {
+                        connection.rollback(function () {
+                          throw err;
+                        });
+                      }
+
+                      sql = "INSERT INTO shippingAddressHistory (order_id, name, subname, country, district, city, street, phoneNumber, postalCode, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                      connection.query(sql, [req.body.orderId, req.body.shippingTo.name, req.body.shippingTo.subname, req.body.shippingTo.country, req.body.shippingTo.district, req.body.shippingTo.city, req.body.shippingTo.street, req.body.shippingTo.phoneNumber, req.body.shippingTo.postalCode, req.user.username, new Date()], function (err, result, fields) {
+                        if (err) {
+                          connection.rollback(function () {
+                            throw err;
+                          });
+                        }
+
+                        connection.commit(function (err) {
+                          if (err) {
+                            connection.rollback(function () {
+                              throw err;
+                            });
+                          }
+
+                          res.status(200).send("OK");
+                          console.log('Transaction Completed Successfully.');
+                        });
+                      });
+                    });
                     connection.release(); // Handle error after the release.
 
                     if (err) throw err;
@@ -1206,18 +1803,27 @@ router.put("/updateShippingAddress", _util.isAuth, _util.isAdmin, /*#__PURE__*/f
                           });
                         }
 
-                        connection.commit(function (err) {
+                        sql = "INSERT INTO shippingAddressHistory (order_id, name, subname, country, district, city, street, phoneNumber, postalCode, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                        connection.query(sql, [req.body.orderId, req.body.shippingTo.name, req.body.shippingTo.subname, req.body.shippingTo.country, req.body.shippingTo.district, req.body.shippingTo.city, req.body.shippingTo.street, req.body.shippingTo.phoneNumber, req.body.shippingTo.postalCode, req.user.username, new Date()], function (err, result, fields) {
                           if (err) {
                             connection.rollback(function () {
                               throw err;
                             });
                           }
 
-                          console.log('Transaction Completed Successfully.');
-                          connection.release();
+                          connection.commit(function (err) {
+                            if (err) {
+                              connection.rollback(function () {
+                                throw err;
+                              });
+                            }
+                          });
                         });
                       });
                     });
+                    connection.release(); // Handle error after the release.
+
+                    if (err) throw err;
                   });
                   /* End transaction */
                 }
@@ -1247,18 +1853,67 @@ router.put("/updateOrder", _util.isAuth, _util.isAdmin, /*#__PURE__*/function ()
         switch (_context16.prev = _context16.next) {
           case 0:
             try {
+              console.log(req.body.itemsCost);
+
               _connection["default"].getConnection(function (err, connection) {
                 if (err) throw err; // not connected!
 
-                var sql = "UPDATE order_products SET quantity=? WHERE order_id=? && model=? && product_id=?";
-                connection.query(sql, [req.body.quantity, req.body.order_id, req.body.model, req.body.product_id], function (err, result, fields) {
-                  if (err) throw err;
-                  console.log("Order updated");
-                  res.status(200).send("OK");
-                  connection.release(); // Handle error after the release.
+                connection.beginTransaction(function (err) {
+                  if (err) {
+                    throw err;
+                  }
 
-                  if (err) throw err;
+                  var sql = "UPDATE order_products SET quantity=? WHERE order_id=? && model=? && product_id=?";
+                  connection.query(sql, [req.body.quantity, req.body.order_id, req.body.model, req.body.product_id], function (err, result, fields) {
+                    if (err) {
+                      connection.rollback(function () {
+                        throw err;
+                      });
+                    }
+
+                    sql = "SELECT SUM(order_products.quantity*products.totalPrice) AS itemscost FROM order_products INNER JOIN products on order_products.product_id=products._id WHERE order_products.order_id=? ";
+                    connection.query(sql, [req.body.order_id], function (err, result, fields) {
+                      if (err) {
+                        connection.rollback(function () {
+                          throw err;
+                        });
+                      }
+
+                      var itemsCost = result[0].itemscost;
+                      var sql = "UPDATE orders SET itemsPrice=? WHERE order_id=?";
+                      connection.query(sql, [itemsCost, req.body.order_id], function (err, result, fields) {
+                        if (err) {
+                          connection.rollback(function () {
+                            throw err;
+                          });
+                        }
+
+                        sql = "INSERT INTO orderProductHistory (order_id, product_id, model, quantity, UpdatedBy, UpdatedAt, actions) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                        connection.query(sql, [req.body.order_id, req.body.product_id, req.body.model, req.body.quantity, req.user.username, new Date(), "Αλλαγή Ποσότητας"], function (err, result, fields) {
+                          if (err) {
+                            connection.rollback(function () {
+                              throw err;
+                            });
+                          }
+
+                          connection.commit(function (err) {
+                            if (err) {
+                              connection.rollback(function () {
+                                throw err;
+                              });
+                            }
+
+                            res.status(200).send("OK");
+                            console.log('Transaction Completed Successfully.');
+                          });
+                        });
+                      });
+                    });
+                  });
                 });
+                connection.release(); // Handle error after the release.
+
+                if (err) throw err;
               });
             } catch (error) {
               res.send({
@@ -1288,11 +1943,53 @@ router.post("/removeOrderItem", _util.isAuth, _util.isAdmin, /*#__PURE__*/functi
               _connection["default"].getConnection(function (err, connection) {
                 if (err) throw err; // not connected!
 
-                var sql = "DELETE FROM order_products WHERE order_id=? && model=? && product_id=?";
-                connection.query(sql, [req.body.order_id, req.body.model, req.body.product_id], function (err, result, fields) {
-                  if (err) throw err;
-                  console.log("Item deleted");
-                  res.status(200).send("OK");
+                connection.beginTransaction(function (err) {
+                  if (err) {
+                    throw err;
+                  }
+
+                  var sql = "INSERT INTO orderProductHistory (order_id, product_id, model, quantity, UpdatedBy, UpdatedAt, actions) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                  connection.query(sql, [req.body.order_id, req.body.product_id, req.body.model, req.body.quantity, req.user.username, new Date(), "Διαγραφή"], function (err, result, fields) {
+                    if (err) {
+                      connection.rollback(function () {
+                        throw err;
+                      });
+                    }
+
+                    var sql = "DELETE FROM order_products WHERE order_id=? && model=? && product_id=?";
+                    connection.query(sql, [req.body.order_id, req.body.model, req.body.product_id], function (err, result, fields) {
+                      if (err) throw err;
+                      sql = "SELECT SUM(order_products.quantity*products.totalPrice) AS itemscost FROM order_products INNER JOIN products on order_products.product_id=products._id WHERE order_products.order_id=? ";
+                      connection.query(sql, [req.body.order_id], function (err, result, fields) {
+                        if (err) {
+                          connection.rollback(function () {
+                            throw err;
+                          });
+                        }
+
+                        var itemsCost = result[0].itemscost;
+                        var sql = "UPDATE orders SET itemsPrice=? WHERE order_id=?";
+                        connection.query(sql, [itemsCost, req.body.order_id], function (err, result, fields) {
+                          if (err) {
+                            connection.rollback(function () {
+                              throw err;
+                            });
+                          }
+
+                          connection.commit(function (err) {
+                            if (err) {
+                              connection.rollback(function () {
+                                throw err;
+                              });
+                            }
+
+                            res.status(200).send("OK");
+                            console.log('Transaction Completed Successfully.');
+                          });
+                        });
+                      });
+                    });
+                  });
                   connection.release(); // Handle error after the release.
 
                   if (err) throw err;
@@ -1415,8 +2112,6 @@ router.get("/customerOrders/:id", _util.isAuth, /*#__PURE__*/function () {
                               throw err;
                             });
                           }
-
-                          connection.release();
                         });
                       });
                     });
@@ -1424,7 +2119,8 @@ router.get("/customerOrders/:id", _util.isAuth, /*#__PURE__*/function () {
                 });
               });
               /* End transaction */
-              // Handle error after the release.
+
+              connection.release(); // Handle error after the release.
 
               if (err) throw err;
             });

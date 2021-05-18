@@ -161,6 +161,13 @@ ul.breadcrumb {
 .form-container button{
     margin: 0.5rem;
 }
+
+.history_button{
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+}
+
 .content-margined{
     margin: 1rem;
     color: #312f8b;

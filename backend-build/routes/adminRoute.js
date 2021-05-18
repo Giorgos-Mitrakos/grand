@@ -9,6 +9,8 @@ var _express = _interopRequireDefault(require("express"));
 
 var _multer = _interopRequireDefault(require("multer"));
 
+var _bcrypt = _interopRequireDefault(require("bcrypt"));
+
 var _util = require("../util");
 
 var _connection = _interopRequireDefault(require("../connection"));
@@ -79,11 +81,11 @@ router.post("/createproduct", _util.isAuth, _util.isAdmin, upload.single('image'
             _connection["default"].getConnection(function (err, connection) {
               if (err) throw err; // not connected!
 
-              var sql = "INSERT INTO products (name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 10)";
-              connection.query(sql, [req.body.name, req.body.category, req.body.brand, req.body.subcategory, req.body.supplier, req.file.path.slice(15, req.file.path.length), req.body.price, req.body.percentage, req.body.description, req.user.username, new Date(), req.body.countInStock], function (err, result, fields) {
+              var sql = "INSERT INTO products (name, category, brand, subcategory, supplier, image, price, percentage,availability, description, CreatedBy, CreatedAt, countInStock) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 10)";
+              connection.query(sql, [req.body.name, req.body.category, req.body.brand, req.body.subcategory, req.body.supplier, req.file.path.slice(15, req.file.path.length), req.body.price, req.body.percentage, req.body.availability, req.body.description, req.user.username, new Date(), req.body.countInStock], function (err, result, fields) {
                 if (err) throw err;
                 var insertedId = result.insertId;
-                sql = "INSERT INTO productshistory (product_id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock FROM products WHERE _id=?";
+                sql = "INSERT INTO productshistory (product_id, name, category, brand, subcategory, supplier, image, price, percentage, availability, description, CreatedBy, CreatedAt, countInStock) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, availability, description, CreatedBy, CreatedAt, countInStock FROM products WHERE _id=?";
                 connection.query(sql, [insertedId], function (err, result, fields) {
                   if (err) throw err;
                 });
@@ -265,13 +267,34 @@ router.put("/changeVisibility", _util.isAuth, _util.isAdmin, /*#__PURE__*/functi
             _connection["default"].getConnection(function (err, connection) {
               if (err) throw err; // not connected!
 
-              var sql = 'UPDATE products SET visibility=? WHERE _id=?';
-              connection.query(sql, [req.body.productVisibility, req.body.productID], function (err, result, fields) {
-                if (err) throw err;
-                sql = "SELECT * FROM products WHERE _id=?";
-                connection.query(sql, [req.body.productID], function (err, result, fields) {
-                  if (err) throw err;
-                  res.send(result);
+              connection.beginTransaction(function (err) {
+                if (err) {
+                  throw err;
+                }
+
+                var sql = 'UPDATE products SET visibility=? WHERE _id=?';
+                connection.query(sql, [req.body.productVisibility, req.body.productID], function (err, result, fields) {
+                  if (err) throw err; // sql = "INSERT INTO productshistory (product_id, name, category, brand, subcategory, supplier, image, price, percentage, availability, visibility, description, CreatedBy, CreatedAt, countInStock, UpdatedBy, UpdatedAt) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, availability, visibility, description, CreatedBy, CreatedAt, countInStock, ?, ? FROM products WHERE _id=?";
+                  // connection.query(sql, [req.user.username, new Date, req.body.productID], function (err, result, fields) {
+                  //   if (err) {
+                  //     connection.rollback(function () {
+                  //       throw err;
+                  //     });
+                  //   }
+
+                  sql = "SELECT * FROM products WHERE _id=?";
+                  connection.query(sql, [req.body.productID], function (err, result, fields) {
+                    if (err) throw err;
+                    connection.commit(function (err) {
+                      if (err) {
+                        connection.rollback(function () {
+                          throw err;
+                        });
+                      }
+
+                      res.send(result);
+                    }); // })
+                  });
                 });
               });
               connection.release(); // Handle error after the release.
@@ -302,48 +325,351 @@ router.put("/category_percentage_change", _util.isAuth, _util.isAdmin, /*#__PURE
 
               if (req.body.supplier === '' || req.body.supplier === 'Επέλεξε Προμηθευτή' || req.body.supplier === null) {
                 if (req.body.subcategory === '' || req.body.subcategory === 'Επέλεξε Υποκατηγορία' || req.body.subcategory === null) {
-                  var sql = 'UPDATE products SET percentage=? WHERE category=?';
-                  connection.query(sql, [req.body.pricePercentage, req.body.category], function (err, result, fields) {
-                    if (err) throw err;
-                    res.send({
-                      message: "OK"
+                  connection.beginTransaction(function (err) {
+                    var sql = 'UPDATE products SET percentage=? WHERE category=?';
+                    connection.query(sql, [req.body.pricePercentage, req.body.category], function (err, result, fields) {
+                      if (err) throw err;
+                      sql = "INSERT INTO productshistory (product_id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock, UpdatedBy, UpdatedAt) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock, ?, ? FROM products WHERE category=?";
+                      connection.query(sql, [req.user.username, new Date(), req.body.category], function (err, result, fields) {
+                        if (err) {
+                          connection.rollback(function () {
+                            throw err;
+                          });
+                        }
+
+                        sql = "SELECT _id FROM products WHERE category=?";
+                        connection.query(sql, [req.body.category], function (err, result, fields) {
+                          if (err) {
+                            connection.rollback(function () {
+                              throw err;
+                            });
+                          }
+
+                          var product = result;
+
+                          var _loop = function _loop(i) {
+                            sql = "SELECT ID FROM productshistory WHERE product_id=? ORDER BY UpdatedAt DESC LIMIT 5";
+                            connection.query(sql, [product[i]._id], function (err, result, fields) {
+                              if (err) {
+                                connection.rollback(function () {
+                                  throw err;
+                                });
+                              }
+
+                              var idArray = [];
+
+                              for (var _i = 0; _i < result.length; _i++) {
+                                idArray.push(result[_i].ID);
+                              }
+
+                              sql = "DELETE FROM productshistory WHERE product_id=? && ID NOT IN (?)";
+                              connection.query(sql, [product[i]._id, idArray], function (err, result, fields) {
+                                if (err) {
+                                  connection.rollback(function () {
+                                    throw err;
+                                  });
+                                }
+                              });
+                            });
+                          };
+
+                          for (var i = 0; i < product.length; i++) {
+                            _loop(i);
+                          }
+
+                          connection.commit(function (err) {
+                            if (err) {
+                              connection.rollback(function () {
+                                throw err;
+                              });
+                            }
+
+                            console.log('Transaction Completed Successfully.');
+                            res.send({
+                              message: "OK"
+                            });
+                          });
+                        });
+                      });
                     });
                   });
                 } else {
-                  var sql = 'UPDATE products SET percentage=? WHERE category=? && subcategory=?';
-                  connection.query(sql, [req.body.pricePercentage, req.body.category, req.body.subcategory], function (err, result, fields) {
-                    if (err) throw err;
-                    res.send({
-                      message: "OK"
+                  connection.beginTransaction(function (err) {
+                    var sql = 'UPDATE products SET percentage=? WHERE category=? && subcategory=?';
+                    connection.query(sql, [req.body.pricePercentage, req.body.category, req.body.subcategory], function (err, result, fields) {
+                      if (err) throw err;
+                      sql = "INSERT INTO productshistory (product_id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock, UpdatedBy, UpdatedAt) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock, ?, ? FROM products WHERE category=? && subcategory=?";
+                      connection.query(sql, [req.user.username, new Date(), req.body.category, req.body.subcategory], function (err, result, fields) {
+                        if (err) {
+                          connection.rollback(function () {
+                            throw err;
+                          });
+                        }
+
+                        sql = "SELECT _id FROM products WHERE category=? && subcategory=?";
+                        connection.query(sql, [req.body.category, req.body.subcategory], function (err, result, fields) {
+                          if (err) {
+                            connection.rollback(function () {
+                              throw err;
+                            });
+                          }
+
+                          var product = result;
+
+                          var _loop2 = function _loop2(i) {
+                            sql = "SELECT ID FROM productshistory WHERE product_id=? ORDER BY UpdatedAt DESC LIMIT 5";
+                            connection.query(sql, [product[i]._id], function (err, result, fields) {
+                              if (err) {
+                                connection.rollback(function () {
+                                  throw err;
+                                });
+                              }
+
+                              var idArray = [];
+
+                              for (var _i2 = 0; _i2 < result.length; _i2++) {
+                                idArray.push(result[_i2].ID);
+                              }
+
+                              sql = "DELETE FROM productshistory WHERE product_id=? && ID NOT IN (?)";
+                              connection.query(sql, [product[i]._id, idArray], function (err, result, fields) {
+                                if (err) {
+                                  connection.rollback(function () {
+                                    throw err;
+                                  });
+                                }
+                              });
+                            });
+                          };
+
+                          for (var i = 0; i < product.length; i++) {
+                            _loop2(i);
+                          }
+
+                          connection.commit(function (err) {
+                            if (err) {
+                              connection.rollback(function () {
+                                throw err;
+                              });
+                            }
+
+                            console.log('Transaction Completed Successfully.');
+                            res.send({
+                              message: "OK"
+                            });
+                          });
+                        });
+                      });
                     });
                   });
                 }
               } else {
-                console.log(req.body.category);
-
                 if (req.body.category === '' || req.body.category === 'Επέλεξε Κατηγορία' || req.body.category === null) {
-                  var sql = 'UPDATE products SET percentage=? WHERE supplier=?';
-                  connection.query(sql, [req.body.pricePercentage, req.body.supplier], function (err, result, fields) {
-                    if (err) throw err;
-                    res.send({
-                      message: "OK"
+                  connection.beginTransaction(function (err) {
+                    var sql = 'UPDATE products SET percentage=? WHERE supplier=?';
+                    connection.query(sql, [req.body.pricePercentage, req.body.supplier], function (err, result, fields) {
+                      if (err) throw err;
+                      sql = "INSERT INTO productshistory (product_id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock, UpdatedBy, UpdatedAt) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock, ?, ? FROM products WHERE supplier=?";
+                      connection.query(sql, [req.user.username, new Date(), req.body.supplier], function (err, result, fields) {
+                        if (err) {
+                          connection.rollback(function () {
+                            throw err;
+                          });
+                        }
+
+                        sql = "SELECT _id FROM products WHERE supplier=?";
+                        connection.query(sql, [req.body.supplier], function (err, result, fields) {
+                          if (err) {
+                            connection.rollback(function () {
+                              throw err;
+                            });
+                          }
+
+                          var product = result;
+
+                          var _loop3 = function _loop3(i) {
+                            sql = "SELECT ID FROM productshistory WHERE product_id=? ORDER BY UpdatedAt DESC LIMIT 5";
+                            connection.query(sql, [product[i]._id], function (err, result, fields) {
+                              if (err) {
+                                connection.rollback(function () {
+                                  throw err;
+                                });
+                              }
+
+                              var idArray = [];
+
+                              for (var _i3 = 0; _i3 < result.length; _i3++) {
+                                idArray.push(result[_i3].ID);
+                              }
+
+                              sql = "DELETE FROM productshistory WHERE product_id=? && ID NOT IN (?)";
+                              connection.query(sql, [product[i]._id, idArray], function (err, result, fields) {
+                                if (err) {
+                                  connection.rollback(function () {
+                                    throw err;
+                                  });
+                                }
+                              });
+                            });
+                          };
+
+                          for (var i = 0; i < product.length; i++) {
+                            _loop3(i);
+                          }
+
+                          connection.commit(function (err) {
+                            if (err) {
+                              connection.rollback(function () {
+                                throw err;
+                              });
+                            }
+
+                            console.log('Transaction Completed Successfully.');
+                            res.send({
+                              message: "OK"
+                            });
+                          });
+                        });
+                      });
                     });
                   });
                 } else {
                   if (req.body.subcategory === '' || req.body.subcategory === 'Επέλεξε Υποκατηγορία' || req.body.subcategory === null) {
-                    var sql = 'UPDATE products SET percentage=? WHERE category=? && supplier=?';
-                    connection.query(sql, [req.body.pricePercentage, req.body.category, req.body.supplier], function (err, result, fields) {
-                      if (err) throw err;
-                      res.send({
-                        message: "OK"
+                    connection.beginTransaction(function (err) {
+                      var sql = 'UPDATE products SET percentage=? WHERE category=? && supplier=?';
+                      connection.query(sql, [req.body.pricePercentage, req.body.category, req.body.supplier], function (err, result, fields) {
+                        if (err) throw err;
+                        sql = "INSERT INTO productshistory (product_id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock, UpdatedBy, UpdatedAt) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock, ?, ? FROM products WHERE category=? && supplier=?";
+                        connection.query(sql, [req.user.username, new Date(), req.body.category, req.body.supplier], function (err, result, fields) {
+                          if (err) {
+                            connection.rollback(function () {
+                              throw err;
+                            });
+                          }
+
+                          sql = "SELECT _id FROM products WHERE category=? && supplier=?";
+                          connection.query(sql, [req.body.category, req.body.supplier], function (err, result, fields) {
+                            if (err) {
+                              connection.rollback(function () {
+                                throw err;
+                              });
+                            }
+
+                            var product = result;
+
+                            var _loop4 = function _loop4(i) {
+                              sql = "SELECT ID FROM productshistory WHERE product_id=? ORDER BY UpdatedAt DESC LIMIT 5";
+                              connection.query(sql, [product[i]._id], function (err, result, fields) {
+                                if (err) {
+                                  connection.rollback(function () {
+                                    throw err;
+                                  });
+                                }
+
+                                var idArray = [];
+
+                                for (var _i4 = 0; _i4 < result.length; _i4++) {
+                                  idArray.push(result[_i4].ID);
+                                }
+
+                                sql = "DELETE FROM productshistory WHERE product_id=? && ID NOT IN (?)";
+                                connection.query(sql, [product[i]._id, idArray], function (err, result, fields) {
+                                  if (err) {
+                                    connection.rollback(function () {
+                                      throw err;
+                                    });
+                                  }
+                                });
+                              });
+                            };
+
+                            for (var i = 0; i < product.length; i++) {
+                              _loop4(i);
+                            }
+
+                            connection.commit(function (err) {
+                              if (err) {
+                                connection.rollback(function () {
+                                  throw err;
+                                });
+                              }
+
+                              console.log('Transaction Completed Successfully.');
+                              res.send({
+                                message: "OK"
+                              });
+                            });
+                          });
+                        });
                       });
                     });
                   } else {
-                    var sql = 'UPDATE products SET percentage=? WHERE category=? && subcategory=? && supplier=?';
-                    connection.query(sql, [req.body.pricePercentage, req.body.category, req.body.subcategory, req.body.supplier], function (err, result, fields) {
-                      if (err) throw err;
-                      res.send({
-                        message: "OK"
+                    connection.beginTransaction(function (err) {
+                      var sql = 'UPDATE products SET percentage=? WHERE category=? && subcategory=? && supplier=?';
+                      connection.query(sql, [req.body.pricePercentage, req.body.category, req.body.subcategory, req.body.supplier], function (err, result, fields) {
+                        if (err) throw err;
+                        sql = "INSERT INTO productshistory (product_id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock, UpdatedBy, UpdatedAt) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock, ?, ? FROM products WHERE category=? && subcategory=? && supplier=?";
+                        connection.query(sql, [req.user.username, new Date(), req.body.category, req.body.subcategory, req.body.supplier], function (err, result, fields) {
+                          if (err) {
+                            connection.rollback(function () {
+                              throw err;
+                            });
+                          }
+
+                          sql = "SELECT _id FROM products WHERE category=? && subcategory=? && supplier=?";
+                          connection.query(sql, [req.body.category, req.body.subcategory, req.body.supplier], function (err, result, fields) {
+                            if (err) {
+                              connection.rollback(function () {
+                                throw err;
+                              });
+                            }
+
+                            var product = result;
+
+                            var _loop5 = function _loop5(i) {
+                              sql = "SELECT ID FROM productshistory WHERE product_id=? ORDER BY UpdatedAt DESC LIMIT 5";
+                              connection.query(sql, [product[i]._id], function (err, result, fields) {
+                                if (err) {
+                                  connection.rollback(function () {
+                                    throw err;
+                                  });
+                                }
+
+                                var idArray = [];
+
+                                for (var _i5 = 0; _i5 < result.length; _i5++) {
+                                  idArray.push(result[_i5].ID);
+                                }
+
+                                sql = "DELETE FROM productshistory WHERE product_id=? && ID NOT IN (?)";
+                                connection.query(sql, [product[i]._id, idArray], function (err, result, fields) {
+                                  if (err) {
+                                    connection.rollback(function () {
+                                      throw err;
+                                    });
+                                  }
+                                });
+                              });
+                            };
+
+                            for (var i = 0; i < product.length; i++) {
+                              _loop5(i);
+                            }
+
+                            connection.commit(function (err) {
+                              if (err) {
+                                connection.rollback(function () {
+                                  throw err;
+                                });
+                              }
+
+                              console.log('Transaction Completed Successfully.');
+                              res.send({
+                                message: "OK"
+                              });
+                            });
+                          });
+                        });
                       });
                     });
                   }
@@ -377,51 +703,109 @@ router.put("/createproduct/:id", _util.isAuth, _util.isAdmin, upload.single('ima
             productId = req.params.id;
 
             _connection["default"].getConnection(function (err, connection) {
-              if (err) throw err; // not connected!
-
-              var sql = 'SELECT * FROM products WHERE _ID=?';
-              connection.query(sql, [productId], function (err, result, fields) {
-                if (err) throw err;
-
-                if (Object.keys(result).length === 0) {
-                  res.send({
-                    message: 'Product not found'
-                  });
-                  return;
+              connection.beginTransaction(function (err) {
+                if (err) {
+                  throw err;
                 }
-              });
-              sql = "UPDATE products SET name=?, category=?, brand=?, subcategory=?, supplier=?, image=?, price=?, percentage=?, description=? WHERE _id=?";
-              connection.query(sql, [req.body.name, req.body.category, req.body.brand, req.body.subcategory, req.body.supplier, req.body.image, req.body.price, req.body.percentage, req.body.description, productId], function (err, result, fields) {
-                if (err) throw err;
-                sql = "INSERT INTO productshistory (product_id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock, UpdatedBy, UpdatedAt) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock, ?, ? FROM products WHERE _id=?";
-                connection.query(sql, [req.user.username, new Date(), productId], function (err, result, fields) {
-                  if (err) throw err;
-                });
-              });
-              sql = "SELECT * FROM products WHERE _id=?";
-              connection.query(sql, [productId], function (err, result, fields) {
-                if (err) throw err;
 
-                if (Object.keys(result).length !== 0) {
-                  Object.keys(result).forEach(function (key) {
-                    var row = result[key];
-                    var product = {
-                      name: row.name,
-                      category: row.category,
-                      brand: row.brand,
-                      //image: row.image,
-                      price: row.price,
-                      percentage: row.percentage,
-                      description: row.description,
-                      countInStock: row.countInStock
-                    };
+                var sql = 'SELECT * FROM products WHERE _ID=?';
+                connection.query(sql, [productId], function (err, result, fields) {
+                  if (err) {
+                    connection.rollback(function () {
+                      throw err;
+                    });
+                  }
+
+                  if (Object.keys(result).length === 0) {
                     res.send({
-                      product: product
+                      message: 'Product not found'
+                    });
+                    return;
+                  }
+
+                  sql = "UPDATE products SET name=?, category=?, brand=?, subcategory=?, supplier=?, image=?, price=?, percentage=?, availability=?, description=? WHERE _id=?";
+                  connection.query(sql, [req.body.name, req.body.category, req.body.brand, req.body.subcategory, req.body.supplier, req.body.image, req.body.price, req.body.percentage, req.body.availability, req.body.description, productId], function (err, result, fields) {
+                    if (err) {
+                      connection.rollback(function () {
+                        throw err;
+                      });
+                    }
+
+                    sql = "INSERT INTO productshistory (product_id, name, category, brand, subcategory, supplier, image, price, percentage, availability, visibility, description, CreatedBy, CreatedAt, countInStock, UpdatedBy, UpdatedAt) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, availability, visibility, description, CreatedBy, CreatedAt, countInStock, ?, ? FROM products WHERE _id=?";
+                    connection.query(sql, [req.user.username, new Date(), productId], function (err, result, fields) {
+                      if (err) {
+                        connection.rollback(function () {
+                          throw err;
+                        });
+                      }
+
+                      sql = "SELECT ID FROM productshistory WHERE product_id=? ORDER BY UpdatedAt DESC LIMIT 5";
+                      connection.query(sql, [productId], function (err, result, fields) {
+                        if (err) {
+                          connection.rollback(function () {
+                            throw err;
+                          });
+                        }
+
+                        var idArray = [];
+
+                        for (var i = 0; i < result.length; i++) {
+                          idArray.push(result[i].ID);
+                        }
+
+                        sql = "DELETE FROM productshistory WHERE product_id=? && ID NOT IN (?)";
+                        connection.query(sql, [productId, idArray], function (err, result, fields) {
+                          if (err) {
+                            connection.rollback(function () {
+                              throw err;
+                            });
+                          }
+
+                          sql = "SELECT * FROM products WHERE _id=?";
+                          connection.query(sql, [productId], function (err, result, fields) {
+                            if (err) {
+                              connection.rollback(function () {
+                                throw err;
+                              });
+                            }
+
+                            var product = {};
+
+                            if (Object.keys(result).length !== 0) {
+                              Object.keys(result).forEach(function (key) {
+                                var row = result[key];
+                                product = {
+                                  name: row.name,
+                                  category: row.category,
+                                  brand: row.brand,
+                                  subcategory: row.subcategory,
+                                  supplier: row.supplier,
+                                  price: row.price,
+                                  percentage: row.percentage,
+                                  description: row.description,
+                                  countInStock: row.countInStock
+                                };
+                              });
+                            }
+
+                            connection.commit(function (err) {
+                              if (err) {
+                                connection.rollback(function () {
+                                  throw err;
+                                });
+                              }
+
+                              console.log('Transaction Completed Successfully.');
+                              res.status(200).send(product);
+                              connection.release();
+                            });
+                          });
+                        });
+                      });
                     });
                   });
-                }
-              });
-              connection.release(); // Handle error after the release.
+                });
+              }); // Handle error after the release.
 
               if (err) throw err;
             });
@@ -1080,7 +1464,7 @@ router.post("/featurelist", _util.isAuth, _util.isAdmin, /*#__PURE__*/function (
             _connection["default"].getConnection(function (err, connection) {
               if (err) throw err; // not connected!
 
-              connection.query('SELECT * FROM features WHERE product_id=?', [req.body.productId], function (err, result, fields) {
+              connection.query('SELECT * FROM features WHERE product_id=? ORDER BY feature_title,feature', [req.body.productId], function (err, result, fields) {
                 if (err) throw err;
                 res.send(result);
                 connection.release(); // Handle error after the release.
@@ -1125,26 +1509,36 @@ router.post("/insertfeature", _util.isAuth, _util.isAdmin, /*#__PURE__*/function
                     });
                   }
 
-                  sql = "SELECT * FROM features WHERE product_id=?";
-                  connection.query(sql, [req.body.productId], function (err, result) {
+                  var sql = "INSERT INTO featuresHistory (product_id, feature_title, feature, UpdatedBy, UpdatedAt, actions) VALUES (?,?,?,?,?,?)";
+                  connection.query(sql, [req.body.productId, req.body.title, req.body.name, req.user.username, new Date(), "Προσθήκη"], function (err, result, fields) {
                     if (err) {
                       connection.rollback(function () {
                         throw err;
                       });
                     }
 
-                    res.send(result);
-                    connection.commit(function (err) {
+                    sql = "SELECT * FROM features WHERE product_id=? ORDER BY feature_title,feature";
+                    connection.query(sql, [req.body.productId], function (err, result) {
                       if (err) {
                         connection.rollback(function () {
                           throw err;
                         });
                       }
 
-                      connection.release();
+                      res.send(result);
+                      connection.commit(function (err) {
+                        if (err) {
+                          connection.rollback(function () {
+                            throw err;
+                          });
+                        }
+                      });
                     });
                   });
                 });
+                connection.release(); // Handle error after the release.
+
+                if (err) throw err;
               });
               /* End transaction */
             });
@@ -1177,34 +1571,44 @@ router.post("/deletefeature", _util.isAuth, _util.isAdmin, /*#__PURE__*/function
                   throw err;
                 }
 
-                var sql = "DELETE FROM features WHERE features_id=?";
-                connection.query(sql, [req.body.featureId], function (err, result, fields) {
+                var sql = "INSERT INTO featuresHistory (product_id, feature_title, feature, UpdatedBy, UpdatedAt, actions) SELECT  features.product_id, features.feature_title, features.feature, ?, ? , ? FROM features WHERE features_id=?";
+                connection.query(sql, [req.user.username, new Date(), "Διαγραφή", req.body.featureId], function (err, result, fields) {
                   if (err) {
                     connection.rollback(function () {
                       throw err;
                     });
                   }
 
-                  sql = "SELECT * FROM features WHERE product_id=?";
-                  connection.query(sql, [req.body.productId], function (err, result) {
+                  var sql = "DELETE FROM features WHERE features_id=?";
+                  connection.query(sql, [req.body.featureId], function (err, result, fields) {
                     if (err) {
                       connection.rollback(function () {
                         throw err;
                       });
                     }
 
-                    res.send(result);
-                    connection.commit(function (err) {
+                    sql = "SELECT * FROM features WHERE product_id=?";
+                    connection.query(sql, [req.body.productId], function (err, result) {
                       if (err) {
                         connection.rollback(function () {
                           throw err;
                         });
                       }
 
-                      connection.release();
+                      res.send(result);
+                      connection.commit(function (err) {
+                        if (err) {
+                          connection.rollback(function () {
+                            throw err;
+                          });
+                        }
+                      });
                     });
                   });
                 });
+                connection.release(); // Handle error after the release.
+
+                if (err) throw err;
               });
               /* End transaction */
             });
@@ -1230,7 +1634,7 @@ router.post("/categories", _util.isAuth, _util.isAdmin, /*#__PURE__*/function ()
             _connection["default"].getConnection(function (err, connection) {
               if (err) throw err; // not connected!
 
-              connection.query('SELECT * FROM categories', function (err, result, fields) {
+              connection.query('SELECT * FROM categories ORDER BY category', function (err, result, fields) {
                 if (err) throw err;
                 res.send(result);
                 connection.release(); // Handle error after the release.
@@ -1260,7 +1664,7 @@ router.post("/subcategories", _util.isAuth, _util.isAdmin, /*#__PURE__*/function
             _connection["default"].getConnection(function (err, connection) {
               if (err) throw err; // not connected!
 
-              connection.query('SELECT * FROM categories WHERE parent_id=?', [req.body.parentId], function (err, result, fields) {
+              connection.query('SELECT * FROM categories WHERE parent_id=? ORDER BY category', [req.body.parentId], function (err, result, fields) {
                 if (err) throw err;
                 res.send(result);
                 connection.release(); // Handle error after the release.
@@ -1572,19 +1976,54 @@ router.post("/insertcompatibility", _util.isAuth, _util.isAdmin, /*#__PURE__*/fu
             _connection["default"].getConnection(function (err, connection) {
               if (err) throw err; // not connected!
 
-              var sql = "INSERT INTO compatibilities (product_id,compatibility_company,compatibility_model) VALUES (?,?,?)";
-              connection.query(sql, [req.body.productId, req.body.company, req.body.model], function (err, result, fields) {
-                if (err) throw err;
-                var compat_id = result.insertId;
-                sql = "SELECT * FROM compatibilities WHERE compatibility_id=?";
-                connection.query(sql, [compat_id], function (err, result, fields) {
-                  if (err) throw err;
-                  res.status(201).send(result);
-                });
-              });
-              connection.release(); // Handle error after the release.
+              connection.beginTransaction(function (err) {
+                if (err) {
+                  throw err;
+                }
 
-              if (err) throw err;
+                var sql = "INSERT INTO compatibilities (product_id,compatibility_company,compatibility_model) VALUES (?,?,?)";
+                connection.query(sql, [req.body.productId, req.body.company, req.body.model], function (err, result, fields) {
+                  if (err) {
+                    connection.rollback(function () {
+                      throw err;
+                    });
+                  }
+
+                  var compat_id = result.insertId;
+                  var sql = "INSERT INTO compatibilitiesHistory (product_id, compatibility_company, compatibility_model, UpdatedBy, UpdatedAt, actions) VALUES (?,?,?,?,?,?)";
+                  connection.query(sql, [req.body.productId, req.body.company, req.body.model, req.user.username, new Date(), "Προσθήκη"], function (err, result, fields) {
+                    if (err) {
+                      connection.rollback(function () {
+                        throw err;
+                      });
+                    }
+
+                    sql = "SELECT * FROM compatibilities WHERE compatibility_id=? ORDER BY compatibility_company ASC, compatibility_model ASC";
+                    connection.query(sql, [compat_id], function (err, result, fields) {
+                      if (err) {
+                        connection.rollback(function () {
+                          throw err;
+                        });
+                      }
+
+                      var compatibilities = result;
+                      connection.commit(function (err) {
+                        if (err) {
+                          connection.rollback(function () {
+                            throw err;
+                          });
+                        }
+
+                        res.status(201).send(compatibilities);
+                        console.log('Transaction Completed Successfully.');
+                      });
+                    });
+                  });
+                });
+                connection.release(); // Handle error after the release.
+
+                if (err) throw err;
+              });
             });
 
           case 1:
@@ -1608,12 +2047,12 @@ router.post("/getproductcompatibilities", _util.isAuth, _util.isAdmin, /*#__PURE
             _connection["default"].getConnection(function (err, connection) {
               if (err) throw err; // not connected!
 
-              var sql = "SELECT * FROM compatibilities WHERE product_id=? ORDER BY compatibility_model";
+              var sql = "SELECT * FROM compatibilities WHERE product_id=? ORDER BY compatibility_company ASC,compatibility_model ASC";
               connection.query(sql, [req.body.productId], function (err, result, fields) {
                 if (err) throw err;
                 res.status(200).send(result);
-                connection.release();
-              }); // Handle error after the release.
+              });
+              connection.release(); // Handle error after the release.
 
               if (err) throw err;
             });
@@ -1639,14 +2078,43 @@ router.post("/deletecompatibility", _util.isAuth, _util.isAdmin, /*#__PURE__*/fu
             _connection["default"].getConnection(function (err, connection) {
               if (err) throw err; // not connected!
 
-              var sql = "DELETE FROM compatibilities WHERE compatibility_id=?";
-              connection.query(sql, [req.body.compatId], function (err, result, fields) {
-                if (err) throw err;
-                res.status(200).send({
-                  message: "OK"
+              connection.beginTransaction(function (err) {
+                if (err) {
+                  throw err;
+                }
+
+                var sql = "INSERT INTO compatibilitiesHistory (product_id, compatibility_company, compatibility_model, UpdatedBy, UpdatedAt, actions) SELECT  compatibilities.product_id, compatibilities.compatibility_company, compatibilities.compatibility_model, ?, ? , ? FROM compatibilities WHERE compatibility_id=?";
+                connection.query(sql, [req.user.username, new Date(), "Διαγραφή", req.body.compatId], function (err, result, fields) {
+                  if (err) {
+                    connection.rollback(function () {
+                      throw err;
+                    });
+                  }
+
+                  var sql = "DELETE FROM compatibilities WHERE compatibility_id=?";
+                  connection.query(sql, [req.body.compatId], function (err, result, fields) {
+                    if (err) {
+                      connection.rollback(function () {
+                        throw err;
+                      });
+                    }
+
+                    connection.commit(function (err) {
+                      if (err) {
+                        connection.rollback(function () {
+                          throw err;
+                        });
+                      }
+
+                      res.status(200).send({
+                        message: "OK"
+                      });
+                      console.log('Transaction Completed Successfully.');
+                    });
+                  });
                 });
-                connection.release();
-              }); // Handle error after the release.
+              });
+              connection.release(); // Handle error after the release.
 
               if (err) throw err;
             });
@@ -1661,6 +2129,341 @@ router.post("/deletecompatibility", _util.isAuth, _util.isAdmin, /*#__PURE__*/fu
 
   return function (_x100, _x101, _x102) {
     return _ref40.apply(this, arguments);
+  };
+}());
+router.post("/getAdmins", _util.isAuth, _util.isAdmin, _util.isSuperAdmin, /*#__PURE__*/function () {
+  var _ref41 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee41(req, res) {
+    return regeneratorRuntime.wrap(function _callee41$(_context41) {
+      while (1) {
+        switch (_context41.prev = _context41.next) {
+          case 0:
+            _connection["default"].getConnection(function (err, connection) {
+              if (err) throw err; // not connected!
+
+              var sql = 'SELECT username, email, isAdmin FROM users WHERE isAdmin=1 ORDER BY username';
+              connection.query(sql, function (err, result, fields) {
+                if (err) throw err;
+                res.send(result);
+                connection.release(); // Handle error after the release.
+
+                if (err) throw err;
+              });
+            });
+
+          case 1:
+          case "end":
+            return _context41.stop();
+        }
+      }
+    }, _callee41);
+  }));
+
+  return function (_x103, _x104) {
+    return _ref41.apply(this, arguments);
+  };
+}());
+router.post("/insertAdmin", _util.isAuth, _util.isAdmin, _util.isSuperAdmin, /*#__PURE__*/function () {
+  var _ref42 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee42(req, res) {
+    return regeneratorRuntime.wrap(function _callee42$(_context42) {
+      while (1) {
+        switch (_context42.prev = _context42.next) {
+          case 0:
+            _connection["default"].getConnection(function (err, connection) {
+              if (err) throw err; // not connected!
+
+              connection.beginTransaction(function (err) {
+                if (err) {
+                  throw err;
+                }
+
+                _bcrypt["default"].hash(req.body.password, 10, function (err, hash) {
+                  // Store hash in your password DB.
+                  var sql = "INSERT INTO users (username,email,password,isAdmin) VALUES (?,?,?,?)";
+                  connection.query(sql, [req.body.username, req.body.email, hash, "1"], function (err, result, fields) {
+                    if (err) {
+                      connection.rollback(function () {
+                        throw err;
+                      });
+                    }
+
+                    sql = 'SELECT username, email, isAdmin FROM users WHERE isAdmin=1 ORDER BY username';
+                    connection.query(sql, function (err, result, fields) {
+                      if (err) {
+                        connection.rollback(function () {
+                          throw err;
+                        });
+                      }
+
+                      var admins = result;
+                      connection.commit(function (err) {
+                        if (err) {
+                          connection.rollback(function () {
+                            throw err;
+                          });
+                        }
+
+                        res.send(admins);
+                      });
+                    });
+                  });
+                });
+
+                connection.release(); // Handle error after the release.
+
+                if (err) throw err;
+              });
+            });
+
+          case 1:
+          case "end":
+            return _context42.stop();
+        }
+      }
+    }, _callee42);
+  }));
+
+  return function (_x105, _x106) {
+    return _ref42.apply(this, arguments);
+  };
+}());
+router.post("/deleteAdmin", _util.isAuth, _util.isAdmin, _util.isSuperAdmin, /*#__PURE__*/function () {
+  var _ref43 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee43(req, res) {
+    return regeneratorRuntime.wrap(function _callee43$(_context43) {
+      while (1) {
+        switch (_context43.prev = _context43.next) {
+          case 0:
+            _connection["default"].getConnection(function (err, connection) {
+              if (err) throw err; // not connected!
+
+              connection.beginTransaction(function (err) {
+                if (err) {
+                  throw err;
+                }
+
+                var sql = "DELETE FROM users WHERE email=?";
+                connection.query(sql, [req.body.email], function (err, result, fields) {
+                  if (err) {
+                    connection.rollback(function () {
+                      throw err;
+                    });
+                  }
+
+                  sql = 'SELECT username, email, isAdmin FROM users WHERE isAdmin=1 ORDER BY username';
+                  connection.query(sql, function (err, result, fields) {
+                    if (err) {
+                      connection.rollback(function () {
+                        throw err;
+                      });
+                    }
+
+                    var admins = result;
+                    connection.commit(function (err) {
+                      if (err) {
+                        connection.rollback(function () {
+                          throw err;
+                        });
+                      }
+
+                      res.send(admins);
+                    });
+                  });
+                });
+                connection.release(); // Handle error after the release.
+
+                if (err) throw err;
+              });
+            });
+
+          case 1:
+          case "end":
+            return _context43.stop();
+        }
+      }
+    }, _callee43);
+  }));
+
+  return function (_x107, _x108) {
+    return _ref43.apply(this, arguments);
+  };
+}());
+router.post("/getProductHistory", _util.isAuth, _util.isAdmin, _util.isSuperAdmin, /*#__PURE__*/function () {
+  var _ref44 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee44(req, res) {
+    var productId;
+    return regeneratorRuntime.wrap(function _callee44$(_context44) {
+      while (1) {
+        switch (_context44.prev = _context44.next) {
+          case 0:
+            productId = req.body.productId;
+
+            _connection["default"].getConnection(function (err, connection) {
+              if (err) throw err; // not connected!
+
+              connection.beginTransaction(function (err) {
+                if (err) {
+                  throw err;
+                }
+
+                var sql = "SELECT * FROM productsHistory WHERE product_id=? ORDER BY UpdatedAt DESC";
+                connection.query(sql, [productId], function (err, result, fields) {
+                  if (err) {
+                    connection.rollback(function () {
+                      throw err;
+                    });
+                  }
+
+                  var productHistory = result;
+                  sql = "SELECT * FROM compatibilitiesHistory WHERE product_id=? ORDER BY UpdatedAt DESC";
+                  connection.query(sql, [productId], function (err, result, fields) {
+                    if (err) {
+                      connection.rollback(function () {
+                        throw err;
+                      });
+                    }
+
+                    var compHistory = result;
+                    sql = "SELECT * FROM featureshistory WHERE product_id=? ORDER BY UpdatedAt DESC";
+                    connection.query(sql, [productId], function (err, result, fields) {
+                      if (err) {
+                        connection.rollback(function () {
+                          throw err;
+                        });
+                      }
+
+                      var featHistory = result;
+                      connection.commit(function (err) {
+                        if (err) {
+                          connection.rollback(function () {
+                            throw err;
+                          });
+                        }
+
+                        var resp = {
+                          productHistory: productHistory,
+                          compHistory: compHistory,
+                          featHistory: featHistory
+                        };
+                        res.send(resp);
+                      });
+                    });
+                  });
+                });
+                connection.release(); // Handle error after the release.
+
+                if (err) throw err;
+              });
+            });
+
+          case 2:
+          case "end":
+            return _context44.stop();
+        }
+      }
+    }, _callee44);
+  }));
+
+  return function (_x109, _x110) {
+    return _ref44.apply(this, arguments);
+  };
+}());
+router.post("/getOrderHistory", _util.isAuth, _util.isAdmin, _util.isSuperAdmin, /*#__PURE__*/function () {
+  var _ref45 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee45(req, res) {
+    var orderId;
+    return regeneratorRuntime.wrap(function _callee45$(_context45) {
+      while (1) {
+        switch (_context45.prev = _context45.next) {
+          case 0:
+            orderId = req.body.orderId;
+
+            _connection["default"].getConnection(function (err, connection) {
+              if (err) throw err; // not connected!
+
+              connection.beginTransaction(function (err) {
+                if (err) {
+                  throw err;
+                }
+
+                var sql = "SELECT * FROM orderStatusHistory WHERE order_id=? ORDER BY UpdatedAt DESC";
+                connection.query(sql, [orderId], function (err, result, fields) {
+                  if (err) {
+                    connection.rollback(function () {
+                      throw err;
+                    });
+                  }
+
+                  var orderStatusHistory = result;
+                  sql = "SELECT * FROM orderSendingPaymentHistory WHERE order_id=? ORDER BY UpdatedAt DESC";
+                  connection.query(sql, [orderId], function (err, result, fields) {
+                    if (err) {
+                      connection.rollback(function () {
+                        throw err;
+                      });
+                    }
+
+                    var orderSendingPaymentHistory = result;
+                    sql = "SELECT * FROM billingAddressHistory WHERE order_id=? ORDER BY UpdatedAt DESC";
+                    connection.query(sql, [orderId], function (err, result, fields) {
+                      if (err) {
+                        connection.rollback(function () {
+                          throw err;
+                        });
+                      }
+
+                      var billingAddressHistory = result;
+                      sql = "SELECT * FROM shippingAddressHistory WHERE order_id=? ORDER BY UpdatedAt DESC";
+                      connection.query(sql, [orderId], function (err, result, fields) {
+                        if (err) {
+                          connection.rollback(function () {
+                            throw err;
+                          });
+                        }
+
+                        var shippingAddressHistory = result;
+                        sql = "SELECT orderProductHistory.product_id, orderProductHistory.model, orderProductHistory.quantity, orderProductHistory.image_case, orderProductHistory.UpdatedBy, orderProductHistory.UpdatedAt, orderProductHistory.actions, products.name, products.category, products.brand, products.image FROM orderProductHistory INNER JOIN products ON orderProductHistory.product_id=products._id  WHERE orderProductHistory.order_id=? ORDER BY orderProductHistory.product_id , UpdatedAt DESC";
+                        connection.query(sql, [orderId], function (err, result, fields) {
+                          if (err) {
+                            connection.rollback(function () {
+                              throw err;
+                            });
+                          }
+
+                          var orderProductHistory = result;
+                          connection.commit(function (err) {
+                            if (err) {
+                              connection.rollback(function () {
+                                throw err;
+                              });
+                            }
+
+                            var resp = {
+                              orderStatusHistory: orderStatusHistory,
+                              orderSendingPaymentHistory: orderSendingPaymentHistory,
+                              billingAddressHistory: billingAddressHistory,
+                              shippingAddressHistory: shippingAddressHistory,
+                              orderProductHistory: orderProductHistory
+                            };
+                            res.send(resp);
+                          });
+                        });
+                      });
+                    });
+                  });
+                });
+                connection.release(); // Handle error after the release.
+
+                if (err) throw err;
+              });
+            });
+
+          case 2:
+          case "end":
+            return _context45.stop();
+        }
+      }
+    }, _callee45);
+  }));
+
+  return function (_x111, _x112) {
+    return _ref45.apply(this, arguments);
   };
 }());
 var _default = router;

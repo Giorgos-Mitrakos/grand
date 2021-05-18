@@ -8,7 +8,7 @@ import { productListReducer, productDetailsReducer, mostViewedProductsReducer,
     featureTitlesByCategoryReducer, featureNamesByCategoryReducer, 
     productFeaturesReducer, sendingListReducer, paymentListReducer, 
     compatibilitiesByCategoryReducer, compatibilityCompaniesReducer, 
-    compatibilityModelsReducer, productCompatibilitiesReducer, suppliersListReducer, searchForItemsReducer, itemsPerPageReducer, textSearchReducer } from "./reducers/productReducer";
+    compatibilityModelsReducer, productCompatibilitiesReducer, suppliersListReducer, searchForItemsReducer, itemsPerPageReducer, textSearchReducer, productHistoryReducer } from "./reducers/productReducer";
 import { modelListReducer, phoneModelListReducer, phonesBrandListReducer } from "./reducers/modelReducer";
 import { cartReducer } from "./reducers/cartReducer";
 import Cookie from 'js-cookie';
@@ -17,7 +17,7 @@ import { userSigninReducer, userRegisterReducer, userAccountInfoReducer,
 import { wishListReducer } from "./reducers/wishListReducer";
 import { orderReducer, orderListReducer, orderDetailsReducer, changeOrderStatusReducer,
      updateOrderStatusReducer, 
-     updateOrderReducer, deleteOrderItemReducer, customerOrderListReducer, customerOrderDetailsReducer } from "./reducers/orderReducer";
+     updateOrderReducer, deleteOrderItemReducer, customerOrderListReducer, customerOrderDetailsReducer, orderHistoryReducer } from "./reducers/orderReducer";
 import { collectionAdminReducer, collectionDetailsReducer, collectionListReducer, collectionRandomListReducer } from "./reducers/collectionReducer";
 import { emailAccountDeleteConfirmationReducer, emailAddNewsletterReducer, emailContactReducer, emailOrderCorfimationReducer, emailOrderNotificationReducer, emailPassUpdateConfirmationReducer, emailRegisterReducer, 
     emailRemoveNewsletterReducer, emailResetPasswordReducer, updatePasswordReducer } from "./reducers/emailReducer";
@@ -93,7 +93,9 @@ const reducer=combineReducers({
     searchForItems:searchForItemsReducer,
     perPageItems:itemsPerPageReducer,
     textSearch:textSearchReducer,
-    adminsList:adminsListReducer
+    adminsList:adminsListReducer,
+    productHistory:productHistoryReducer,
+    orderHistory:orderHistoryReducer
 })
 
 const composeEchancer= window._REDUX_DEVTOOLS_EXTENSION_COMPOSE_ || compose;

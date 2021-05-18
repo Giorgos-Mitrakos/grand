@@ -38,14 +38,14 @@ router.post("/createproduct", isAuth, isAdmin, upload.single('image'), async (re
   mysqlConnection.getConnection(function (err, connection) {
     if (err) throw err; // not connected!
 
-    var sql = "INSERT INTO products (name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 10)";
+    var sql = "INSERT INTO products (name, category, brand, subcategory, supplier, image, price, percentage,availability, description, CreatedBy, CreatedAt, countInStock) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 10)";
     connection.query(sql, [req.body.name, req.body.category, req.body.brand, req.body.subcategory, req.body.supplier, req.file.path.slice(15, req.file.path.length),
-    req.body.price, req.body.percentage, req.body.description, req.user.username, new Date, req.body.countInStock], function (err, result, fields) {
+    req.body.price, req.body.percentage, req.body.availability, req.body.description, req.user.username, new Date, req.body.countInStock], function (err, result, fields) {
       if (err) throw err;
 
       let insertedId = result.insertId
 
-      sql = "INSERT INTO productshistory (product_id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock FROM products WHERE _id=?";
+      sql = "INSERT INTO productshistory (product_id, name, category, brand, subcategory, supplier, image, price, percentage, availability, description, CreatedBy, CreatedAt, countInStock) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, availability, description, CreatedBy, CreatedAt, countInStock FROM products WHERE _id=?";
       connection.query(sql, [insertedId], function (err, result, fields) {
         if (err) throw err;
 
@@ -165,19 +165,36 @@ router.put("/changeVisibility", isAuth, isAdmin, async (req, res, next) => {
 
   mysqlConnection.getConnection(function (err, connection) {
     if (err) throw err; // not connected!
+    connection.beginTransaction(function (err) {
+      if (err) { throw err; }
 
-    var sql = 'UPDATE products SET visibility=? WHERE _id=?';
-    connection.query(sql, [req.body.productVisibility, req.body.productID], function (err, result, fields) {
-      if (err) throw err;
-
-      sql = "SELECT * FROM products WHERE _id=?";
-      connection.query(sql, [req.body.productID], function (err, result, fields) {
+      var sql = 'UPDATE products SET visibility=? WHERE _id=?';
+      connection.query(sql, [req.body.productVisibility, req.body.productID], function (err, result, fields) {
         if (err) throw err;
-        res.send(result);
-      })
+        // sql = "INSERT INTO productshistory (product_id, name, category, brand, subcategory, supplier, image, price, percentage, availability, visibility, description, CreatedBy, CreatedAt, countInStock, UpdatedBy, UpdatedAt) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, availability, visibility, description, CreatedBy, CreatedAt, countInStock, ?, ? FROM products WHERE _id=?";
+        // connection.query(sql, [req.user.username, new Date, req.body.productID], function (err, result, fields) {
+        //   if (err) {
+        //     connection.rollback(function () {
+        //       throw err;
+        //     });
+        //   }
 
+        sql = "SELECT * FROM products WHERE _id=?";
+        connection.query(sql, [req.body.productID], function (err, result, fields) {
+          if (err) throw err;
+
+          connection.commit(function (err) {
+            if (err) {
+              connection.rollback(function () {
+                throw err;
+              });
+            }
+            res.send(result);
+          })
+          // })
+        });
+      });
     });
-
     connection.release();
 
     // Handle error after the release.
@@ -539,16 +556,16 @@ router.put("/createproduct/:id", isAuth, isAdmin, upload.single('image'), async 
           return
         }
 
-        sql = "UPDATE products SET name=?, category=?, brand=?, subcategory=?, supplier=?, image=?, price=?, percentage=?, description=? WHERE _id=?";
+        sql = "UPDATE products SET name=?, category=?, brand=?, subcategory=?, supplier=?, image=?, price=?, percentage=?, availability=?, description=? WHERE _id=?";
         connection.query(sql, [req.body.name, req.body.category, req.body.brand, req.body.subcategory, req.body.supplier,
-        req.body.image, req.body.price, req.body.percentage, req.body.description, productId], function (err, result, fields) {
+        req.body.image, req.body.price, req.body.percentage, req.body.availability, req.body.description, productId], function (err, result, fields) {
           if (err) {
             connection.rollback(function () {
               throw err;
             });
           }
 
-          sql = "INSERT INTO productshistory (product_id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock, UpdatedBy, UpdatedAt) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock, ?, ? FROM products WHERE _id=?";
+          sql = "INSERT INTO productshistory (product_id, name, category, brand, subcategory, supplier, image, price, percentage, availability, visibility, description, CreatedBy, CreatedAt, countInStock, UpdatedBy, UpdatedAt) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, availability, visibility, description, CreatedBy, CreatedAt, countInStock, ?, ? FROM products WHERE _id=?";
           connection.query(sql, [req.user.username, new Date, productId], function (err, result, fields) {
             if (err) {
               connection.rollback(function () {
@@ -1048,7 +1065,7 @@ router.post("/featurelist", isAuth, isAdmin, async (req, res) => {
   mysqlConnection.getConnection(function (err, connection) {
     if (err) throw err; // not connected!
 
-    connection.query('SELECT * FROM features WHERE product_id=?', [req.body.productId], function (err, result, fields) {
+    connection.query('SELECT * FROM features WHERE product_id=? ORDER BY feature_title,feature', [req.body.productId], function (err, result, fields) {
       if (err) throw err;
 
       res.send(result);
@@ -1083,7 +1100,7 @@ router.post("/insertfeature", isAuth, isAdmin, async (req, res, next) => {
             });
           }
 
-          sql = "SELECT * FROM features WHERE product_id=?";
+          sql = "SELECT * FROM features WHERE product_id=? ORDER BY feature_title,feature";
           connection.query(sql, [req.body.productId], function (err, result) {
             if (err) {
               connection.rollback(function () {
@@ -1169,7 +1186,7 @@ router.post("/categories", isAuth, isAdmin, async (req, res) => {
   mysqlConnection.getConnection(function (err, connection) {
     if (err) throw err; // not connected!
 
-    connection.query('SELECT * FROM categories', function (err, result, fields) {
+    connection.query('SELECT * FROM categories ORDER BY category', function (err, result, fields) {
       if (err) throw err;
 
       res.send(result);
@@ -1184,7 +1201,7 @@ router.post("/categories", isAuth, isAdmin, async (req, res) => {
 router.post("/subcategories", isAuth, isAdmin, async (req, res) => {
   mysqlConnection.getConnection(function (err, connection) {
     if (err) throw err; // not connected!
-    connection.query('SELECT * FROM categories WHERE parent_id=?', [req.body.parentId], function (err, result, fields) {
+    connection.query('SELECT * FROM categories WHERE parent_id=? ORDER BY category', [req.body.parentId], function (err, result, fields) {
       if (err) throw err;
 
       res.send(result);
@@ -1406,7 +1423,7 @@ router.post("/insertcompatibility", isAuth, isAdmin, async (req, res, next) => {
             });
           }
 
-          sql = "SELECT * FROM compatibilities WHERE compatibility_id=?";
+          sql = "SELECT * FROM compatibilities WHERE compatibility_id=? ORDER BY compatibility_company ASC, compatibility_model ASC";
           connection.query(sql, [compat_id], function (err, result, fields) {
             if (err) {
               connection.rollback(function () {
@@ -1441,7 +1458,7 @@ router.post("/getproductcompatibilities", isAuth, isAdmin, async (req, res, next
   mysqlConnection.getConnection(function (err, connection) {
     if (err) throw err; // not connected!
 
-    var sql = "SELECT * FROM compatibilities WHERE product_id=? ORDER BY compatibility_model";
+    var sql = "SELECT * FROM compatibilities WHERE product_id=? ORDER BY compatibility_company ASC,compatibility_model ASC";
     connection.query(sql, [req.body.productId], function (err, result, fields) {
       if (err) throw err;
 
@@ -1603,6 +1620,142 @@ router.post("/deleteAdmin", isAuth, isAdmin, isSuperAdmin, async (req, res) => {
     });
   });
 })
+
+router.post("/getProductHistory", isAuth, isAdmin, isSuperAdmin, async (req, res) => {
+  const productId = req.body.productId;
+  mysqlConnection.getConnection(function (err, connection) {
+    if (err) throw err; // not connected!
+    connection.beginTransaction(function (err) {
+      if (err) { throw err; }
+      var sql = "SELECT * FROM productsHistory WHERE product_id=? ORDER BY UpdatedAt DESC";
+      connection.query(sql, [productId], function (err, result, fields) {
+        if (err) {
+          connection.rollback(function () {
+            throw err;
+          });
+        }
+
+        let productHistory = result;
+
+        sql = "SELECT * FROM compatibilitiesHistory WHERE product_id=? ORDER BY UpdatedAt DESC";
+        connection.query(sql, [productId], function (err, result, fields) {
+          if (err) {
+            connection.rollback(function () {
+              throw err;
+            });
+          }
+
+          let compHistory = result;
+
+          sql = "SELECT * FROM featureshistory WHERE product_id=? ORDER BY UpdatedAt DESC";
+          connection.query(sql, [productId], function (err, result, fields) {
+            if (err) {
+              connection.rollback(function () {
+                throw err;
+              });
+            }
+
+            let featHistory = result;
+
+            connection.commit(function (err) {
+              if (err) {
+                connection.rollback(function () {
+                  throw err;
+                });
+              }
+              let resp = { productHistory, compHistory, featHistory }
+              res.send(resp);
+            });
+          })
+        })
+      });
+      connection.release();
+
+      // Handle error after the release.
+      if (err) throw err;
+    });
+  });
+})
+
+router.post("/getOrderHistory", isAuth, isAdmin, isSuperAdmin, async (req, res) => {
+  const orderId = req.body.orderId;
+  mysqlConnection.getConnection(function (err, connection) {
+    if (err) throw err; // not connected!
+    connection.beginTransaction(function (err) {
+      if (err) { throw err; }
+      var sql = "SELECT * FROM orderStatusHistory WHERE order_id=? ORDER BY UpdatedAt DESC";
+      connection.query(sql, [orderId], function (err, result, fields) {
+        if (err) {
+          connection.rollback(function () {
+            throw err;
+          });
+        }
+
+        let orderStatusHistory = result;
+
+        sql = "SELECT * FROM orderSendingPaymentHistory WHERE order_id=? ORDER BY UpdatedAt DESC";
+        connection.query(sql, [orderId], function (err, result, fields) {
+          if (err) {
+            connection.rollback(function () {
+              throw err;
+            });
+          }
+
+          let orderSendingPaymentHistory = result;
+
+          sql = "SELECT * FROM billingAddressHistory WHERE order_id=? ORDER BY UpdatedAt DESC";
+          connection.query(sql, [orderId], function (err, result, fields) {
+            if (err) {
+              connection.rollback(function () {
+                throw err;
+              });
+            }
+
+            let billingAddressHistory = result;
+
+            sql = "SELECT * FROM shippingAddressHistory WHERE order_id=? ORDER BY UpdatedAt DESC";
+            connection.query(sql, [orderId], function (err, result, fields) {
+              if (err) {
+                connection.rollback(function () {
+                  throw err;
+                });
+              }
+
+              let shippingAddressHistory = result;
+
+              sql = "SELECT orderProductHistory.product_id, orderProductHistory.model, orderProductHistory.quantity, orderProductHistory.image_case, orderProductHistory.UpdatedBy, orderProductHistory.UpdatedAt, orderProductHistory.actions, products.name, products.category, products.brand, products.image FROM orderProductHistory INNER JOIN products ON orderProductHistory.product_id=products._id  WHERE orderProductHistory.order_id=? ORDER BY orderProductHistory.product_id , UpdatedAt DESC";
+              connection.query(sql, [orderId], function (err, result, fields) {
+                if (err) {
+                  connection.rollback(function () {
+                    throw err;
+                  });
+                }
+
+                let orderProductHistory = result;
+
+                connection.commit(function (err) {
+                  if (err) {
+                    connection.rollback(function () {
+                      throw err;
+                    });
+                  }
+                  let resp = { orderStatusHistory,orderSendingPaymentHistory, billingAddressHistory, shippingAddressHistory, orderProductHistory }
+                  res.send(resp);
+                });
+              });
+            })
+          })
+        })
+      });
+      connection.release();
+
+      // Handle error after the release.
+      if (err) throw err;
+    });
+  });
+})
+
+
 
 
 export default router;

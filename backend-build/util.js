@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.isAdmin = exports.isAuth = exports.getToken = void 0;
+exports.isSuperAdmin = exports.isAdmin = exports.isAuth = exports.getToken = void 0;
 
 var _jsonwebtoken = _interopRequireDefault(require("jsonwebtoken"));
 
@@ -18,7 +18,7 @@ var getToken = function getToken(user) {
     email: user.email,
     isAdmin: user.isAdmin
   }, _config["default"].JWT_SECRET, {
-    expiresIn: '24h'
+    expiresIn: '2h'
   });
 };
 
@@ -51,7 +51,7 @@ var isAuth = function isAuth(req, res, next) {
 exports.isAuth = isAuth;
 
 var isAdmin = function isAdmin(req, res, next) {
-  if (req.user && parseInt(req.user.isAdmin) == 1) {
+  if (req.user && (parseInt(req.user.isAdmin) == 1 || parseInt(req.user.isAdmin) == 2)) {
     return next();
   } else {
     return res.status(401).send({
@@ -61,4 +61,16 @@ var isAdmin = function isAdmin(req, res, next) {
 };
 
 exports.isAdmin = isAdmin;
+
+var isSuperAdmin = function isSuperAdmin(req, res, next) {
+  if (req.user && parseInt(req.user.isAdmin) == 2) {
+    return next();
+  } else {
+    return res.status(401).send({
+      msg: ' Admin Token is not valid.'
+    });
+  }
+};
+
+exports.isSuperAdmin = isSuperAdmin;
 //# sourceMappingURL=util.js.map

@@ -63,7 +63,10 @@ import { PRODUCT_LIST_SUCCESS, PRODUCT_LIST_FAIL,
        SELECT_ITEMS_PER_PAGE,
        SET_SEARCH_TEXT,
        SET_SEARCH_FILTERS,
-       RESET_SEARCH_FILTERS} from '../constants/productConstant';
+       RESET_SEARCH_FILTERS,
+       GET_PRODUCT_HISTORY_REQUEST,
+       GET_PRODUCT_HISTORY_SUCCESS,
+       GET_PRODUCT_HISTORY_FAIL} from '../constants/productConstant';
 
 function sortCompanies( a, b ) {
 if ( a.company < b.company ){
@@ -539,6 +542,19 @@ function textSearchReducer(state={searchText:'', filters: []},action){
     }
 }
 
+function productHistoryReducer(state={prodHistory:[], productCompHistory:[],productFeatHistory:[]},action){
+    switch(action.type){
+        case GET_PRODUCT_HISTORY_REQUEST:
+            return {loading:true, prodHistory: [],productCompHistory:[],productFeatHistory:[]};
+        case GET_PRODUCT_HISTORY_SUCCESS:
+            return {loading:false, prodHistory: action.payload.productHistory, productCompHistory: action.payload.compHistory, productFeatHistory: action.payload.featHistory};
+        case GET_PRODUCT_HISTORY_FAIL:
+            return {loading:false, error : action.payload};
+        default:
+            return state;
+    }
+}
+
 
 
 export {productListReducer, productDetailsReducer, mostViewedProductsReducer,
@@ -547,4 +563,4 @@ export {productListReducer, productDetailsReducer, mostViewedProductsReducer,
     featureTitlesByCategoryReducer, featureNamesByCategoryReducer, productFeaturesReducer,
     paymentListReducer,compatibilitiesByCategoryReducer,compatibilityCompaniesReducer,
     compatibilityModelsReducer,productCompatibilitiesReducer,suppliersListReducer,
-    searchForItemsReducer,itemsPerPageReducer,textSearchReducer}
+    searchForItemsReducer,itemsPerPageReducer,textSearchReducer, productHistoryReducer}

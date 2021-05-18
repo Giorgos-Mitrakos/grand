@@ -46,7 +46,7 @@ import {
     SUPPLIERS_INSERT_FAIL, SUPPLIERS_DELETE_REQUEST, SUPPLIERS_DELETE_SUCCESS,
     SUPPLIERS_DELETE_FAIL, MANUFACTURER_DELETE_REQUEST,  MANUFACTURER_DELETE_SUCCESS,
     MANUFACTURER_DELETE_FAIL, SEARCH_FOR_ITEMS_REQUEST, SEARCH_FOR_ITEMS_SUCCESS,
-    SEARCH_FOR_ITEMS_FAIL, SELECT_ITEMS_PER_PAGE, SET_SEARCH_TEXT, SET_SEARCH_FILTERS, RESET_SEARCH_FILTERS
+    SEARCH_FOR_ITEMS_FAIL, SELECT_ITEMS_PER_PAGE, SET_SEARCH_TEXT, SET_SEARCH_FILTERS, RESET_SEARCH_FILTERS, GET_PRODUCT_HISTORY_REQUEST, GET_PRODUCT_HISTORY_SUCCESS, GET_PRODUCT_HISTORY_FAIL
 } from "../constants/productConstant";
 import Axios from "axios";
 
@@ -727,6 +727,22 @@ const resetFiltersStore = () => async (dispatch) => {
     dispatch({ type: RESET_SEARCH_FILTERS, payload: [] });
 }
 
+const getProductHistory = (productId) => async (dispatch, getState) => {
+    try {
+        dispatch({ type: GET_PRODUCT_HISTORY_REQUEST });
+        const { userSignin: { userInfo } } = getState();
+        const { data } = await Axios.post("/api/admin/getProductHistory", { productId }, {
+            headers: {
+                'Authorization': 'Bearer ' + userInfo.token
+            }
+        });
+        dispatch({ type: GET_PRODUCT_HISTORY_SUCCESS, payload: data});
+    }
+    catch (error) {
+        dispatch({ type: GET_PRODUCT_HISTORY_FAIL, payload: error.message });
+    }
+}
+
 
 export {
     listProducts, detailsProduct, saveProduct, removeProducts, listSendingMethods,
@@ -741,5 +757,5 @@ export {
     insertCompatibilityCompany, insertCompatibilityModel, insertCompatibility,
     getProductCompatibilities, deleteProductCompatibility, importProducts, listSuppliers,
     insertSupplier, deleteSupplier, deleteManufacturer, searchForItem, 
-    selectItemsPerPage,searchTextStore,filtersStore,resetFiltersStore
+    selectItemsPerPage,searchTextStore,filtersStore,resetFiltersStore, getProductHistory
 }
