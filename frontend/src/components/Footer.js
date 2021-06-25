@@ -19,6 +19,8 @@ function Footer() {
     const submitHandler = (e) => {
         e.preventDefault();
         dispatch(addToNewsletterList(email));
+        setEmail("");
+        setChecked(false);
     }
 
     useEffect(() => {
@@ -114,8 +116,8 @@ function Footer() {
                             Συμπληρώστε το email σας για να μένετε<br /> ενημερωμένοι για νέα & προσφορές!
                             </p>
                         <form className="newsletter-email" onSubmit={submitHandler}>
-                            <input type="email" id="email" name="email" placeholder="email" onChange={(e) => validEmail(e.target.value)}></input><br></br>
-                            <input type="checkbox" id="private-policy" name="private-policy" onChange={(e) => { setChecked(e.target.checked) }}></input>
+                            <input type="email" id="email" name="email" placeholder="email" value={email} onChange={(e) => validEmail(e.target.value)}></input><br></br>
+                            <input type="checkbox" id="private-policy" name="private-policy" checked={checked} onChange={(e) => { setChecked(e.target.checked) }}></input>
                             {" "}
                             <Link to="/newsletter-disclaimer" id="private-policy-link">
                                 <strong>Αποδοχή όρων χρήσης</strong>

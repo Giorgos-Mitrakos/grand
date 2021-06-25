@@ -51,7 +51,7 @@ import {
 import Axios from "axios";
 
 const importProducts = () => async (displatch) => {
-    await Axios.get("/api/getProducts");
+    await Axios.get("/api/getProductsFromIsis");
 }
 
 const listProducts = () => async (dispatch) => {

@@ -62,6 +62,14 @@ function ProductsByCategoryScreen(props) {
     }, [loading]);
 
     useEffect(() => {
+        if (window.innerWidth < 1024) {
+            dispatch(productMenuToggle(false));
+        }
+        // alert(props.match.params.category)
+
+    }, [props.match.params.category, props.match.params.subcategory,]);
+
+    useEffect(() => {
         if (data) {
             setPageCount(Math.ceil(data.length / itemsPerPage));
             setCurrentPageData(data.slice(offset, offset + itemsPerPage))
@@ -175,7 +183,7 @@ function ProductsByCategoryScreen(props) {
         // Remove event listener on cleanup
         return () => window.removeEventListener("resize", handleResize);
 
-    }, []); // Empty array ensures that effect is only run on mount
+    }, [dispatch]); // Empty array ensures that effect is only run on mount
 
     function handlePageClick({ selected: selectedPage }) {
         setCurrentPage(parseInt(selectedPage));

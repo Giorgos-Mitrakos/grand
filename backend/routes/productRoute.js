@@ -302,7 +302,7 @@ router.get("/:id", async (req, res) => {
                     });
                 }
 
-                var sql = 'SELECT _id, name, category, brand, image, description,countInStock, numReview, subcategory, weight, supplier, availability, visibility, totalPrice FROM products WHERE _id=?';
+                sql = 'SELECT _id, name, category, brand, image, description,countInStock, numReview, subcategory, weight, supplier, availability, visibility, totalPrice FROM products WHERE _id=?';
                 connection.query(sql, productId, function (err, result, fields) {
                     if (err) {
                         connection.rollback(function () {
@@ -310,18 +310,42 @@ router.get("/:id", async (req, res) => {
                         });
                     }
 
-                    res.status(200).send(result[0]);
-                    connection.commit(function (err) {
+                    var product = result[0]
+
+                    sql = 'SELECT compatibility_company, compatibility_model FROM compatibilities WHERE product_id=?';
+                    connection.query(sql, productId, function (err, result, fields) {
                         if (err) {
                             connection.rollback(function () {
                                 throw err;
                             });
                         }
-                        console.log('Transaction Completed Successfully.');
-                        connection.release();
 
-                        // Handle error after the release.
-                        if (err) throw err;
+                        var compatibilities = result;
+
+                        sql = 'SELECT feature_title, feature FROM features WHERE product_id=?';
+                        connection.query(sql, productId, function (err, result, fields) {
+                            if (err) {
+                                connection.rollback(function () {
+                                    throw err;
+                                });
+                            }
+
+                            var features = result;
+
+                            res.status(200).send({ product, compatibilities, features });
+                            connection.commit(function (err) {
+                                if (err) {
+                                    connection.rollback(function () {
+                                        throw err;
+                                    });
+                                }
+                                console.log('Transaction Completed Successfully.');
+                                connection.release();
+
+                                // Handle error after the release.
+                                if (err) throw err;
+                            });
+                        });
                     });
                 });
             });
@@ -358,7 +382,7 @@ router.post("/searchForItems", async (req, res) => {
         };
 
         let filters = '';
-        if (req.body.filters!==null && req.body.filters.length !== 0 ) {
+        if (req.body.filters !== null && req.body.filters.length !== 0) {
             filters += '&&('
             for (let i = 0; i < req.body.filters.length; i++) {
                 if (i !== 0) {

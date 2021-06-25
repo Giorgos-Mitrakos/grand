@@ -26,6 +26,7 @@
     justify-content: space-evenly;
     width: 37%;
     background-color: #deccf0;
+    padding-left: 1rem;
 }
 
 .contact-us-call-mail-social>div{
@@ -34,6 +35,11 @@
     color: #312f8b;
     font-size: 1.2rem;
     font-weight: bold;
+}
+
+.contact-us-call-mail-social>div>h3{
+    margin-top: 1rem;
+    margin-bottom: 1rem;
 }
 
 .contact-us-call-mail-social>div>p{
@@ -48,6 +54,8 @@
     border-radius: 0.5rem;
     width: 60%;
     background-color: #deccf0;
+    padding-bottom: 1rem;
+    padding-top: 1rem;
 }
 
 .contact-us-email{ 
@@ -57,11 +65,12 @@
     justify-content: space-evenly;
     align-items: center;
     background-color: #deccf0;
-    
+    font-size: 1.2rem;
 }
 
 .contact-us-email>h3{
     color: #312f8b;
+    margin: 1rem;
 }
 
 .contact-us-email>input{

@@ -10,11 +10,11 @@ import { Helmet } from 'react-helmet';
 function PaymentScreen(props) {
 
     const [paymentMethod,setPaymentMethod] = useState('');
-    const [paymentMethodCost,setPaymentMethodCost] = useState('');
+    const [paymentMethodCost,setPaymentMethodCost] = useState(0);
     const [sendingMethod,setSendingMethod] = useState('');
-    const [sendingMethodCost,setSendingMethodCost] = useState('');
+    const [sendingMethodCost,setSendingMethodCost] = useState(0);
     const cart=useSelector(state=>state.cart);
-    const {cartItems} = cart;
+    const {cartItems, shipping} = cart;
     const sendingMethodsList=useSelector(state=>state.sendingMethodsList);
     const {sendingMethods,loading: loadingSendingMethods,error:errorSendingMethods} = sendingMethodsList;
     const paymentMethodsList=useSelector(state=>state.paymentMethodsList);
@@ -80,9 +80,16 @@ function PaymentScreen(props) {
                             errorPaymentMethods?<div>{errorPaymentMethods}</div>:
                             paymentMethods.map(pay=>
                                 <li key={pay.paymentMethod}>
-                                    <input type="radio" name="paymentMethod" id="paymentMethod" value={pay.paymentMethod}
+                                    <input type="radio" name="paymentMethod" id="paymentMethod" value={pay.paymentMethod} disabled={(pay.paymentMethod==="Αντικαταβολή" && shipping.typeOfPayment==="Τιμολόγιο")? cartItems.reduce((a,c)=>a + c.totalPrice*c.quantity,0).toFixed(2)>(500/1.24):
+                                    (pay.paymentMethod==="Αντικαταβολή" && shipping.typeOfPayment==="Απόδειξη")? cartItems.reduce((a,c)=>a + c.totalPrice*c.quantity,0).toFixed(2)>500:false}
                                     onChange={(e)=> paymentMethodHandler(pay.paymentMethod,pay.paymentMethodCost)}/>
-                                    <label htmlFor="paymentMethod">   {pay.paymentMethod}</label>
+                                    <label htmlFor="paymentMethod"> {pay.paymentMethod}</label>
+                                    {(pay.paymentMethod==="Αντικαταβολή" && shipping.typeOfPayment==="Τιμολόγιο" && cartItems.reduce((a,c)=>a + c.totalPrice*c.quantity,0).toFixed(2)>(500/1.24))?
+                                    <div className="attention">*Για ποσά καθαρής αξίας άνω τον 500 €, δεν επιτρέπεται η συναλλαγή με αντικαταβολή</div>:
+                                    (pay.paymentMethod==="Αντικαταβολή" && shipping.typeOfPayment==="Απόδειξη" && cartItems.reduce((a,c)=>a + c.totalPrice*c.quantity,0).toFixed(2)>500)?
+                                    <div className="attention">*Για ποσά αξίας άνω τον 500 €, δεν επιτρέπεται η συναλλαγή με αντικαταβολή</div>
+                                    :<div></div>
+                                    }
                                 </li>
                             )}
                            </ul>
@@ -159,7 +166,7 @@ function PaymentScreen(props) {
                                     Σύνολο :
                                     </h3>
                                     <h3>
-                                    {cartItems.reduce((a,c)=>a + c.totalPrice*c.quantity,0)+ sendingMethodCost + paymentMethodCost} €
+                                    {(cartItems.reduce((a,c)=>a + c.totalPrice*c.quantity,0)+ sendingMethodCost + paymentMethodCost).toFixed(2)} €
                                     </h3>
                                 </div>                                             
                             </li>

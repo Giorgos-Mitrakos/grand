@@ -31,7 +31,7 @@
  }
 
 .footer-container {
-    box-shadow: 0 -0.3rem 0.6rem 0 rgba(0, 0, 0, 0.4);
+    /* box-shadow: 0 -0.3rem 0.3rem 0 rgba(0, 0, 0, 0.4); */
     grid-area: footer;
     background-color: #deccf0;
     color: #312f8b;

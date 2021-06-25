@@ -43,6 +43,7 @@ function ProfileMenu(props){
             <li><Link to="/admin/createproduct">Προϊόντα</Link></li>
             <li><Link to="/admin/collection">Συλλογη</Link></li>
             <li><Link to="/admin/lists">Λίστες</Link></li>
+            <li><Link to="/admin/newsletter">Newsletters</Link></li>
             </Fragment>}
             {userInfo && userInfo.isAdmin===2 &&
             <Fragment>

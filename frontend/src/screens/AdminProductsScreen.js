@@ -6,7 +6,8 @@ import {
     saveProduct, listManufacturers, listFeatureTitles, getFeatureNames, insertFeature,
     listFeatures, deleteFeature, listCategories, listSubcategories, changeVisibility,
     getProductsByCategoryAdmin, changeCategoryPercentage, listCompatibilityCompanies,
-    getCompatibilityModels, insertCompatibility, getProductCompatibilities, deleteProductCompatibility, listSuppliers
+    getCompatibilityModels, insertCompatibility, getProductCompatibilities, deleteProductCompatibility, 
+    listSuppliers, importProducts
 } from '../action/productActions';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ReactPaginate from 'react-paginate';
@@ -25,6 +26,7 @@ function AdminProductsScreen(props) {
     const [supplier, setSupplier] = useState('');
     const [image, setImage] = useState('');
     const [price, setPrice] = useState('');
+    const [desirablePrice, setDesirablePrice] = useState('');
     const [availability, setAvailability] = useState('');
     const [pricePercentage, setPricePercentage] = useState('');
     const [description, setDescription] = useState('');
@@ -83,7 +85,7 @@ function AdminProductsScreen(props) {
     }, [count, itemsPerPage]);
 
     useEffect(() => {
-        if (successSave) {
+        if (!successSave) {
             setModalVisible(false);
             dispatch(getProductsByCategoryAdmin(category, subcategory, supplier, offset));
         }
@@ -125,6 +127,7 @@ function AdminProductsScreen(props) {
         setSupplier(product.supplier);
         setImage(product.image);
         setPrice(product.price);
+        setDesirablePrice('');
         setAvailability(product.availability);
         setPricePercentage(product.percentage);
         setDescription(product.description);
@@ -138,6 +141,7 @@ function AdminProductsScreen(props) {
     }
 
     const submitHandler = (e) => {
+        e.preventDefault();
         if (id === oldProduct._id
             && name === oldProduct.name
             && category === oldProduct.category
@@ -148,6 +152,9 @@ function AdminProductsScreen(props) {
             && pricePercentage === oldProduct.pricePercentage
             && availability === oldProduct.availability
             && description === oldProduct.description) {
+                
+            }
+            else{
             const product = new FormData();
             product.append('_id', id);
             product.append('name', name);
@@ -159,8 +166,7 @@ function AdminProductsScreen(props) {
             product.append('price', price);
             product.append('percentage', pricePercentage);
             product.append('availability', availability);
-            product.append('description', description);
-            e.preventDefault();
+            product.append('description', description);            
             dispatch(saveProduct(id, product));
         }
     }
@@ -239,7 +245,25 @@ function AdminProductsScreen(props) {
         setCurrentPage(selectedPage);
     }
 
+    const calcPercentage = (desireValue)=>{
+        let des= desireValue.replace(",",".")
+        setDesirablePrice(des);
+        let percentage = (100*(des-price)/price).toFixed(2);
+        setPricePercentage(percentage)
+    }
+
+    const insertPrice = (pr)=>{
+        let temp= pr.replace(",",".")
+        setPrice(temp)
+    }
+
+    const insertPricePercentage =(pr)=>{
+        let temp= pr.replace(",",".")
+        setPricePercentage(temp)
+    }
+
     return <div className="content content-margined">
+        <div><button onClick={importProducts()}>getProducts</button></div>
         <div className="product-header">
             <h3>Προϊόντα</h3>
             <button className="button admin-button" onClick={() => setPercentageModal(true)}>Ποσοστό Κέρδους</button>
@@ -383,16 +407,22 @@ function AdminProductsScreen(props) {
                                 <li id="row">
                                     <label htmlFor="product-price">Τιμή:</label>
                                     <input type="text" name="product-price" id="product-price" value={price} required
-                                        onChange={(e) => setPrice(e.target.value)}>
+                                        onChange={(e) => insertPrice(e.target.value)}>
                                     </input>€
                                     <label htmlFor="product-price-percentage">Ποσοστό Κέρδους:</label>
                                     <input type="text" name="product-price-percentage" id="product-price-percentage" value={pricePercentage} required
-                                        onChange={(e) => setPricePercentage(e.target.value)}>
+                                        onChange={(e) => insertPricePercentage(e.target.value)} disabled={desirablePrice}>
                                     </input>
                                     %
                                 </li>
                                 <li className="format_price">
                                     Τελική τιμή: {(price * (1 + pricePercentage / 100)).toFixed(2)} €
+                                </li>
+                                <li id="row">
+                                    <label htmlFor="product-price-percentage">Υπολογισμός ποσοστού μέσω τελικής τιμής:</label>
+                                    <input type="text" name="product-price-percentage" id="product-price-percentage" value={desirablePrice} disabled={!price}
+                                        onChange={(e) => calcPercentage(e.target.value)}>
+                                    </input>
                                 </li>
                                 <li>
                                     <label htmlFor="product-availability">Διαθεσιμότητα:</label>

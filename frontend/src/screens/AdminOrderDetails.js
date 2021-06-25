@@ -359,7 +359,7 @@ function AdminOrdersDetailScreen(props) {
                     (
                         <div className="order_details-wrapper">
                             <div className="order_history_wrapper">
-                            <button className="button continuebtn" onClick={orderHistoryHandler}>Ιστορικό παραγγελίας</button>
+                            {userInfo && userInfo.isAdmin===2 && <button className="button continuebtn" onClick={orderHistoryHandler}>Ιστορικό παραγγελίας</button>}
                             </div>
                             <div className="order_details">
                                 <div>

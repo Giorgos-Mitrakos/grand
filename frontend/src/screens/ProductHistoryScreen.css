@@ -31,7 +31,6 @@
     display: flex;
     border: 1px solid#9291df;
     padding-top: 1rem;
-    overflow-x: scroll;
 }
 
 .product_history_table{

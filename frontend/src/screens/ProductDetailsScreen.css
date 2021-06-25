@@ -131,6 +131,96 @@ label{
     margin-left: 1rem;
 }
 
+* Style the tab */
+
+.display_desktop{
+    display: none;
+}
+
+.mobile{
+    display: none;
+}
+
+.description-wrapper{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 1rem;
+    border-radius: 1rem;
+}
+
+.description-info{
+    border: 1px solid #ccc;
+    padding: 1rem;
+}
+
+.description-wrapper:last-child {
+    margin-bottom: 5rem;
+}
+
+.card-description-header{
+    justify-content: center;
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+    width: 100%;
+    align-self: center;
+    background-color: #ece2f7;
+    color: #312f8b;
+    padding: 1rem;
+    font-size: 1rem;
+    border: 1px #a6a5df solid;
+    cursor: pointer;
+}
+
+.expand{
+    align-self: center;
+}
+
+.tab {
+  overflow: hidden;
+  background-color: #f1f1f1; 
+  width: 100%; 
+}
+
+/* Style the buttons inside the tab */
+.tablinks {
+  background-color: inherit;
+  color: inherit;
+  float: left;
+  border-radius: 0;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  margin: 2px;
+  padding: 14px 16px;
+  transition: 0.3s;
+  font-size: 1rem;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+  background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+  background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+  padding: 1rem 1rem;
+}
+
+.tabcontent-row{
+    display: flex;
+}
+
+.tabcontent-row>div{
+    margin-right: 1rem;
+}
+
 @media only screen and (max-width: 1024px) {
 
 .product-details-wrapper{
@@ -173,6 +263,14 @@ label{
 .select-model{
     margin-left: 0;
     font-size: 0.875rem;
+}
+
+.display_desktop{
+    display: none;
+}
+
+.mobile{
+    display: block;
 }
 
 }

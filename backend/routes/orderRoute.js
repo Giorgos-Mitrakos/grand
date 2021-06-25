@@ -51,7 +51,7 @@ router.post("/insert_order_company_shippingTo", isAuth, async (req, res) => {
 
                             const order_id = result.insertId;
 
-                            sql = "INSERT INTO ordersendingpaymenthistory (order_id, sendingMethod, paymentMethod, paymentType, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?)";
+                            sql = "INSERT INTO orderSendingPaymentHistory (order_id, sendingMethod, paymentMethod, paymentType, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?)";
                             connection.query(sql, [order_id, req.body.methods.sendingMethod, req.body.methods.paymentMethod, req.body.methods.typeOfPayment, req.user.email, new Date], function (err, result, fields) {
                                 if (err) {
                                     connection.rollback(function () {
@@ -169,7 +169,7 @@ router.post("/insert_no_user_order_company_shippingTo", async (req, res) => {
 
                         const order_id = result.insertId;
 
-                        sql = "INSERT INTO ordersendingpaymenthistory (order_id, sendingMethod, paymentMethod, paymentType, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?)";
+                        sql = "INSERT INTO orderSendingPaymentHistory (order_id, sendingMethod, paymentMethod, paymentType, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?)";
                         connection.query(sql, [order_id, req.body.methods.sendingMethod, req.body.methods.paymentMethod, req.body.methods.typeOfPayment, req.body.charger.email, new Date], function (err, result, fields) {
                             if (err) {
                                 connection.rollback(function () {
@@ -295,7 +295,7 @@ router.post("/insert_order_company", isAuth, async (req, res) => {
 
                         const order_id = result.insertId;
 
-                        sql = "INSERT INTO ordersendingpaymenthistory (order_id, sendingMethod, paymentMethod, paymentType, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?)";
+                        sql = "INSERT INTO orderSendingPaymentHistory (order_id, sendingMethod, paymentMethod, paymentType, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?)";
                         connection.query(sql, [order_id, req.body.methods.sendingMethod, req.body.methods.paymentMethod, req.body.methods.typeOfPayment, req.user.email, new Date], function (err, result, fields) {
                             if (err) {
                                 connection.rollback(function () {
@@ -390,7 +390,7 @@ router.post("/insert_no_user_order_company", async (req, res) => {
 
                     const order_id = result.insertId;
 
-                    sql = "INSERT INTO ordersendingpaymenthistory (order_id, sendingMethod, paymentMethod, paymentType, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?)";
+                    sql = "INSERT INTO orderSendingPaymentHistory (order_id, sendingMethod, paymentMethod, paymentType, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?)";
                     connection.query(sql, [order_id, req.body.methods.sendingMethod, req.body.methods.paymentMethod, req.body.methods.typeOfPayment, req.body.charger.email, new Date], function (err, result, fields) {
                         if (err) {
                             connection.rollback(function () {
@@ -515,7 +515,7 @@ router.post("/insert_order_shippingTo", isAuth, async (req, res) => {
 
                             const order_id = result.insertId;
 
-                            sql = "INSERT INTO ordersendingpaymenthistory (order_id, sendingMethod, paymentMethod, paymentType, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?)";
+                            sql = "INSERT INTO orderSendingPaymentHistory (order_id, sendingMethod, paymentMethod, paymentType, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?)";
                             connection.query(sql, [order_id, req.body.methods.sendingMethod, req.body.methods.paymentMethod, req.body.methods.typeOfPayment, req.user.email, new Date], function (err, result, fields) {
                                 if (err) {
                                     connection.rollback(function () {
@@ -632,7 +632,7 @@ router.post("/insert_no_user_order_shippingTo", async (req, res) => {
 
                         const order_id = result.insertId;
 
-                        sql = "INSERT INTO ordersendingpaymenthistory (order_id, sendingMethod, paymentMethod, paymentType, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?)";
+                        sql = "INSERT INTO orderSendingPaymentHistory (order_id, sendingMethod, paymentMethod, paymentType, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?)";
                         connection.query(sql, [order_id, req.body.methods.sendingMethod, req.body.methods.paymentMethod, req.body.methods.typeOfPayment, req.body.charger.email, new Date], function (err, result, fields) {
                             if (err) {
                                 connection.rollback(function () {
@@ -758,7 +758,7 @@ router.post("/insert_order", isAuth, async (req, res) => {
 
                         const order_id = result.insertId;
 
-                        sql = "INSERT INTO ordersendingpaymenthistory (order_id, sendingMethod, paymentMethod, paymentType, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?)";
+                        sql = "INSERT INTO orderSendingPaymentHistory (order_id, sendingMethod, paymentMethod, paymentType, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?)";
                         connection.query(sql, [order_id, req.body.methods.sendingMethod, req.body.methods.paymentMethod, req.body.methods.typeOfPayment, req.user.email, new Date], function (err, result, fields) {
                             if (err) {
                                 connection.rollback(function () {
@@ -854,7 +854,7 @@ router.post("/insert_no_user_order", async (req, res) => {
 
                     const order_id = result.insertId;
 
-                    sql = "INSERT INTO ordersendingpaymenthistory (order_id, sendingMethod, paymentMethod, paymentType, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?)";
+                    sql = "INSERT INTO orderSendingPaymentHistory (order_id, sendingMethod, paymentMethod, paymentType, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?)";
                     connection.query(sql, [order_id, req.body.methods.sendingMethod, req.body.methods.paymentMethod, req.body.methods.typeOfPayment, req.body.charger.email, new Date], function (err, result, fields) {
                         if (err) {
                             connection.rollback(function () {
@@ -1073,7 +1073,7 @@ router.put("/changeStatus", isAuth, isAdmin, async (req, res) => {
                                 });
                             }
 
-                            var sql = "INSERT INTO orderstatushistory (order_id, status, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?)";
+                            var sql = "INSERT INTO orderStatusHistory (order_id, status, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?)";
                             connection.query(sql, [req.body.orderId, req.body.newStatus, req.user.username, new Date], function (err, result, fields) {
                                 if (err) {
                                     connection.rollback(function () {
@@ -1109,7 +1109,7 @@ router.put("/changeStatus", isAuth, isAdmin, async (req, res) => {
                                 });
                             }
 
-                            var sql = "INSERT INTO orderstatushistory (order_id, status, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?)";
+                            var sql = "INSERT INTO orderStatusHistory (order_id, status, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?)";
                             connection.query(sql, [req.body.orderId, req.body.newStatus, req.user.username, new Date], function (err, result, fields) {
                                 if (err) {
                                     connection.rollback(function () {
@@ -1145,7 +1145,7 @@ router.put("/changeStatus", isAuth, isAdmin, async (req, res) => {
                                 });
                             }
 
-                            var sql = "INSERT INTO orderstatushistory (order_id, status, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?)";
+                            var sql = "INSERT INTO orderStatusHistory (order_id, status, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?)";
                             connection.query(sql, [req.body.orderId, req.body.newStatus, req.user.username, new Date], function (err, result, fields) {
                                 if (err) {
                                     connection.rollback(function () {
@@ -1180,7 +1180,7 @@ router.put("/changeStatus", isAuth, isAdmin, async (req, res) => {
                                 });
                             }
 
-                            var sql = "INSERT INTO orderstatushistory (order_id, status, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?)";
+                            var sql = "INSERT INTO orderStatusHistory (order_id, status, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?)";
                             connection.query(sql, [req.body.orderId, req.body.newStatus, req.user.username, new Date], function (err, result, fields) {
                                 if (err) {
                                     connection.rollback(function () {
@@ -1232,7 +1232,7 @@ router.put("/updateStatus", isAuth, isAdmin, async (req, res) => {
                                 });
                             }
 
-                            var sql = "INSERT INTO orderstatushistory (order_id, status, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?)";
+                            var sql = "INSERT INTO orderStatusHistory (order_id, status, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?)";
                             connection.query(sql, [req.body.orderId, req.body.newStatus, req.user.username, new Date], function (err, result, fields) {
                                 if (err) {
                                     connection.rollback(function () {
@@ -1267,7 +1267,7 @@ router.put("/updateStatus", isAuth, isAdmin, async (req, res) => {
                                 });
                             }
 
-                            var sql = "INSERT INTO orderstatushistory (order_id, status, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?)";
+                            var sql = "INSERT INTO orderStatusHistory (order_id, status, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?)";
                             connection.query(sql, [req.body.orderId, req.body.newStatus, req.user.username, new Date], function (err, result, fields) {
                                 if (err) {
                                     connection.rollback(function () {
@@ -1302,7 +1302,7 @@ router.put("/updateStatus", isAuth, isAdmin, async (req, res) => {
                                 });
                             }
 
-                            var sql = "INSERT INTO orderstatushistory (order_id, status, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?)";
+                            var sql = "INSERT INTO orderStatusHistory (order_id, status, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?)";
                             connection.query(sql, [req.body.orderId, req.body.newStatus, req.user.username, new Date], function (err, result, fields) {
                                 if (err) {
                                     connection.rollback(function () {
@@ -1337,7 +1337,7 @@ router.put("/updateStatus", isAuth, isAdmin, async (req, res) => {
                                 });
                             }
 
-                            var sql = "INSERT INTO orderstatushistory (order_id, status, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?)";
+                            var sql = "INSERT INTO orderStatusHistory (order_id, status, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?)";
                             connection.query(sql, [req.body.orderId, req.body.newStatus, req.user.username, new Date], function (err, result, fields) {
                                 if (err) {
                                     connection.rollback(function () {
@@ -1391,7 +1391,7 @@ router.put("/changeOrderDetails", isAuth, isAdmin, async (req, res) => {
                         });
                     }
 
-                    sql = "INSERT INTO ordersendingpaymenthistory (order_id, sendingMethod, paymentMethod, paymentType, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?)";
+                    sql = "INSERT INTO orderSendingPaymentHistory (order_id, sendingMethod, paymentMethod, paymentType, UpdatedBy, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?)";
                     connection.query(sql, [req.body.orderId, req.body.sendingMethod, req.body.paymentMethod, req.body.paymentType, req.user.username, new Date], function (err, result, fields) {
                         if (err) {
                             connection.rollback(function () {
@@ -1840,7 +1840,7 @@ router.get("/customerOrders/:id", isAuth, async (req, res) => {
                                     connection.rollback(function () {
                                         throw err;
                                     });
-                                }                                
+                                }
                             });
                         });
                     });

@@ -4,9 +4,9 @@ import MainScreen from '../screens/MainScreen';
 import ProtectedRoute from '../components/ProtectedRoute';
 import SuperProtectedRoute from '../components/SuperProtectedRoute';
 import ProductsByCategoryScreen from '../screens/ProductsByCategoryScreen';
-import AdminAdministratorsScreen from '../screens/AdminAdministratorsScreen';
-import ProductHistoryScreen from '../screens/ProductHistoryScreen';
-import OrderHistoryScreen from '../screens/OrderHistoryScreen';
+const AdminAdministratorsScreen = lazy(() => import('../screens/AdminAdministratorsScreen'));
+const ProductHistoryScreen = lazy(() => import('../screens/ProductHistoryScreen'));
+const OrderHistoryScreen = lazy(() => import('../screens/OrderHistoryScreen'));
 const CollectionScreen = lazy(() => import('../screens/CollectionScreen'));
 const ProductsScreen = lazy(() => import('../screens/ProductsScreen'));
 const ContactUsScreen = lazy(() => import('../screens/ContactUsScreen'));
@@ -35,6 +35,7 @@ const CustomerOrdersScreen = lazy(() => import('../screens/CustomerOrdersScreen'
 const CustomerOrderDetails = lazy(() => import('../screens/CustomerOrderDetails'));
 const SendingMethodsScreen = lazy(() => import('../screens/SendingMethodsScreen'));
 const ReturnPolicy = lazy(() => import('../screens/ReturnPolicy'));
+const NewslettersScreen = lazy(() => import('../screens/NewslettersScreen'));
 
 function Routes() {
     return (
@@ -71,6 +72,7 @@ function Routes() {
             <ProtectedRoute path="/admin/collection" component={AdminCollectionScreen} />
             <ProtectedRoute path="/admin/order/:id" component={AdminOrdersDetailScreen} />
             <ProtectedRoute path="/admin/lists" component={AdminListsScreen} />
+            <ProtectedRoute path="/admin/newsletter" component={NewslettersScreen} />
             <SuperProtectedRoute path="/admin/administrators" component={AdminAdministratorsScreen} />
             <SuperProtectedRoute path="/admin/productHistory/:id" component={ProductHistoryScreen} />
             <SuperProtectedRoute path="/admin/orderHistory/:id" component={OrderHistoryScreen} />            

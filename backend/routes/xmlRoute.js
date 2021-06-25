@@ -8,7 +8,7 @@ const router= express.Router();
 router.get("/", async (req, res) =>{
 
     const parser= new xml2js.Parser();
-    fs.readFile('C:/Users/Giorgos/projects/reactApp/grand/frontend/src/images/products.xml', function(err, data) {
+    fs.readFile('C:/Users/Giorgos/projects/reactApp/grand/frontend/src/images/xml_isis.xml', function(err, data) {
         parser.parseString(data, function (err, result) {
             console.dir(result["www.isispc-eshop.gr"].PRODUCTS[0].PRODUCT[0].NAME);
             console.log('Done');

@@ -13,8 +13,9 @@ import { Helmet } from 'react-helmet';
 function ProductDetailScreen(props) {
 
     const [qty, setQty] = useState(1);
+    const [activeTab, setActiveTab] = useState("description");
     const productDetails = useSelector(state => state.productDetails);
-    const { product, loading, error } = productDetails;
+    const { product, compatibilities, features, loading, error } = productDetails;
     const userSignin = useSelector(state => state.userSignin);
     const { userInfo } = userSignin;
     const dispatch = useDispatch();
@@ -99,21 +100,88 @@ function ProductDetailScreen(props) {
                                             <div>
                                                 <button className="add-to-cart-btn" onClick={handleAddToCart} disabled={!product.countInStock > 0}>
                                                     ΠΡΟΣΘΗΚΗ ΣΤΟ ΚΑΛΑΘΙ
-                                    </button>
+                                                </button>
                                                 <button className="wish-list-link" onClick={handleAddToWishList} disabled={!product.countInStock > 0}
                                                     data-tip data-for="my-wish-list">
                                                     <i className="material-icons wish-list-link">favorite_border</i>
                                                 </button>
                                                 <ReactTooltip backgroundColor="#deccf0" textColor="#312f8b" id="my-wish-list" place="bottom" effect="solid">
                                                     Προσθήκη στα αγαπημένα μου.
-                                    </ReactTooltip>
+                                                </ReactTooltip>
                                             </div>
                                         </div>
                                     </li>
                                     <li className="product-details-info">
-                                        <h3>Περιγραφή:</h3>
+                                        <div className="mobile">
+                                        <div className="description-wrapper">
+                                            <div className="card-description-header" onClick={() => setActiveTab("description")}>
+                                                <h4 className="expand">Περιγραφή</h4>
+                                                <i className="material-icons expand">{activeTab!=="description" ? "expand_more" : "expand_less"}</i>
+                                            </div>
+                                            {activeTab==="description" &&
+                                                <div className="description-info ">
+                                                    {ShowHtml(product.description)}
+                                                </div>}
+                                        </div>
+                                        {features && features.length>0 && <div className="description-wrapper">
+                                            <div className="card-description-header" onClick={() => setActiveTab("characteristics")}>
+                                                <h4 className="expand">Χαρακτηριστικά</h4>
+                                                <i className="material-icons expand">{activeTab!=="characteristics" ? "expand_more" : "expand_less"}</i>
+                                            </div>
+                                            {activeTab==="characteristics" &&
+                                                <div className="description-info">
+                                                    {features && features.map(ft =>
+                                                    <div className="tabcontent-row">
+                                                        <div>{ft.feature_title}</div>
+                                                        <div>{ft.feature}</div>
+                                                    </div>)}
+                                                </div>}
+                                        </div>}
+                                        {compatibilities && compatibilities.length>0 && <div className="description-wrapper">
+                                            <div className="card-description-header" onClick={() => setActiveTab("compatibility")}>
+                                                <h4 className="expand">Συμβατότητα</h4>
+                                                <i className="material-icons expand">{activeTab!=="compatibility" ? "expand_more" : "expand_less"}</i>
+                                            </div>
+                                            {activeTab==="compatibility" &&
+                                                <div className="description-info">
+                                                    {compatibilities && compatibilities.map(comp =>
+                                                    <div className="tabcontent-row">
+                                                        <div>{comp.compatibility_company}</div>
+                                                        <div>{comp.compatibility_model}</div>
+                                                    </div>)}
+                                                </div>}
+                                        </div>}
+                                        </div>
+                                        <div className="display_desktop">
+                                            <div className="tab">
+                                                <button className={`tablinks ${activeTab === 'description' ? 'active' : ''}`} onClick={() => setActiveTab("description")}>Περιγραφή</button>
+                                                {features && features.length>0 && <button className={`tablinks ${activeTab === 'characteristics' ? 'active' : ''}`} onClick={() => setActiveTab("characteristics")}>Χαρακτηριστικά</button>}
+                                                {compatibilities && compatibilities.length>0 && <button className={`tablinks ${activeTab === 'compatibility' ? 'active' : ''}`} onClick={() => setActiveTab("compatibility")}>Συμβατότητα</button>}
+                                            </div>
+
+                                            <div id="Description" className="tabcontent" style={{ display: activeTab === 'description' ? 'block' : 'none' }}>
+                                                {ShowHtml(product.description)}
+                                            </div>
+
+                                            <div id="Characteristics" className="tabcontent" style={{ display: activeTab === 'characteristics' ? 'block' : 'none' }}>
+                                                {features && features.map(ft =>
+                                                    <div className="tabcontent-row">
+                                                        <div>{ft.feature_title}</div>
+                                                        <div>{ft.feature}</div>
+                                                    </div>)}
+                                            </div>
+
+                                            <div id="Compatibility" className="tabcontent" style={{ display: activeTab === 'compatibility' ? 'block' : 'none' }}>
+                                                {compatibilities && compatibilities.map(comp =>
+                                                    <div className="tabcontent-row">
+                                                        <div>{comp.compatibility_company}</div>
+                                                        <div>{comp.compatibility_model}</div>
+                                                    </div>)}
+                                            </div>
+                                        </div>
+                                        {/* <h3>Περιγραφή:</h3>
                                         <br />
-                                        {ShowHtml(product.description)}
+                                        {ShowHtml(product.description)} */}
                                     </li>
                                 </ul>
                             </div>

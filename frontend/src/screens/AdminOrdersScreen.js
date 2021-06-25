@@ -118,7 +118,7 @@ function AdminOrdersScreen(props) {
           <tbody>
             {orders.map(order => (<tr key={order.order_id}>
               <td>{order.order_id}</td>
-              <td>{Intl.DateTimeFormat('en-GB',{
+              <td>{order.orderDate && Intl.DateTimeFormat('en-GB',{
                     year: 'numeric', month: 'numeric', day: 'numeric',
                     hour: 'numeric', minute: 'numeric', second: 'numeric',
                     hour12: false}).format(Date.parse(order.orderDate))}</td>

@@ -15,10 +15,11 @@
     width: 100%;
     display: flex;
     flex-direction: row;
-    justify-content: right;
+    justify-content: flex-end;
     align-items: center;
     padding-right: 1rem;
     padding-bottom: 1rem;
+    padding-left: 1rem;
 }
 
 .filter_collection_per_page{

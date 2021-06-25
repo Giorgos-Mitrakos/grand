@@ -132,7 +132,7 @@ function productListReducer(state={products:[]},action){
         case PRODUCT_SAVE_SUCCESS:
             item = action.payload;
             return {loadingSave:false,
-                products :state.products.map(x=>(x._id===item._id)?item:x)
+                products : [...state.products,state.products.map(x=>(x._id===item._id)?item:x)]
             };
         case PRODUCT_SAVE_FAIL:
             return {loadingSave:false, errorSave : action.payload};
@@ -176,12 +176,14 @@ function searchForItemsReducer(state={searchItems:[], categories:[], subcategori
     }
 }
 
-function productDetailsReducer(state={product:{}},action){
+function productDetailsReducer(state={product:{}, compatibilities:[], features:[]},action){
     switch(action.type){
         case PRODUCT_DETAILS_REQUEST:
             return {loading:true};
         case PRODUCT_DETAILS_SUCCESS:
-            return {loading:false, product : action.payload};
+            return {loading:false, product : action.payload.product, 
+                compatibilities:action.payload.compatibilities,
+                features:action.payload.features};
         case PRODUCT_DETAILS_FAIL:
             return {loading:false, error : action.payload};
         default:

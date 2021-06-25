@@ -72,14 +72,14 @@ function ProductHistoryScreen(props) {
                                         </div>
                                         <div>{product.availability}</div>
                                         <div>{product.CreatedBy}</div>
-                                        <div>{Intl.DateTimeFormat('en-GB', {
+                                        <div>{product.CreatedAt && Intl.DateTimeFormat('en-GB', {
                                             year: 'numeric', month: 'numeric', day: 'numeric',
                                             hour: 'numeric', minute: 'numeric', second: 'numeric',
                                             hour12: false
                                         }).format(Date.parse(product.CreatedAt))}
                                         </div>
                                         <div>{product.UpdatedBy}</div>
-                                        <div>{Intl.DateTimeFormat('en-GB', {
+                                        <div>{product.UpdatedAt && Intl.DateTimeFormat('en-GB', {
                                             year: 'numeric', month: 'numeric', day: 'numeric',
                                             hour: 'numeric', minute: 'numeric', second: 'numeric',
                                             hour12: false
@@ -114,7 +114,7 @@ function ProductHistoryScreen(props) {
                                                 <td>{comp.compatibility_company}</td>
                                                 <td>{comp.compatibility_model}</td>
                                                 <td>{comp.UpdatedBy}</td>
-                                                <td>{Intl.DateTimeFormat('en-GB', {
+                                                <td>{comp.UpdatedAt && Intl.DateTimeFormat('en-GB', {
                                                     year: 'numeric', month: 'numeric', day: 'numeric',
                                                     hour: 'numeric', minute: 'numeric', second: 'numeric',
                                                     hour12: false
@@ -151,7 +151,7 @@ function ProductHistoryScreen(props) {
                                                 <td>{feat.feature_title}</td>
                                                 <td>{feat.feature}</td>
                                                 <td>{feat.UpdatedBy}</td>
-                                                <td>{Intl.DateTimeFormat('en-GB', {
+                                                <td>{feat.UpdatedAt && Intl.DateTimeFormat('en-GB', {
                                                     year: 'numeric', month: 'numeric', day: 'numeric',
                                                     hour: 'numeric', minute: 'numeric', second: 'numeric',
                                                     hour12: false

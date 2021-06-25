@@ -57,7 +57,7 @@ function OrderHistoryScreen(props) {
                                                     <tr>
                                                         <td>{ord.status}</td>
                                                         <td>{ord.UpdatedBy}</td>
-                                                        <td>{Intl.DateTimeFormat('en-GB', {
+                                                        <td>{ord.UpdatedAt && Intl.DateTimeFormat('en-GB', {
                                                             year: 'numeric', month: 'numeric', day: 'numeric',
                                                             hour: 'numeric', minute: 'numeric', second: 'numeric',
                                                             hour12: false
@@ -116,7 +116,7 @@ function OrderHistoryScreen(props) {
                     (loading ? <div><LoadingSpinner /></div> :
                         error ? <div>{error}</div> :
                             <div className="product_history_table_wrapper">
-                                <div className="product_history_table">
+                                <div className="product_history_table_headers">
                                     <div><label>Επεξεργάστηκε από</label></div>
                                     <div><label>Επεξεργάστηκε Στις</label></div>
                                     <div><label>Επωνυμία</label></div>
@@ -131,12 +131,13 @@ function OrderHistoryScreen(props) {
                                     <div><label>Οδός</label></div>
                                     <div><label>Τ.Κ</label></div>
                                     <div><label>Τηλέφωνο</label></div>
-                                    <div><label>Σχόλια</label></div>
+                                    <div id="comments_scroll"><label>Σχόλια</label></div>
                                 </div>
+                                <div className="horizontal_scroll">
                                 {billingAddressHistory.map(ord => (
                                     <div key={ord.ID} className="product_history_table">
                                         <div>{ord.UpdatedBy}</div>
-                                        <div>{Intl.DateTimeFormat('en-GB', {
+                                        <div>{ord.UpdatedAt && Intl.DateTimeFormat('en-GB', {
                                             year: 'numeric', month: 'numeric', day: 'numeric',
                                             hour: 'numeric', minute: 'numeric', second: 'numeric',
                                             hour12: false
@@ -153,10 +154,9 @@ function OrderHistoryScreen(props) {
                                         <div>{ord.street}</div>
                                         <div>{ord.postalCode}</div>
                                         <div>{ord.phoneNumber}</div>
-                                        <div>{ord.comments}</div>
-
+                                        <div id="comments_scroll">{ord.comments}</div>
                                     </div>
-                                ))}
+                                ))}</div>
                             </div>)}
             </div>
             <div className="product_history_wrapper">
@@ -168,7 +168,7 @@ function OrderHistoryScreen(props) {
                     (loading ? <div><LoadingSpinner /></div> :
                         error ? <div>{error}</div> :
                             <div className="product_history_table_wrapper">
-                                <div className="product_history_table">
+                                <div className="product_history_table_headers">
                                     <div><label>Επεξεργάστηκε από</label></div>
                                     <div><label>Επεξεργάστηκε Στις</label></div>
                                     <div><label>Όνομα</label></div>
@@ -180,10 +180,11 @@ function OrderHistoryScreen(props) {
                                     <div><label>Τ.Κ</label></div>
                                     <div><label>Τηλέφωνο</label></div>
                                 </div>
+                                <div className="horizontal_scroll">
                                 {shippingAddressHistory.map(ord => (
                                     <div key={ord.ID} className="product_history_table">
                                         <div>{ord.UpdatedBy}</div>
-                                        <div>{Intl.DateTimeFormat('en-GB', {
+                                        <div>{ord.UpdatedAt && Intl.DateTimeFormat('en-GB', {
                                             year: 'numeric', month: 'numeric', day: 'numeric',
                                             hour: 'numeric', minute: 'numeric', second: 'numeric',
                                             hour12: false
@@ -197,7 +198,7 @@ function OrderHistoryScreen(props) {
                                         <div>{ord.postalCode}</div>
                                         <div>{ord.phoneNumber}</div>
                                     </div>
-                                ))}
+                                ))}</div>
                             </div>)}
             </div>
             <div className="product_history_wrapper">
@@ -239,7 +240,7 @@ function OrderHistoryScreen(props) {
                                                         <td>{ord.model}</td>}
                                                         <td>{ord.quantity}</td>
                                                         <td>{ord.UpdatedBy}</td>
-                                                        <td>{Intl.DateTimeFormat('en-GB', {
+                                                        <td>{ord.UpdatedAt && Intl.DateTimeFormat('en-GB', {
                                                             year: 'numeric', month: 'numeric', day: 'numeric',
                                                             hour: 'numeric', minute: 'numeric', second: 'numeric',
                                                             hour12: false

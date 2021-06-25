@@ -45,7 +45,7 @@ router.post("/createproduct", isAuth, isAdmin, upload.single('image'), async (re
 
       let insertedId = result.insertId
 
-      sql = "INSERT INTO productshistory (product_id, name, category, brand, subcategory, supplier, image, price, percentage, availability, description, CreatedBy, CreatedAt, countInStock) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, availability, description, CreatedBy, CreatedAt, countInStock FROM products WHERE _id=?";
+      sql = "INSERT INTO productsHistory (product_id, name, category, brand, subcategory, supplier, image, price, percentage, availability, description, CreatedBy, CreatedAt, countInStock) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, availability, description, CreatedBy, CreatedAt, countInStock FROM products WHERE _id=?";
       connection.query(sql, [insertedId], function (err, result, fields) {
         if (err) throw err;
 
@@ -171,7 +171,7 @@ router.put("/changeVisibility", isAuth, isAdmin, async (req, res, next) => {
       var sql = 'UPDATE products SET visibility=? WHERE _id=?';
       connection.query(sql, [req.body.productVisibility, req.body.productID], function (err, result, fields) {
         if (err) throw err;
-        // sql = "INSERT INTO productshistory (product_id, name, category, brand, subcategory, supplier, image, price, percentage, availability, visibility, description, CreatedBy, CreatedAt, countInStock, UpdatedBy, UpdatedAt) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, availability, visibility, description, CreatedBy, CreatedAt, countInStock, ?, ? FROM products WHERE _id=?";
+        // sql = "INSERT INTO productsHistory (product_id, name, category, brand, subcategory, supplier, image, price, percentage, availability, visibility, description, CreatedBy, CreatedAt, countInStock, UpdatedBy, UpdatedAt) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, availability, visibility, description, CreatedBy, CreatedAt, countInStock, ?, ? FROM products WHERE _id=?";
         // connection.query(sql, [req.user.username, new Date, req.body.productID], function (err, result, fields) {
         //   if (err) {
         //     connection.rollback(function () {
@@ -213,7 +213,7 @@ router.put("/category_percentage_change", isAuth, isAdmin, async (req, res, next
           connection.query(sql, [req.body.pricePercentage, req.body.category], function (err, result, fields) {
             if (err) throw err;
 
-            sql = "INSERT INTO productshistory (product_id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock, UpdatedBy, UpdatedAt) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock, ?, ? FROM products WHERE category=?";
+            sql = "INSERT INTO productsHistory (product_id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock, UpdatedBy, UpdatedAt) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock, ?, ? FROM products WHERE category=?";
             connection.query(sql, [req.user.username, new Date, req.body.category], function (err, result, fields) {
               if (err) {
                 connection.rollback(function () {
@@ -232,7 +232,7 @@ router.put("/category_percentage_change", isAuth, isAdmin, async (req, res, next
                 let product = result;
 
                 for (let i = 0; i < product.length; i++) {
-                  sql = "SELECT ID FROM productshistory WHERE product_id=? ORDER BY UpdatedAt DESC LIMIT 5";
+                  sql = "SELECT ID FROM productsHistory WHERE product_id=? ORDER BY UpdatedAt DESC LIMIT 5";
                   connection.query(sql, [product[i]._id], function (err, result, fields) {
                     if (err) {
                       connection.rollback(function () {
@@ -245,7 +245,7 @@ router.put("/category_percentage_change", isAuth, isAdmin, async (req, res, next
                       idArray.push(result[i].ID)
                     }
 
-                    sql = "DELETE FROM productshistory WHERE product_id=? && ID NOT IN (?)";
+                    sql = "DELETE FROM productsHistory WHERE product_id=? && ID NOT IN (?)";
                     connection.query(sql, [product[i]._id, idArray], function (err, result, fields) {
                       if (err) {
                         connection.rollback(function () {
@@ -276,7 +276,7 @@ router.put("/category_percentage_change", isAuth, isAdmin, async (req, res, next
           connection.query(sql, [req.body.pricePercentage, req.body.category, req.body.subcategory], function (err, result, fields) {
             if (err) throw err;
 
-            sql = "INSERT INTO productshistory (product_id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock, UpdatedBy, UpdatedAt) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock, ?, ? FROM products WHERE category=? && subcategory=?";
+            sql = "INSERT INTO productsHistory (product_id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock, UpdatedBy, UpdatedAt) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock, ?, ? FROM products WHERE category=? && subcategory=?";
             connection.query(sql, [req.user.username, new Date, req.body.category, req.body.subcategory], function (err, result, fields) {
               if (err) {
                 connection.rollback(function () {
@@ -295,7 +295,7 @@ router.put("/category_percentage_change", isAuth, isAdmin, async (req, res, next
                 let product = result;
 
                 for (let i = 0; i < product.length; i++) {
-                  sql = "SELECT ID FROM productshistory WHERE product_id=? ORDER BY UpdatedAt DESC LIMIT 5";
+                  sql = "SELECT ID FROM productsHistory WHERE product_id=? ORDER BY UpdatedAt DESC LIMIT 5";
                   connection.query(sql, [product[i]._id], function (err, result, fields) {
                     if (err) {
                       connection.rollback(function () {
@@ -308,7 +308,7 @@ router.put("/category_percentage_change", isAuth, isAdmin, async (req, res, next
                       idArray.push(result[i].ID)
                     }
 
-                    sql = "DELETE FROM productshistory WHERE product_id=? && ID NOT IN (?)";
+                    sql = "DELETE FROM productsHistory WHERE product_id=? && ID NOT IN (?)";
                     connection.query(sql, [product[i]._id, idArray], function (err, result, fields) {
                       if (err) {
                         connection.rollback(function () {
@@ -341,7 +341,7 @@ router.put("/category_percentage_change", isAuth, isAdmin, async (req, res, next
           connection.query(sql, [req.body.pricePercentage, req.body.supplier], function (err, result, fields) {
             if (err) throw err;
 
-            sql = "INSERT INTO productshistory (product_id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock, UpdatedBy, UpdatedAt) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock, ?, ? FROM products WHERE supplier=?";
+            sql = "INSERT INTO productsHistory (product_id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock, UpdatedBy, UpdatedAt) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock, ?, ? FROM products WHERE supplier=?";
             connection.query(sql, [req.user.username, new Date, req.body.supplier], function (err, result, fields) {
               if (err) {
                 connection.rollback(function () {
@@ -360,7 +360,7 @@ router.put("/category_percentage_change", isAuth, isAdmin, async (req, res, next
                 let product = result;
 
                 for (let i = 0; i < product.length; i++) {
-                  sql = "SELECT ID FROM productshistory WHERE product_id=? ORDER BY UpdatedAt DESC LIMIT 5";
+                  sql = "SELECT ID FROM productsHistory WHERE product_id=? ORDER BY UpdatedAt DESC LIMIT 5";
                   connection.query(sql, [product[i]._id], function (err, result, fields) {
                     if (err) {
                       connection.rollback(function () {
@@ -373,7 +373,7 @@ router.put("/category_percentage_change", isAuth, isAdmin, async (req, res, next
                       idArray.push(result[i].ID)
                     }
 
-                    sql = "DELETE FROM productshistory WHERE product_id=? && ID NOT IN (?)";
+                    sql = "DELETE FROM productsHistory WHERE product_id=? && ID NOT IN (?)";
                     connection.query(sql, [product[i]._id, idArray], function (err, result, fields) {
                       if (err) {
                         connection.rollback(function () {
@@ -405,7 +405,7 @@ router.put("/category_percentage_change", isAuth, isAdmin, async (req, res, next
             connection.query(sql, [req.body.pricePercentage, req.body.category, req.body.supplier], function (err, result, fields) {
               if (err) throw err;
 
-              sql = "INSERT INTO productshistory (product_id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock, UpdatedBy, UpdatedAt) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock, ?, ? FROM products WHERE category=? && supplier=?";
+              sql = "INSERT INTO productsHistory (product_id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock, UpdatedBy, UpdatedAt) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock, ?, ? FROM products WHERE category=? && supplier=?";
               connection.query(sql, [req.user.username, new Date, req.body.category, req.body.supplier], function (err, result, fields) {
                 if (err) {
                   connection.rollback(function () {
@@ -424,7 +424,7 @@ router.put("/category_percentage_change", isAuth, isAdmin, async (req, res, next
                   let product = result;
 
                   for (let i = 0; i < product.length; i++) {
-                    sql = "SELECT ID FROM productshistory WHERE product_id=? ORDER BY UpdatedAt DESC LIMIT 5";
+                    sql = "SELECT ID FROM productsHistory WHERE product_id=? ORDER BY UpdatedAt DESC LIMIT 5";
                     connection.query(sql, [product[i]._id], function (err, result, fields) {
                       if (err) {
                         connection.rollback(function () {
@@ -437,7 +437,7 @@ router.put("/category_percentage_change", isAuth, isAdmin, async (req, res, next
                         idArray.push(result[i].ID)
                       }
 
-                      sql = "DELETE FROM productshistory WHERE product_id=? && ID NOT IN (?)";
+                      sql = "DELETE FROM productsHistory WHERE product_id=? && ID NOT IN (?)";
                       connection.query(sql, [product[i]._id, idArray], function (err, result, fields) {
                         if (err) {
                           connection.rollback(function () {
@@ -468,7 +468,7 @@ router.put("/category_percentage_change", isAuth, isAdmin, async (req, res, next
             connection.query(sql, [req.body.pricePercentage, req.body.category, req.body.subcategory, req.body.supplier], function (err, result, fields) {
               if (err) throw err;
 
-              sql = "INSERT INTO productshistory (product_id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock, UpdatedBy, UpdatedAt) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock, ?, ? FROM products WHERE category=? && subcategory=? && supplier=?";
+              sql = "INSERT INTO productsHistory (product_id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock, UpdatedBy, UpdatedAt) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, description, CreatedBy, CreatedAt, countInStock, ?, ? FROM products WHERE category=? && subcategory=? && supplier=?";
               connection.query(sql, [req.user.username, new Date, req.body.category, req.body.subcategory, req.body.supplier], function (err, result, fields) {
                 if (err) {
                   connection.rollback(function () {
@@ -487,7 +487,7 @@ router.put("/category_percentage_change", isAuth, isAdmin, async (req, res, next
                   let product = result;
 
                   for (let i = 0; i < product.length; i++) {
-                    sql = "SELECT ID FROM productshistory WHERE product_id=? ORDER BY UpdatedAt DESC LIMIT 5";
+                    sql = "SELECT ID FROM productsHistory WHERE product_id=? ORDER BY UpdatedAt DESC LIMIT 5";
                     connection.query(sql, [product[i]._id], function (err, result, fields) {
                       if (err) {
                         connection.rollback(function () {
@@ -500,7 +500,7 @@ router.put("/category_percentage_change", isAuth, isAdmin, async (req, res, next
                         idArray.push(result[i].ID)
                       }
 
-                      sql = "DELETE FROM productshistory WHERE product_id=? && ID NOT IN (?)";
+                      sql = "DELETE FROM productsHistory WHERE product_id=? && ID NOT IN (?)";
                       connection.query(sql, [product[i]._id, idArray], function (err, result, fields) {
                         if (err) {
                           connection.rollback(function () {
@@ -537,7 +537,7 @@ router.put("/category_percentage_change", isAuth, isAdmin, async (req, res, next
 
 router.put("/createproduct/:id", isAuth, isAdmin, upload.single('image'), async (req, res, next) => {
   const productId = req.params.id;
-
+  
   mysqlConnection.getConnection(function (err, connection) {
     connection.beginTransaction(function (err) {
       if (err) { throw err; }
@@ -565,7 +565,7 @@ router.put("/createproduct/:id", isAuth, isAdmin, upload.single('image'), async 
             });
           }
 
-          sql = "INSERT INTO productshistory (product_id, name, category, brand, subcategory, supplier, image, price, percentage, availability, visibility, description, CreatedBy, CreatedAt, countInStock, UpdatedBy, UpdatedAt) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, availability, visibility, description, CreatedBy, CreatedAt, countInStock, ?, ? FROM products WHERE _id=?";
+          sql = "INSERT INTO productsHistory (product_id, name, category, brand, subcategory, supplier, image, price, percentage, availability, visibility, description, CreatedBy, CreatedAt, countInStock, UpdatedBy, UpdatedAt) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, availability, visibility, description, CreatedBy, CreatedAt, countInStock, ?, ? FROM products WHERE _id=?";
           connection.query(sql, [req.user.username, new Date, productId], function (err, result, fields) {
             if (err) {
               connection.rollback(function () {
@@ -573,7 +573,7 @@ router.put("/createproduct/:id", isAuth, isAdmin, upload.single('image'), async 
               });
             }
 
-            sql = "SELECT ID FROM productshistory WHERE product_id=? ORDER BY UpdatedAt DESC LIMIT 5";
+            sql = "SELECT ID FROM productsHistory WHERE product_id=? ORDER BY UpdatedAt DESC LIMIT 5";
             connection.query(sql, [productId], function (err, result, fields) {
               if (err) {
                 connection.rollback(function () {
@@ -586,7 +586,7 @@ router.put("/createproduct/:id", isAuth, isAdmin, upload.single('image'), async 
                 idArray.push(result[i].ID)
               }
 
-              sql = "DELETE FROM productshistory WHERE product_id=? && ID NOT IN (?)";
+              sql = "DELETE FROM productsHistory WHERE product_id=? && ID NOT IN (?)";
               connection.query(sql, [productId, idArray], function (err, result, fields) {
                 if (err) {
                   connection.rollback(function () {
@@ -1647,7 +1647,7 @@ router.post("/getProductHistory", isAuth, isAdmin, isSuperAdmin, async (req, res
 
           let compHistory = result;
 
-          sql = "SELECT * FROM featureshistory WHERE product_id=? ORDER BY UpdatedAt DESC";
+          sql = "SELECT * FROM featuresHistory WHERE product_id=? ORDER BY UpdatedAt DESC";
           connection.query(sql, [productId], function (err, result, fields) {
             if (err) {
               connection.rollback(function () {
@@ -1739,7 +1739,7 @@ router.post("/getOrderHistory", isAuth, isAdmin, isSuperAdmin, async (req, res) 
                       throw err;
                     });
                   }
-                  let resp = { orderStatusHistory,orderSendingPaymentHistory, billingAddressHistory, shippingAddressHistory, orderProductHistory }
+                  let resp = { orderStatusHistory, orderSendingPaymentHistory, billingAddressHistory, shippingAddressHistory, orderProductHistory }
                   res.send(resp);
                 });
               });
@@ -1751,6 +1751,47 @@ router.post("/getOrderHistory", isAuth, isAdmin, isSuperAdmin, async (req, res) 
 
       // Handle error after the release.
       if (err) throw err;
+    });
+  });
+})
+
+router.post("/newsletterlist", isAuth, isAdmin, async (req, res) => {
+
+  mysqlConnection.getConnection(function (err, connection) {
+    if (err) throw err; // not connected!
+
+    connection.beginTransaction(function (err) {
+      if (err) { throw err; }
+
+      var sql = 'SELECT * FROM newsletters ORDER BY email LIMIT ? OFFSET ?';
+      connection.query(sql, [req.body.itemsPerPage, req.body.offset], function (err, result, fields) {
+        if (err) {
+          connection.rollback(function () {
+            throw err;
+          });
+        }
+
+        let newsletterList = result;
+
+        connection.query('SELECT COUNT(*) AS count FROM newsletters',
+          function (err, result, fields) {
+            if (err) throw err;
+            let count = result;
+
+            connection.commit(function (err) {
+              if (err) {
+                connection.rollback(function () {
+                  throw err;
+                });
+              }
+              res.send({ newsletterList, count });
+            });
+            connection.release();
+
+            // Handle error after the release.
+            if (err) throw err;
+          })
+      })
     });
   });
 })

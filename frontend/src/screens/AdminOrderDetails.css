@@ -28,6 +28,7 @@
 
 .order-list-details{
     display: flex;
+    flex-direction: column;
     justify-content: space-between;
     box-shadow: 0 0.25rem 0.5rem 0 rgba(0, 0, 0, 0.2);
     margin: 1rem;
@@ -39,8 +40,6 @@
 
 .order-list-details>ul{
     width: 100%;
-    display: flex;
-    flex-direction: column;
 }
 
 .order-list-details>ul li{
@@ -86,7 +85,6 @@
 
 .charger-shipping-order{
     display: flex;
-    flex: 1 1 2;
     justify-content: space-between;
     box-shadow: 0 0.25rem 0.5rem 0 rgba(0, 0, 0, 0.2);
     margin: 1rem;
@@ -96,36 +94,38 @@
     background-color: #f7f1fd;
 }
 
-.charger-shipping-order>div{
-    flex-grow: 1;
-    margin-left: 1rem;
-}
-
-.charger-shipping-order>div:last-child{
-    flex-grow: 1.5;
-    margin-right: 1rem;
-}
-
 .charge-details{
+    flex: 1;
     border-right: 1px #b0afe9 solid;
+    margin-left: 1rem;
     padding-right: 1rem;
 }
 
-.charge-details-unordered-list,.charge-details li{
+.charge-details-unordered-list .charge-details li{
     display: flex;
 }
 
-.charge-details-unordered-list,.charge-details li>label{
+.charge-details-unordered-list li>label{
     flex: 2;
 }
 
-.charge-details-unordered-list,.charge-details li>div{
+.charge-details-unordered-list .charge-details li>div{
+    flex: 3;
+}
+
+.charge-details li>label{
+    flex: 2;
+}
+
+.charge-details li>div{
     flex: 3;
 }
 
 .shipping-details{
+    flex: 1;
     border-right: 1px #b0afe9 solid;
     padding-right: 1rem;
+    padding-left: 1rem;
 }
 
 .shipping-details>ul>li{
@@ -155,7 +155,7 @@
 }
 
 .order_details-wrapper li>div{
-    margin-left: 1rem;
+    margin-left: 0.2rem;
     align-self: center;
 }
 
@@ -294,6 +294,7 @@
 
 .admin-order-items-total-cost-table{
     width: 30%;
+    margin-left: auto;
 }
 
 .admin-order-items-total-cost-table>tbody>tr>td{
@@ -323,6 +324,29 @@
     font-size: 2rem;
 }
 
+.order-list-details-container{
+    display: flex;
+    flex-direction: column;
+    overflow-x: auto;
+    width: 100%;
+}
+
+.order-list-header{
+    display: flex;
+    flex-direction: row;
+    background-color: #deccf0;
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.25rem 0.25rem 0 #ebdbfa;
+}
+
+.my-order-item{
+    display: flex;
+    flex-direction: row;
+}
+
 @media only screen and (max-width: 1024px) {
     .order_details{
         flex-direction: column;
@@ -344,6 +368,55 @@
     .admin-order-items-total-cost{
         padding: 0 0.5rem 0 1rem;
         font-size: 0.9rem;
+    }
+
+    .order-list-header{
+        flex-direction: column;
+        width: 40%;
+        position: -webkit-sticky; /* Safari */
+        position: sticky;
+        left: 0;
+        padding-left: 0.1rem;
+        margin-left: 0.1rem;
+    }
+
+    .order-list-header>div{
+        margin-right: auto;
+        margin-left: 0.5rem;
+    }
+
+    .my-order-item{
+        flex-direction: column;
+        width: 60%;
+    }
+
+    .my-order-item>div{
+        min-width: 10rem;
+    }
+
+    .order-list-details-container{
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;
+    }
+
+    .admin-order-items-total-cost-table{
+        width: 100%;
+        font-size: 0.8rem;
+    }
+
+    .photo-row{
+        justify-items: center;
+        min-height: 5rem;
+    }
+
+    .order-row{
+        min-height: 1.5rem;
+    }
+
+    .product-row{
+        min-height: 7rem;
+        max-height: 6rem;
     }
 }
   

@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useParams } from 'react-router-dom';
 import { sendUpdatePassConfirm, updatePass } from '../action/emailActions';
 import { Helmet } from 'react-helmet';
+import './UpdatePassword.css'
 
 function UpdatePassword(props) {
 
