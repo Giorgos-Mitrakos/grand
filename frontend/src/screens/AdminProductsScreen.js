@@ -6,11 +6,14 @@ import {
     saveProduct, listManufacturers, listFeatureTitles, getFeatureNames, insertFeature,
     listFeatures, deleteFeature, listCategories, listSubcategories, changeVisibility,
     getProductsByCategoryAdmin, changeCategoryPercentage, listCompatibilityCompanies,
-    getCompatibilityModels, insertCompatibility, getProductCompatibilities, deleteProductCompatibility, 
-    listSuppliers, importProducts
+    getCompatibilityModels, insertCompatibility, getProductCompatibilities, deleteProductCompatibility,
+    listSuppliers, importProducts, getProductByNameAdmin
 } from '../action/productActions';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ReactPaginate from 'react-paginate';
+import HtmlEditor from '../components/HtmlEditor';
+import ReactTooltip from 'react-tooltip';
+import 'suneditor/dist/css/suneditor.min.css'; // Import Sun Editor's CSS File
 
 function AdminProductsScreen(props) {
 
@@ -20,11 +23,13 @@ function AdminProductsScreen(props) {
     const [featureName, setFeatureName] = useState('');
     const [id, setId] = useState('');
     const [name, setName] = useState('');
+    const [nameSearch, setNameSearch] = useState('');
     const [category, setCategory] = useState('');
     const [brand, setBrand] = useState('');
     const [subcategory, setSubcategory] = useState('');
     const [supplier, setSupplier] = useState('');
     const [image, setImage] = useState('');
+    const [preview, setPreview] = useState();
     const [price, setPrice] = useState('');
     const [desirablePrice, setDesirablePrice] = useState('');
     const [availability, setAvailability] = useState('');
@@ -62,8 +67,8 @@ function AdminProductsScreen(props) {
     const { models, loading: loadingCompatibilityModels, error: errorCompatibilityModels } = compatibilityModels;
     const productCompatibilities = useSelector(state => state.productCompatibilities);
     const { productCompat, loading: loadingProductCompatibilities, error: errorProductCompatibilities } = productCompatibilities;
-    const userSignin = useSelector(state=>state.userSignin);
-    const {userInfo} = userSignin;
+    const userSignin = useSelector(state => state.userSignin);
+    const { userInfo } = userSignin;
 
     const dispatch = useDispatch();
 
@@ -75,6 +80,20 @@ function AdminProductsScreen(props) {
 
         }
     }, []);
+
+    useEffect(() => {
+        if (image && image.type === "blob") {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreview(reader.result)
+                console.log(reader.result)
+            }
+            reader.readAsDataURL(image)
+        }
+        else {
+            setPreview(null)
+        }
+    }, [image]);
 
     useEffect(() => {
         dispatch(getProductsByCategoryAdmin(category, subcategory, supplier, offset));
@@ -104,17 +123,19 @@ function AdminProductsScreen(props) {
         }
     }, [successPercentageChange]);
 
-    useEffect(() => {
-        if (category && category !== '') {
-            let sub = {};
-            sub = categories.filter(cat => cat.category === category)
-            if (sub[0])
-                dispatch(listSubcategories(sub[0].category_id));
-        }
-        return () => {
+    // useEffect(() => {
+    //     if (category && category !== '') {
+    //         let sub = {};
+    //         sub = categories.filter(cat => cat.category === category)
 
-        }
-    }, [category]);
+    //         if (sub[0])
+    //         console.log("here")
+    //             dispatch(listSubcategories(sub[0].category_id));
+    //     }
+    //     return () => {
+
+    //     }
+    // }, [category]);
 
     const openModal = (product) => {
         setModalVisible(true);
@@ -152,9 +173,9 @@ function AdminProductsScreen(props) {
             && pricePercentage === oldProduct.pricePercentage
             && availability === oldProduct.availability
             && description === oldProduct.description) {
-                
-            }
-            else{
+
+        }
+        else {
             const product = new FormData();
             product.append('_id', id);
             product.append('name', name);
@@ -166,7 +187,7 @@ function AdminProductsScreen(props) {
             product.append('price', price);
             product.append('percentage', pricePercentage);
             product.append('availability', availability);
-            product.append('description', description);            
+            product.append('description', description);
             dispatch(saveProduct(id, product));
         }
     }
@@ -204,7 +225,12 @@ function AdminProductsScreen(props) {
         dispatch(getProductsByCategoryAdmin(category, subcategory, supplier, offset));
     }
 
-    const productHistoryHandler = () =>{
+    const searchByNameHandler = () => {
+        setCurrentPage(0)
+        dispatch(getProductByNameAdmin(nameSearch, offset));
+    }
+
+    const productHistoryHandler = () => {
         props.history.push(`/admin/productHistory/${id}`)
     }
 
@@ -245,25 +271,35 @@ function AdminProductsScreen(props) {
         setCurrentPage(selectedPage);
     }
 
-    const calcPercentage = (desireValue)=>{
-        let des= desireValue.replace(",",".")
+    const calcPercentage = (desireValue) => {
+        let des = desireValue.replace(",", ".")
         setDesirablePrice(des);
-        let percentage = (100*(des-price)/price).toFixed(2);
+        let percentage = (100 * (des - price) / price).toFixed(2);
         setPricePercentage(percentage)
     }
 
-    const insertPrice = (pr)=>{
-        let temp= pr.replace(",",".")
+    const insertPrice = (pr) => {
+        let temp = pr.replace(",", ".")
         setPrice(temp)
     }
 
-    const insertPricePercentage =(pr)=>{
-        let temp= pr.replace(",",".")
+    const insertPricePercentage = (pr) => {
+        let temp = pr.replace(",", ".")
         setPricePercentage(temp)
     }
 
+    const handleChange = (e) => {
+        const file = e.target.files[0];
+        if (file && file.type.substr(0, 5) === "image") {
+            setImage(file)
+        }
+        else {
+            setImage(null)
+        }
+    }
+
     return <div className="content content-margined">
-        <div><button onClick={importProducts()}>getProducts</button></div>
+        {/* <div><button onClick={importProducts()}>getProducts</button></div> */}
         <div className="product-header">
             <h3>Προϊόντα</h3>
             <button className="button admin-button" onClick={() => setPercentageModal(true)}>Ποσοστό Κέρδους</button>
@@ -398,12 +434,12 @@ function AdminProductsScreen(props) {
                                                 )}
                                             </select>}
                                 </li>
-                                {!id && <li>
+                                <li>
                                     <label htmlFor="product-image">Φωτογραφία:</label>
-                                    <input type="file" name="product-image" id="product-image" required
-                                        accept=".jpg, .jpeg, .png, .webp" onChange={(e) => setImage(e.target.files[0])}>
+                                    <input type="file" name="product-image" id="product-image" required={!image}
+                                        accept=".jpg, .jpeg, .png, .webp" onChange={(e) => handleChange(e)}>
                                     </input>
-                                </li>}
+                                </li>
                                 <li id="row">
                                     <label htmlFor="product-price">Τιμή:</label>
                                     <input type="text" name="product-price" id="product-price" value={price} required
@@ -430,11 +466,15 @@ function AdminProductsScreen(props) {
                                         onChange={(e) => setAvailability(e.target.value)} maxLength={50}>
                                     </input>
                                 </li>
-                                <li>
+                                <li
+                                    className="html_editor">
                                     <label htmlFor="product-description">Περιγραφή:</label>
-                                    <textarea name="product-description" id="product-description" value={description}
+                                    <HtmlEditor
+                                        descriptionValue={description}
+                                        onDescriptionChange={(content) => setDescription(content)} />
+                                    {/* <textarea name="product-description" id="product-description" value={description}
                                         onChange={(e) => setDescription(e.target.value)} rows={20}>
-                                    </textarea>
+                                    </textarea> */}
                                 </li>
                                 <li>
                                     <button type="submit" className="button">{id ? "Ενημέρωση" : "Δημιουργία"}</button>
@@ -449,7 +489,7 @@ function AdminProductsScreen(props) {
                                 <h2>Συμβατότητα</h2>
                             </li>
                             <li>
-                                <div>
+                                <div className="column_flex">
                                     <label htmlFor="company-list">Εταιρία:</label>
                                     {loadingcompatibilityCompanies ? <LoadingSpinner /> :
                                         errorcompatibilityCompanies ? <div>{errorcompatibilityCompanies}</div> :
@@ -461,7 +501,7 @@ function AdminProductsScreen(props) {
                                                 )}
                                             </select>}
                                 </div>
-                                <div>
+                                <div className="column_flex">
                                     <label htmlFor="feature-list">Μοντέλο:</label>
                                     {loadingCompatibilityModels ? <LoadingSpinner /> :
                                         errorCompatibilityModels ? <div>{errorCompatibilityModels}</div> :
@@ -506,7 +546,7 @@ function AdminProductsScreen(props) {
                                 <h2>Χαρακτηριστικά</h2>
                             </li>
                             <li>
-                                <div>
+                                <div className="column_flex">
                                     <label htmlFor="feature-list">Τίτλος:</label>
                                     {featureTitleLoading ? <LoadingSpinner /> :
                                         featureTitleError ? <div>{featureTitleError}</div> :
@@ -518,7 +558,7 @@ function AdminProductsScreen(props) {
                                                 )}
                                             </select>}
                                 </div>
-                                <div>
+                                <div className="column_flex">
                                     <label htmlFor="feature-list">Χαρακτηριστικό:</label>
                                     {featureNamesLoading ? <LoadingSpinner /> :
                                         featureNamesError ? <div>{featureNamesError}</div> :
@@ -558,7 +598,7 @@ function AdminProductsScreen(props) {
                                     </tbody>
                                 </table>
                             </li>
-                            {userInfo && userInfo.isAdmin===2 && <li className="history_button">
+                            {userInfo && userInfo.isAdmin === 2 && <li className="history_button">
                                 <button className="button" onClick={productHistoryHandler}>Ιστορικό</button>
                             </li>}
                         </ul>}
@@ -566,6 +606,18 @@ function AdminProductsScreen(props) {
                 </div>
             </div>
         }
+        <div className="search_by_name">
+            <label>Αναζήτηση με Όνομα: </label>
+            <input type="text" value={nameSearch} placeholder="Όνομα Προϊόντος" onChange={(e)=>setNameSearch(e.target.value)}></input>
+            <button className="button admin-button" onClick={searchByNameHandler}>
+                <span class="material-icons" data-tip data-for="admin_search_product_by_name">
+                    search
+                </span>
+            </button>
+            <ReactTooltip backgroundColor="#deccf0" textColor="#312f8b" id="admin_search_product_by_name" place="top" effect="solid">
+                Αναζήτηση
+            </ReactTooltip>
+        </div>
         <div className="filter-container filter-product-container">
             <label htmlFor="product-category">Κατηγορία:</label>
             {categoriesLoading ? <div>Loading...</div>
@@ -591,7 +643,14 @@ function AdminProductsScreen(props) {
                         {suppliers.map(sub =>
                             <option key={sub.supplier_id} id={sub.supplier_id} value={sub.supplier} defaultValue={sub.supplier === supplier}>{sub.supplier}</option>)}
                     </select>}
-            <button className="button admin-button" onClick={searchHandler}>Αναζήτηση</button>
+            <button className="button admin-button" onClick={searchHandler}>
+                <span class="material-icons" data-tip data-for="admin_search_products">
+                    search
+                </span>
+            </button>
+            <ReactTooltip backgroundColor="#deccf0" textColor="#312f8b" id="admin_search_products" place="top" effect="solid">
+                Αναζήτηση
+            </ReactTooltip>
         </div>
         <div className="paginationList">
             <ReactPaginate
@@ -653,7 +712,14 @@ function AdminProductsScreen(props) {
                                         </input>
                                     </td>
                                     <td>
-                                        <button className="button admin-button" onClick={() => openModal(product)}>Επεξεργασία</button>
+                                        <button className="button admin-button" onClick={() => openModal(product)}>
+                                            <span class="material-icons" data-tip data-for="admin_edit_product">
+                                                edit
+                                            </span>
+                                        </button>
+                                        <ReactTooltip backgroundColor="#deccf0" textColor="#312f8b" id="admin_edit_product" place="top" effect="solid">
+                                            Επεξεργασία
+                                        </ReactTooltip>
                                     </td>
                                 </tr>
                             ))}

@@ -38,24 +38,24 @@ function ProductMenu(props) {
                 </div>
                 <i className="material-icons expand">{!mobileModal ? "expand_more" : "expand_less"}</i>
             </div>
-            {mobileModal && <ul className="mobile-modal">
-                <Link to="/products/Kινητά/Used-Refurbished"><li>Used - Refurbished</li></Link>
-                <Link to="/products/Kινητά/Kινητά"><li>Κινητά</li></Link>
-                <Link to="/products/Kινητά/Προστασία-Οθόνης"><li>Προστασία Οθόνης</li></Link>
-                <Link to="/products/Kινητά/Θήκες-Κινητών"><li>Θήκες Κινητών</li></Link>
-                <Link to="/products/Kινητά/Car-Kit"><li>Car Kit</li></Link>
-                <Link to="/products/Kινητά/Bluetooth"><li>Bluetooth</li></Link>
-                <Link to="/products/Kινητά/Handsfree"><li>Handsfree</li></Link>
-                <Link to="/products/Kινητά/Smartwatches"><li>Smartwatches</li></Link>
-                <Link to="/products/Kινητά/Φορτιστές-Κινητών"><li>Φορτιστές Κινητών</li></Link>
+            {mobileModal && <ul className="first-modal">
+                <Link to="/products/Κινητά/Used-Refurbished"><li>Used - Refurbished</li></Link>
+                <Link to="/products/Κινητά/Κινητά"><li>Κινητά</li></Link>
+                <Link to="/products/Κινητά/Προστασία-Οθόνης"><li>Προστασία Οθόνης</li></Link>
+                <Link to="/products/Κινητά/Θήκες-Κινητών"><li>Θήκες Κινητών</li></Link>
+                <Link to="/products/Κινητά/Car-Kit"><li>Car Kit</li></Link>
+                <Link to="/products/Κινητά/Bluetooth"><li>Bluetooth</li></Link>
+                <Link to="/products/Κινητά/Handsfree"><li>Handsfree</li></Link>
+                <Link to="/products/Κινητά/Smartwatches"><li>Smartwatches</li></Link>
+                <Link to="/products/Κινητά/Φορτιστές-Κινητών"><li>Φορτιστές Κινητών</li></Link>
                 <Link to="/products/Μπαταρίες/PowerBanks"><li>Power Banks</li></Link>
-                <Link to="/products/Kινητά/Καλώδια-Φόρτισης-Δεδομένων"><li>Καλώδια Φόρτισης-Δεδομένων</li></Link>
-                <Link to="/products/Kινητά/Adapters-Φόρτισης-Δεδομένων"><li>Adapters Φόρτισης-Δεδομένων</li></Link>
-                <Link to="/products/Kινητά/Selfie-Sticks"><li>Selfie Sticks</li></Link>
-                <Link to="/products/Kινητά/Βάσεις-Στήριξης-Κινητών"><li>Βάσεις Στήριξης Κινητών</li></Link>
-                <Link to="/products/Kινητά/Γραφίδες"><li>Γραφίδες</li></Link>
-                <Link to="/products/Kινητά/Διάφορα-αξεσουάρ"><li>Διάφορα αξεσουάρ</li></Link>
-                <Link to="/products/Kινητά/Ανταλλακτικά-Κινητών"><li>Ανταλλακτικά Κινητών</li></Link>
+                <Link to="/products/Κινητά/Καλώδια-Φόρτισης-Δεδομένων"><li>Καλώδια Φόρτισης-Δεδομένων</li></Link>
+                <Link to="/products/Κινητά/Adapters-Φόρτισης-Δεδομένων"><li>Adapters Φόρτισης-Δεδομένων</li></Link>
+                <Link to="/products/Κινητά/Selfie-Sticks"><li>Selfie Sticks</li></Link>
+                <Link to="/products/Κινητά/Βάσεις-Στήριξης-Κινητών"><li>Βάσεις Στήριξης Κινητών</li></Link>
+                <Link to="/products/Κινητά/Γραφίδες"><li>Γραφίδες</li></Link>
+                <Link to="/products/Κινητά/Διάφορα-αξεσουάρ"><li>Διάφορα αξεσουάρ</li></Link>
+                <Link to="/products/Κινητά/Ανταλλακτικά-Κινητών"><li>Ανταλλακτικά Κινητών</li></Link>
             </ul>}
             <div className="menu-header" onClick={() => setTabletModal(!tabletModal)}>
                 <div>
@@ -64,7 +64,7 @@ function ProductMenu(props) {
                 </div>
                 <i className="material-icons expand">{!tabletModal ? "expand_more" : "expand_less"}</i>
             </div>
-            {tabletModal && <ul className="tablet-modal">
+            {tabletModal && <ul className="first-modal">
                 <Link to="/products/Tablet/Used-Refurbished"><li>Used - Refurbished</li></Link>
                 <Link to="/products/Tablet/Tablet"><li>Tablet</li></Link>
                 <Link to="/products/Tablet/Προστασία-Οθόνης"><li>Προστασία Οθόνης</li></Link>
@@ -84,7 +84,7 @@ function ProductMenu(props) {
                 </div>
                 <i className="material-icons expand">{!desktopModal ? "expand_more" : "expand_less"}</i>
             </div>
-            {desktopModal && <ul className="desktop-modal">
+            {desktopModal && <ul className="first-modal">
                 <Link to="/products/Desktop/Used-Refurbished"><li>Used - Refurbished</li></Link>
                 <Link to="/products/Desktop/Desktop-PC"><li>Desktop PC</li></Link>
                 <Link to="/products/Μultimedia/Οθόνες"><li>Οθόνες</li></Link>
@@ -133,7 +133,7 @@ function ProductMenu(props) {
                 </div>
                 <i className="material-icons expand">{!laptopModal ? "expand_more" : "expand_less"}</i>
             </div>
-            {laptopModal && <ul className="laptop-modal">
+            {laptopModal && <ul className="first-modal">
                 <Link to="/products/Laptop/Used-Refurbished"><li>Used - Refurbished</li></Link>
                 <Link to="/products/Laptop/laptop"><li>Laptop</li></Link>
                 <Link to="/products/Laptop/Τσάντες-Laptop"><li>Τσάντες Laptop</li></Link>
@@ -150,7 +150,7 @@ function ProductMenu(props) {
                 </div>
                 <i className="material-icons expand">{!multimediaModal ? "expand_more" : "expand_less"}</i>
             </div>
-            {multimediaModal && <ul className="multimedia-modal">
+            {multimediaModal && <ul className="first-modal">
                 <Link to="/products/Μultimedia/Οθόνες"><li>Οθόνες</li></Link>
                 <Link to="/products/Μultimedia/Ηχεία"><li>Ηχεία</li></Link>
                 <li className="menu-header" onClick={() => setCamerasModal(!camerasModal)}>
@@ -221,7 +221,7 @@ function ProductMenu(props) {
                 </div>
                 <i className="material-icons expand">{!officeSuppliesModal ? "expand_more" : "expand_less"}</i>
             </div>
-            {officeSuppliesModal && <ul className="office-modal">
+            {officeSuppliesModal && <ul className="first-modal">
                 <Link to="/products/είδη-γραφείου/Σταθερά-Τηλέφωνα"><li>Σταθερά Τηλέφωνα</li></Link>
                 <Link to="/products/είδη-γραφείου/καταστροφείς-εγγράφων"><li>Καταστροφείς Εγγράφων</li></Link>
                 <li className="menu-header" onClick={() => setBatteriesModal(!batteriesModal)}>
@@ -270,7 +270,7 @@ function ProductMenu(props) {
                 </div>
                 <i className="material-icons expand">{!softwareModal ? "expand_more" : "expand_less"}</i>
             </div>
-            {softwareModal && <ul className="software-modal">
+            {softwareModal && <ul className="first-modal">
                 <Link to="/products/προγράμματα-υπηρεσίες/Antivirus"><li>Antivirus</li></Link>
                 <Link to="/products/προγράμματα-υπηρεσίες/PEGASUS-Μηχανογράφηση"><li>PEGASUS Μηχανογράφηση</li></Link>
                 <Link to="/products/προγράμματα-υπηρεσίες/e-TOKEN-Ψηφιακή-Υπογραφή"><li>e-TOKEN Ψηφιακή Υπογραφή</li></Link>
@@ -283,7 +283,7 @@ function ProductMenu(props) {
                 </div>
                 <i className="material-icons expand">{!gamingModal ? "expand_more" : "expand_less"}</i>
             </div>
-            {gamingModal && <ul className="house-modal">
+            {gamingModal && <ul className="first-modal">
                 <Link to="/products/Gaming/Gamepads"><li>Gamepads</li></Link>
                 <Link to="/products/Gaming/Παιχνίδια"><li>Παιχνίδια</li></Link>
                 <Link to="/products/Gaming/Virtual-Reality"><li>Virtual Reality</li></Link>
@@ -299,7 +299,7 @@ function ProductMenu(props) {
                 </div>
                 <i className="material-icons expand">{!lightingModal ? "expand_more" : "expand_less"}</i>
             </div>
-            {lightingModal && <ul className="lighting-modal">
+            {lightingModal && <ul className="first-modal">
                 <Link to="/products/Φωτισμός/Λάμπες-LED"><li>Λάμπες LED</li></Link>
                 <Link to="/products/Φωτισμός/Προβολείς-LED"><li>Προβολείς LED</li></Link>
                 <Link to="/products/Φωτισμός/Πολύμπριζα"><li>Πολύμπριζα</li></Link>
@@ -312,7 +312,7 @@ function ProductMenu(props) {
                 </div>
                 <i className="material-icons expand">{!gadgetModal ? "expand_more" : "expand_less"}</i>
             </div>
-            {gadgetModal && <ul className="health-modal">
+            {gadgetModal && <ul className="first-modal">
                 <li className="menu-header" onClick={() => setFreeTimeModal(!freeTimeModal)}>
                     <h5>Ελεύθερος Χρόνος</h5>
                     <i className="material-icons expand">{!freeTimeModal ? "expand_more" : "expand_less"}</i>
@@ -342,7 +342,7 @@ function ProductMenu(props) {
                 </div>
                 <i className="material-icons expand">{!medicalDevicesModal ? "expand_more" : "expand_less"}</i>
             </div>
-            {medicalDevicesModal && <ul className="house-modal">
+            {medicalDevicesModal && <ul className="first-modal">
                 <Link to="/products/Ιατρικά-Είδη/Προστασίας"><li>Προστασίας</li></Link>
                 <Link to="/products/Ιατρικά-Είδη/Οξύμετρα"><li>Οξύμετρα</li></Link>
                 <Link to="/products/Ιατρικά-Είδη/Θερμόμετρα"><li>Θερμόμετρα</li></Link>

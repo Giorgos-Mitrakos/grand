@@ -2,9 +2,13 @@
     box-sizing: border-box;
 }
 
+.mySwiper{
+    padding: 0.5rem;
+}
+
 .carousel-card {
     box-shadow: 0 0.25rem 0.5rem 0 rgba(0, 0, 0, 0.2);
-    margin: 0.5rem;
+    margin: 0.5rem 0 0.5rem 0;
     text-align: center;
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
     color: #312f8b;
@@ -51,12 +55,18 @@
 
 @media only screen and (max-width: 1024px) {
 
+    .mySwiper{
+        padding: 0.5rem;
+        height: 14rem;
+    }
+
     .carousel-card {
         width: 90%;
         max-width: 25rem;
-        height: 12rem;
-        margin: 1rem;
-        padding: 0.2rem;
+        height: 14rem;
+        padding: 0.5rem;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
     }
 
     .carousel-card-container{

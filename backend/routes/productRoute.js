@@ -179,7 +179,11 @@ router.post("/compatibilities_by_category", async (req, res) => {
     mysqlConnection.getConnection(function (err, connection) {
         if (err) throw err; // not connected!
 
-        connection.query('SELECT * FROM products LEFT JOIN compatibilities ON products._id=compatibilities.product_id WHERE products.category=? && products.subcategory=? && products.visibility=1 && compatibilities.compatibility_company IS NOT NULL ORDER BY compatibilities.compatibility_company,compatibilities.compatibility_model ',
+        connection.query(`SELECT compatibility_id,product_id,compatibility_company,compatibility_model 
+        FROM compatibilities LEFT JOIN products 
+        ON products._id=compatibilities.product_id 
+        WHERE products.category=? && products.subcategory=? && products.visibility=1 && compatibilities.compatibility_company IS NOT NULL 
+        ORDER BY compatibilities.compatibility_company,compatibilities.compatibility_model `,
             [req.body.category, req.body.subcategory], function (err, result, fields) {
                 if (err) throw err;
                 console.log("Read compatibility companies succeed");
@@ -285,6 +289,33 @@ router.post("/products_by_category_admin", isAuth, isAdmin, async (req, res) => 
     });
 })
 
+router.post("/product_by_name_admin", isAuth, isAdmin, async (req, res) => {
+    mysqlConnection.getConnection(function (err, connection) {
+        if (err) throw err; // not connected!
+
+        const nameSearch= `%${req.body.productName.trim()}%`
+
+        connection.query('SELECT * FROM products WHERE name LIKE ? LIMIT 20 OFFSET ? ',
+            [nameSearch, req.body.offset], function (err, result, fields) {
+                if (err) throw err;
+                let resp = result;
+
+                connection.query('SELECT COUNT(*) AS count FROM products WHERE name LIKE ?',
+                    [nameSearch], function (err, result, fields) {
+                        if (err) throw err;
+                        let count = result;
+
+                        res.send({ resp, count });
+                    })
+
+            })
+        connection.release();
+
+        // Handle error after the release.
+        if (err) throw err;
+    });
+})
+
 router.get("/:id", async (req, res) => {
     const productId = req.params.id;
     mysqlConnection.getConnection(function (err, connection) {
@@ -373,13 +404,29 @@ router.post("/most_viewed", async (req, res) => {
 router.post("/searchForItems", async (req, res) => {
     mysqlConnection.getConnection(function (err, connection) {
         let sp = req.body.searchText.trim().split(" ")
-        let search = '';
+        let search = '(';
         for (let i = 0; i < sp.length; i++) {
             if (i !== 0) {
                 search += ' && '
             }
             search += 'name LIKE ' + "'%" + sp[i] + "%'"
         };
+        search += ' OR( '
+        for (let i = 0; i < sp.length; i++) {
+            if (i !== 0) {
+                search += ' && '
+            }
+            search += 'subcategory LIKE ' + "'%" + sp[i] + "%'"
+        };
+        search += ' ) '
+        search += ' OR( '
+        for (let i = 0; i < sp.length; i++) {
+            if (i !== 0) {
+                search += ' && '
+            }
+            search += 'category LIKE ' + "'%" + sp[i] + "%'"
+        };
+        search += ' )) '
 
         let filters = '';
         if (req.body.filters !== null && req.body.filters.length !== 0) {
@@ -394,15 +441,34 @@ router.post("/searchForItems", async (req, res) => {
             }
             filters += ')'
         }
+
+        let sortBy = ''
+        switch (req.body.sortType) {
+            case 'Αλφαβητικά: Α-Ω':
+                sortBy = 'name'
+                break;
+            case 'Αλφαβητικά: Ω-Α':
+                sortBy = 'name DESC'
+                break;
+            case 'Τιμή αύξουσα':
+                sortBy = 'totalPrice'
+                break;
+            case 'Τιμή φθίνουσα':
+                sortBy = 'totalPrice DESC'
+                break;
+            default:
+                sortBy = 'numReview DESC'
+                break;
+        }
         if (err) throw err; // not connected!
 
         connection.query(`SELECT _id, name, category, brand, image, description,
         countInStock, numReview, subcategory, weight, supplier, availability, 
         visibility, totalPrice FROM products 
-        WHERE visibility=1 && 
+        WHERE visibility=1 &&
         ${search} 
         ${filters}         
-        ORDER BY numReview DESC LIMIT ${req.body.itemsPerPage} OFFSET ${req.body.offset}`, function (err, result, fields) {
+        ORDER BY ${sortBy} LIMIT ${req.body.itemsPerPage} OFFSET ${req.body.offset}`, function (err, result, fields) {
             if (err) throw err;
 
             let resp = result;

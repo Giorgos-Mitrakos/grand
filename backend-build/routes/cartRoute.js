@@ -34,7 +34,7 @@ var storageB = _multer["default"].diskStorage({
 });
 
 var fileFilter = function fileFilter(req, file, cb) {
-  if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg" || file.mimetype == "image/gif") {
+  if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg" || file.mimetype == "image/gif" || file.mimetype == "image/webp") {
     cb(null, true);
   } else {
     cb(null, false);

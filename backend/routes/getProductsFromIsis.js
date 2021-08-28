@@ -7,8 +7,9 @@ import mysqlConnection from '../connection';
 const router = express.Router();
 
 router.get("/", (req, res) => {
-
+    console.log("Start transmiting...")
     http.get('http://www.isispc.gr/pegasus/xml/products.xml', function (resp) {
+
         var data = '';
         resp.on('data', function (chunk) {
             data += chunk
@@ -18,6 +19,7 @@ router.get("/", (req, res) => {
                 parser.parseString(data, function (err, result) {
                     console.dir(result["www.isispc-eshop.gr"].PRODUCTS[0].PRODUCT[0].NAME);
                     console.log('Done');
+                    console.log(result["www.isispc-eshop.gr"].PRODUCTS[0].PRODUCT.length)
 
                     const insertProduct = (name, category, subcategory, brand, image, price, weight, mpn, supplier, availability, description) => {
                         mysqlConnection.getConnection(function (err, connection) {
@@ -126,7 +128,8 @@ router.get("/", (req, res) => {
                             compatibilityArray.forEach(compArr => {
                                 let sql = "INSERT INTO compatibility_company (company) VALUES (?)";
                                 connection.query(sql, [compArr.company], function (err, result, fields) {
-                                    if (err & err != "ER_DUP_ENTRY") {''
+                                    if (err & err != "ER_DUP_ENTRY") {
+                                        ''
                                         console.log("Entry is already");
                                     }
 
@@ -173,7 +176,7 @@ router.get("/", (req, res) => {
                                     compatibilityArray.forEach(compArr => {
                                         sql = "INSERT INTO compatibilities (product_id, compatibility_company, compatibility_model) VALUES (?, ?, ?)";
                                         connection.query(sql, [product_id, compArr.company, compArr.model], function (err, result, fields) {
-                                            if (err) {
+                                            if (err & err != "ER_DUP_ENTRY") {
                                                 console.log("Entry is already");
                                             }
 
@@ -195,9 +198,13 @@ router.get("/", (req, res) => {
                     }
 
                     let data2 = [];
+
                     for (let index = 0; index < result["www.isispc-eshop.gr"].PRODUCTS[0].PRODUCT.length; index++) {
 
                         const element = result["www.isispc-eshop.gr"].PRODUCTS[0].PRODUCT[index];
+                        data2.push(element.NAME[0])
+                        // data2.push(result["www.isispc-eshop.gr"].PRODUCTS[0].PRODUCT[index])
+
 
                         const programsAndServices = () => {
                             switch (element.CATEGORY[0]["_"].split("->")[1].trim()) {
@@ -380,7 +387,7 @@ router.get("/", (req, res) => {
                                     // data.push(element.CATEGORY[0]["_"].split("->")[0].concat(" "+element.CATEGORY[0]["_"].split("->")[1]).concat(" "+element.CATEGORY[0]["_"].split("->")[2]).concat(" "+element.CATEGORY[0]["_"].split("->")[3]).concat(" "+element.CATEGORY[0]["_"].split("->")[4])); 
 
                                     let compatibilities = [];
-                                    compatibilities.push({ company: element.CATEGORY[0]["_"].split("->")[2], model:""  });
+                                    compatibilities.push({ company: element.CATEGORY[0]["_"].split("->")[2], model: "" });
                                     insertProductWithCompatibility(element.NAME[0], "Laser", "Μελάνια", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", compatibilities, element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '))
                                     break;
                                 case "Μελάνια":
@@ -450,15 +457,14 @@ router.get("/", (req, res) => {
                                     temp = element.CATEGORY[0]["_"].split("->")[2].split("/")
                                     temp.forEach(modelArray)
                                     // console.log(compatibilities)
-                                    insertProductWithCompatibility(element.NAME[0],"Kινητά","Θήκες-Κινητών",element.MANUFACTURER[0],element.IMAGE_URL[0],element.PRICE[0],element.WEIGHT[0],element.MPN[0],"ISISPC",compatibilities,element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '))
+                                    insertProductWithCompatibility(element.NAME[0], "Kινητά", "Θήκες-Κινητών", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", compatibilities, element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '))
                                     break;
                                 case "Tempered Glass":
                                     temp = [];
                                     compatibilities = [];
                                     temp = element.CATEGORY[0]["_"].split("->")[2].split("/")
                                     temp.forEach(modelArray)
-                                    console.log(compatibilities)
-                                    insertProductWithCompatibility(element.NAME[0],"Kινητά","Προστασία-Οθόνης",element.MANUFACTURER[0],element.IMAGE_URL[0],element.PRICE[0],element.WEIGHT[0],element.MPN[0],"ISISPC",compatibilities,element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '))
+                                    insertProductWithCompatibility(element.NAME[0], "Kινητά", "Προστασία-Οθόνης", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", compatibilities, element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '))
                                     break;
                                 default:
                                     break;
@@ -755,10 +761,11 @@ router.get("/", (req, res) => {
                             }
                         }
 
+
                         switch (element.CATEGORY[0]["_"].split("->")[0].trim()) {
                             case "Προγράμματα &amp; Υπηρεσίες":
-                            programsAndServices();
-                            break;
+                                programsAndServices();
+                                break;
                             case "PC / Laptop &amp; More":
                                 desktopAndPeripheral();
                                 break;
@@ -769,16 +776,16 @@ router.get("/", (req, res) => {
                                 lighting();
                                 break;
                             case "Αξεσουάρ Κινητής  - Tablet - Smartwatches":
-                            mobiles_smartwatches();
-                            break;
+                                mobiles_smartwatches();
+                                break;
                             case "Μπαταρίες &amp; Power Banks":
                                 batteries_powerbanks();
-                            break;
-                            case "Gadgets":                                
+                                break;
+                            case "Gadgets":
                                 multimedia();
                                 break;
                             case "Είδη Ατομικής Προστασίας":
-                                medical_devices();                     
+                                medical_devices();
                                 break;
                             case "Tempered Glass - Θήκες Κινητών":
                                 // console.log("brand: "+element.CATEGORY[0]["_"].split("->")[1].trim()+" model: "+console.log(element.CATEGORY[0]["_"].split("->")[2].trim()+" type: "+console.log(element.CATEGORY[0]["_"].split("->")[3].trim())))
@@ -790,8 +797,10 @@ router.get("/", (req, res) => {
                                 break;
                         }
                     }
-                    // res.send(data)
+                    res.send(data2)
                     //res.send(result["www.isispc-eshop.gr"].PRODUCTS[0].PRODUCT[388].CATEGORY[0]["_"].split("->"));
+                    console.log("This is the end")
+                    // return res.send("Done!")
                 });
             } catch (error) {
                 console.error(error.message);
@@ -799,8 +808,7 @@ router.get("/", (req, res) => {
         }).on("error", function (e) {
             console.log("Got error: " + e.message);
         })
-        console.log("This is the end")
-        return res.send("Done!")
+
     })
 
 

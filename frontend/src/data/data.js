@@ -1,66 +1,66 @@
 export const categories = [
     {
-        linkto: 'products/Kινητά/Kινητά',
+        linkto: '/products/Κινητά/Κινητά',
         imgSource: './images/categories/mobile.webp',
         altContent: 'Mobile',
         productCategory: 'Κινητή Τηλεφωνία'
     },
     {
-        linkto: 'products/tablet/tablet',
+        linkto: '/products/tablet/tablet',
         imgSource: './images/categories/tablet.webp',
         altContent: 'Tablet',
         productCategory: 'Tablet'
     },
     {
-        linkto: 'products/desktop/Desktop-PC',
+        linkto: '/products/desktop/Desktop-PC',
         imgSource: './images/categories/desktop.webp',
         altContent: 'Desktop',
         productCategory: 'Desktop'
     },
     {
-        linkto: 'products/Laptop/laptop',
+        linkto: '/products/Laptop/laptop',
         imgSource: './images/categories/laptop.webp',
         altContent: 'Laptop',
         productCategory: 'Laptop'
     },
     {
-        linkto: 'products/Μultimedia/Ηχεία',
+        linkto: '/products/Μultimedia/Ηχεία',
         imgSource: './images/categories/multimedia.webp',
         altContent: 'Εικόνα - Ήχος',
         productCategory: 'Εικόνα - Ήχος'
     },
     {
-        linkto: 'products/είδη-γραφείου/Σταθερά-Τηλέφωνα',
+        linkto: '/products/είδη-γραφείου/Σταθερά-Τηλέφωνα',
         imgSource: './images/categories/office-supplies.webp',
         altContent: 'office-supplies',
         productCategory: 'Είδη Γραφείου'
     },
     {
-        linkto: 'products/προγραμματα-υπηρεσίες/Antivirus',
+        linkto: '/products/προγραμματα-υπηρεσίες/Antivirus',
         imgSource: './images/categories/software.webp',
         altContent: 'Προγράμματα και Υπηρεσίες',
         productCategory: 'Προγράμματα - Υπηρεσίες'
     },
     {
-        linkto: 'products/Gaming/Παιχνίδια',
+        linkto: '/products/Gaming/Παιχνίδια',
         imgSource: './images/categories/gaming.webp',
         altContent: 'Gaming',
         productCategory: 'Gaming'
     },
     {
-        linkto: 'products/Φωτισμός/Λάμπες-LED',
+        linkto: '/products/Φωτισμός/Λάμπες-LED',
         imgSource: './images/categories/lighting.webp',
         altContent: 'Lighting',
         productCategory: 'Φωτισμός'
     },
     {
-        linkto: 'products/Gadgets/Drones',
+        linkto: '/products/Gadgets/Drones',
         imgSource: './images/categories/gadgets.webp',
         altContent: 'Gadgets',
         productCategory: 'Gadgets'
     },
     {
-        linkto: 'products/Ιατρικά-Είδη/Προστασίας',
+        linkto: '/products/Ιατρικά-Είδη/Προστασίας',
         imgSource: './images/categories/medical.webp',
         altContent: 'Ιατρικά Είδη',
         productCategory: 'Ιατρικά Είδη'
@@ -128,7 +128,7 @@ export const menuItems = [
                 title: "Used - Refurbished"
             },
             {
-                linkto: "/products/Kινητά/Kινητά",
+                linkto: "/products/Κινητά/Κινητά",
                 title: "Κινητά"
             },
             {

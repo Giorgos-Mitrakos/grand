@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { sendEmailToConfirmOrder } from '../action/emailActions';
 import { listPaymentMethods, listSendingMethods } from '../action/paymentActions';
 import LoadingSpinner from '../components/LoadingSpinner';
+import { convertDate } from '../utils/DateUtils';
 
 function AdminOrdersDetailScreen(props) {
 
@@ -57,8 +58,8 @@ function AdminOrdersDetailScreen(props) {
     const [chargerAddressEditModal, setChargerAddressEditModal] = useState(false);
     const [shippingAddressEditModal, setShippingAddressEditModal] = useState(false);
     const [cartEditModal, setCartEditModal] = useState(false);
-    const userSignin = useSelector(state=>state.userSignin);
-    const {userInfo} = userSignin;
+    const userSignin = useSelector(state => state.userSignin);
+    const { userInfo } = userSignin;
 
     const dispatch = useDispatch();
 
@@ -75,7 +76,7 @@ function AdminOrdersDetailScreen(props) {
             dispatch(listSendingMethods());
 
     }, [orderEditModal]);
-   
+
     useEffect(() => {
         if (sendingMethods && orderSendingMethod && sendingMethods.length !== 0) {
             const send = sendingMethods.find(x => x.sendingMethod === order.sendingMethod)
@@ -115,12 +116,12 @@ function AdminOrdersDetailScreen(props) {
     }, [successChangeStatus]);
 
     useEffect(() => {
-        if (successUpdate === true || successDeleteOrderItem===true)
+        if (successUpdate === true || successDeleteOrderItem === true)
             dispatch(detailsOrder(props.match.params.id));
         return () => {
             //
         };
-    }, [successUpdate,successDeleteOrderItem]);
+    }, [successUpdate, successDeleteOrderItem]);
 
     useEffect(() => {
         if (success === true) {
@@ -194,17 +195,6 @@ function AdminOrdersDetailScreen(props) {
             //
         };
     }, [success, shippingTo]);
-
-    const convertDate = (x) => {
-        const options = {
-            year: 'numeric', month: 'numeric', day: 'numeric',
-            hour: 'numeric', minute: 'numeric', second: 'numeric',
-            hour12: false
-        }
-        const dateTimeFormat = new Intl.DateTimeFormat('en-GB', options);
-        var date = Date.parse(x);
-        return dateTimeFormat.format(date);
-    }
 
     const changeStatusHandler = (newStatus) => {
         setNewOrderStatus(newStatus);
@@ -324,7 +314,7 @@ function AdminOrdersDetailScreen(props) {
         dispatch(detailsOrder(props.match.params.id));
     }
 
-    const updateCartHandler = (product_id, model, quantity) => {        
+    const updateCartHandler = (product_id, model, quantity) => {
         dispatch(updateOrderQuantity(order.order_id, product_id, model, quantity));
     }
     const orderStatusList = ["Καταχωρήθηκε", "Επεξεργάζεται", "Αναμονή", "Ολοκληρώθηκε", "Ακυρώθηκε"];
@@ -348,7 +338,7 @@ function AdminOrdersDetailScreen(props) {
         setOrderPaymentMethodPrice(cost);
     }
 
-    const orderHistoryHandler = () =>{
+    const orderHistoryHandler = () => {
         props.history.push(`/admin/orderHistory/${props.match.params.id}`)
     }
 
@@ -359,7 +349,7 @@ function AdminOrdersDetailScreen(props) {
                     (
                         <div className="order_details-wrapper">
                             <div className="order_history_wrapper">
-                            {userInfo && userInfo.isAdmin===2 && <button className="button continuebtn" onClick={orderHistoryHandler}>Ιστορικό παραγγελίας</button>}
+                                {userInfo && userInfo.isAdmin === 2 && <button className="button continuebtn" onClick={orderHistoryHandler}>Ιστορικό παραγγελίας</button>}
                             </div>
                             <div className="order_details">
                                 <div>
@@ -437,10 +427,10 @@ function AdminOrdersDetailScreen(props) {
                                                         <h2>Προσοχή!</h2>
                                                     </div>
                                                     <p>Η κατάσταση παραγγελίας που επιλέξατε ({newΟrderStatus}) προηγείται χρονικά της τρέχουσας κατάστασης ({orderStatus}).<br /><br />
-                                            Είστε σίγουρος πως θέλετε να προχωρήσετε?<br /><br />
-                                            Αν συνεχίσετε όλες οι ημερομηνίες που σχετίζονται με τις ενδιάμεσες καταστάσεις
-                                            θα διαγραφουν οριστικά!
-                                        </p>
+                                                        Είστε σίγουρος πως θέλετε να προχωρήσετε?<br /><br />
+                                                        Αν συνεχίσετε όλες οι ημερομηνίες που σχετίζονται με τις ενδιάμεσες καταστάσεις
+                                                        θα διαγραφουν οριστικά!
+                                                    </p>
                                                     <div className="okCancelButton-wrapper">
                                                         <button className="okCancelButton button" onClick={okStatusHandler}>OK</button>
                                                         <button className="okCancelButton button" onClick={cancelStatusHandler}>Ακύρωση</button>
@@ -787,7 +777,7 @@ function AdminOrdersDetailScreen(props) {
                                         <li>
                                             <h3>Παραγγελία</h3>
                                         </li>
-                                        <li className="order-list-header">                                            
+                                        <li className="order-list-header">
                                             <div></div>
                                             <div>Κωδ. Προϊόντος</div>
                                             <div>Προϊόν</div>
@@ -797,7 +787,7 @@ function AdminOrdersDetailScreen(props) {
                                             <div>Σύνολο</div>
                                         </li>
                                         {products.map(item =>
-                                            <li className="order-item" key={item._id + item.model}>                                                
+                                            <li className="order-item" key={item._id + item.model}>
                                                 <div className="order-image flex-column">
                                                     {item.category !== "Φτιάξε τη Θήκη σου" ?
                                                         <img className="order-image-img" src={item.image} alt="product" /> :
@@ -842,26 +832,26 @@ function AdminOrdersDetailScreen(props) {
                                                     <tr>
                                                         <td>
                                                             Κόστος Προϊόντων ( {products.reduce((a, c) => a + Number(c.quantity), 0)} τεμ.) :
-                                                    </td>
+                                                        </td>
                                                         <td>
                                                             {products.reduce((a, c) => a + c.totalPrice * Number(c.quantity), 0).toFixed(2)} €
-                                                    </td>
+                                                        </td>
                                                     </tr>
                                                     {order.sendingMethod && <tr>
                                                         <td>
                                                             Κόστος Αποστολής :
-                                                    </td>
+                                                        </td>
                                                         <td>
                                                             {order.shippingPrice} €
-                                                    </td>
+                                                        </td>
                                                     </tr>}
                                                     {order.paymentMethod && <tr>
                                                         <td>
                                                             Κόστος Αποστολής :
-                                                    </td>
+                                                        </td>
                                                         <td>
                                                             {order.paymentMethodPrice} €
-                                                    </td>
+                                                        </td>
                                                     </tr>}
                                                     <tr>
                                                         <td>

@@ -11,7 +11,7 @@ function FilterContainer(props) {
                         <ul className="filter-features">
                             {props.featureTitles.map(x =>
                                 <li key={x.feature_title}>{x.feature_title} :
-                                <ul>
+                                    <ul>
                                         {props.featureNames.map(y => (y.feature_title === x.feature_title) &&
                                             <li key={y.feature}>
                                                 <input type="checkbox" className="filterByFeatures" value={y.feature}

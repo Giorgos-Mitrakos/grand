@@ -46,7 +46,7 @@ import {
     SUPPLIERS_INSERT_FAIL, SUPPLIERS_DELETE_REQUEST, SUPPLIERS_DELETE_SUCCESS,
     SUPPLIERS_DELETE_FAIL, MANUFACTURER_DELETE_REQUEST,  MANUFACTURER_DELETE_SUCCESS,
     MANUFACTURER_DELETE_FAIL, SEARCH_FOR_ITEMS_REQUEST, SEARCH_FOR_ITEMS_SUCCESS,
-    SEARCH_FOR_ITEMS_FAIL, SELECT_ITEMS_PER_PAGE, SET_SEARCH_TEXT, SET_SEARCH_FILTERS, RESET_SEARCH_FILTERS, GET_PRODUCT_HISTORY_REQUEST, GET_PRODUCT_HISTORY_SUCCESS, GET_PRODUCT_HISTORY_FAIL
+    SEARCH_FOR_ITEMS_FAIL, SELECT_ITEMS_PER_PAGE, SET_SEARCH_TEXT, SET_SEARCH_FILTERS, RESET_SEARCH_FILTERS, GET_PRODUCT_HISTORY_REQUEST, GET_PRODUCT_HISTORY_SUCCESS, GET_PRODUCT_HISTORY_FAIL, GET_PRODUCT_BY_NAME_ADMIN_REQUEST, GET_PRODUCT_BY_NAME_ADMIN_SUCCESS, GET_PRODUCT_BY_NAME_ADMIN_FAIL
 } from "../constants/productConstant";
 import Axios from "axios";
 
@@ -165,6 +165,22 @@ const getProductsByCategoryAdmin = (category, subcategory, supplier, offset) => 
     }
     catch (error) {
         dispatch({ type: PRODUCT_LIST_BY_CATEGORY_ADMIN_FAIL, payload: error.message });
+    }
+}
+
+const getProductByNameAdmin = (productName, offset) => async (dispatch, getState) => {
+    try {
+        const { userSignin: { userInfo } } = getState();
+        dispatch({ type: GET_PRODUCT_BY_NAME_ADMIN_REQUEST });
+        const { data } = await Axios.post("/api/products/product_by_name_admin", { productName, offset }, {
+            headers: {
+                'Authorization': 'Bearer ' + userInfo.token
+            }
+        });
+        dispatch({ type: GET_PRODUCT_BY_NAME_ADMIN_SUCCESS, payload: data });
+    }
+    catch (error) {
+        dispatch({ type: GET_PRODUCT_BY_NAME_ADMIN_FAIL, payload: error.message });
     }
 }
 
@@ -700,10 +716,10 @@ const deleteProductCompatibility = (compatId) => async (dispatch, getState) => {
     }
 }
 
-const searchForItem = (searchText,itemsPerPage, offset, filters) => async (dispatch) => {
+const searchForItem = (searchText,itemsPerPage, offset, filters, sortType) => async (dispatch) => {
     try {
         dispatch({ type: SEARCH_FOR_ITEMS_REQUEST });
-        const { data } = await Axios.post("/api/products/searchForItems", { searchText,itemsPerPage, offset, filters });
+        const { data } = await Axios.post("/api/products/searchForItems", { searchText,itemsPerPage, offset, filters, sortType });
         dispatch({ type: SEARCH_FOR_ITEMS_SUCCESS, payload: data });
     }
     catch (error) {
@@ -757,5 +773,6 @@ export {
     insertCompatibilityCompany, insertCompatibilityModel, insertCompatibility,
     getProductCompatibilities, deleteProductCompatibility, importProducts, listSuppliers,
     insertSupplier, deleteSupplier, deleteManufacturer, searchForItem, 
-    selectItemsPerPage,searchTextStore,filtersStore,resetFiltersStore, getProductHistory
+    selectItemsPerPage,searchTextStore,filtersStore,resetFiltersStore, 
+    getProductHistory, getProductByNameAdmin
 }

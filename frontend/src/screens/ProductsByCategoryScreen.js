@@ -65,9 +65,12 @@ function ProductsByCategoryScreen(props) {
         if (window.innerWidth < 1024) {
             dispatch(productMenuToggle(false));
         }
+        else{
+            dispatch(productMenuToggle(true));
+        }
         // alert(props.match.params.category)
 
-    }, [props.match.params.category, props.match.params.subcategory,]);
+    }, [dispatch,props.match.params.category, props.match.params.subcategory]);
 
     useEffect(() => {
         if (data) {
@@ -102,7 +105,7 @@ function ProductsByCategoryScreen(props) {
         return () => {
 
         };
-    }, [category, subcategory])
+    }, [dispatch,category, subcategory])
 
     useEffect(() => {
 
@@ -158,32 +161,32 @@ function ProductsByCategoryScreen(props) {
         };
     }, [filters, brandFilters, compatibleCompanyFilters, compatibleModelFilters])
 
-    useEffect(() => {
+    // useEffect(() => {
 
-        // Handler to call on window resize
+    //     // Handler to call on window resize
 
-        function handleResize() {
+    //     function handleResize() {
 
-            // Set window width/height to state
-            if (window.innerWidth > 1024) {
-                dispatch(productMenuToggle(true));
+    //         // Set window width/height to state
+    //         if (window.innerWidth > 1024) {
+    //             dispatch(productMenuToggle(true));
 
-            }
-            else {
-                dispatch(productMenuToggle(false));
-            }
+    //         }
+    //         else {
+    //             dispatch(productMenuToggle(false));
+    //         }
 
-        }
-        // Add event listener
+    //     }
+    //     // Add event listener
 
-        window.addEventListener("resize", handleResize);
-        // Call handler right away so state gets updated with initial window size
+    //     window.addEventListener("resize", handleResize);
+    //     // Call handler right away so state gets updated with initial window size
 
-        handleResize();
-        // Remove event listener on cleanup
-        return () => window.removeEventListener("resize", handleResize);
+    //     handleResize();
+    //     // Remove event listener on cleanup
+    //     return () => window.removeEventListener("resize", handleResize);
 
-    }, [dispatch]); // Empty array ensures that effect is only run on mount
+    // }, [dispatch]); // Empty array ensures that effect is only run on mount
 
     function handlePageClick({ selected: selectedPage }) {
         setCurrentPage(parseInt(selectedPage));
@@ -287,7 +290,7 @@ function ProductsByCategoryScreen(props) {
             <Helmet>
                 <title>{`Grand Mobile Accessories-${subcategory}`}</title>
                 <meta name="description" content={`Στο grandmobile.gr θα βρείτε μεγάλη ποικιλία από ${subcategory} στις καλύτερες τιμές! `}/>
-                <meta name="keywords" content={`${category},${subcategory}`} />
+                <meta name="keywords" content={`${category},${subcategory},Χαλκίδα,xalkida`} />
             </Helmet>
             <div className="product-menu-sidebar" style={{ display: isProductMenuOpen ? "block" : "none" }}>
                 <ProductMenu />

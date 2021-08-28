@@ -30,7 +30,8 @@ router.get("/", /*#__PURE__*/function () {
           case 0:
             parser = new _xml2js["default"].Parser();
 
-            _fs["default"].readFile('C:/Users/Giorgos/projects/reactApp/grand/frontend/src/images/products.xml', function (err, data) {
+            _fs["default"].readFile('C:/Users/Giorgos/projects/reactApp/grand/frontend/src/images/isis-products.xml', function (err, data) {
+              var parser = new _xml2js["default"].Parser();
               parser.parseString(data, function (err, result) {
                 console.dir(result["www.isispc-eshop.gr"].PRODUCTS[0].PRODUCT[0].NAME);
                 console.log('Done');
@@ -136,6 +137,7 @@ router.get("/", /*#__PURE__*/function () {
                       var sql = "INSERT INTO compatibility_company (company) VALUES (?)";
                       connection.query(sql, [compArr.company], function (err, result, fields) {
                         if (err & err != "ER_DUP_ENTRY") {
+                          '';
                           console.log("Entry is already");
                         }
 
@@ -178,7 +180,7 @@ router.get("/", /*#__PURE__*/function () {
                         compatibilityArray.forEach(function (compArr) {
                           sql = "INSERT INTO compatibilities (product_id, compatibility_company, compatibility_model) VALUES (?, ?, ?)";
                           connection.query(sql, [product_id, compArr.company, compArr.model], function (err, result, fields) {
-                            if (err) {
+                            if (err & err != "ER_DUP_ENTRY") {
                               console.log("Entry is already");
                             }
 
@@ -198,10 +200,11 @@ router.get("/", /*#__PURE__*/function () {
                   });
                 };
 
-                var data = [];
+                var data2 = [];
 
                 var _loop = function _loop(index) {
                   var element = result["www.isispc-eshop.gr"].PRODUCTS[0].PRODUCT[index];
+                  data2.push(element.NAME[0]);
 
                   var programsAndServices = function programsAndServices() {
                     switch (element.CATEGORY[0]["_"].split("->")[1].trim()) {
@@ -226,29 +229,24 @@ router.get("/", /*#__PURE__*/function () {
                     }
                   };
 
-                  var cable_keyboards = function cable_keyboards() {
-                    switch (element.CATEGORY[0]["_"].split("->")[2].trim()) {
-                      case "Ενσύρματα":
-                        var features = [];
-                        features.push({
-                          featureTitle: "Ασύρματα/Ενσύρματα",
-                          featureName: "Ενσύρματα"
-                        });
-                        insertProductWithFeature(element.NAME[0], "Πληκτρολόγια-Ποντίκια", "Πληκτρολόγια", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", features, element.AVAILABILITY[0], element.TEXT[0].replace('&lt;', '<').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
-                        break;
+                  var keyboards_mouses = function keyboards_mouses() {
+                    if (element.NAME[0].includes("Keyboard")) {
+                      insertProduct(element.NAME[0], "Πληκτρολόγια-Ποντίκια", "Πληκτρολόγια", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
+                    } else if (element.NAME[0].includes("Mouse") || element.NAME[0].includes("mouse")) {
+                      insertProduct(element.NAME[0], "Πληκτρολόγια-Ποντίκια", "Ποντίκια", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
+                    } // switch (element.CATEGORY[0]["_"].split("->")[2].trim()) {
+                    //     case "Ενσύρματα":
+                    //         insertProduct(element.NAME[0],"Kινητά","Bluetooth",element.MANUFACTURER[0],element.IMAGE_URL[0],element.PRICE[0],element.WEIGHT[0],element.MPN[0],"ISISPC",element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
+                    //         break;
+                    //     case "Ασύρματα":
+                    //         features = []; 
+                    //         features.push({featureTitle:"Ασύρματα/Ενσύρματα",featureName:"Ασύρματα"});                            
+                    //         insertProductWithFeature(element.NAME[0],"Πληκτρολόγια-Ποντίκια","Πληκτρολόγια",element.MANUFACTURER[0],element.IMAGE_URL[0],element.PRICE[0],element.WEIGHT[0],element.MPN[0],"ISISPC",features , element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '))
+                    //         break;                    
+                    //     default:
+                    //         break;
+                    // }
 
-                      case "Ασύρματα":
-                        features = [];
-                        features.push({
-                          featureTitle: "Ασύρματα/Ενσύρματα",
-                          featureName: "Ασύρματα"
-                        });
-                        insertProductWithFeature(element.NAME[0], "Πληκτρολόγια-Ποντίκια", "Πληκτρολόγια", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", features, element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
-                        break;
-
-                      default:
-                        break;
-                    }
                   };
 
                   var cable_mouses = function cable_mouses() {
@@ -366,16 +364,34 @@ router.get("/", /*#__PURE__*/function () {
                         insertProduct(element.NAME[0], "Μultimedia", "Οθόνες", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
                         break;
 
-                      case "Πληκτρολόγια":
-                        cable_keyboards();
+                      case "Πληκτρολόγια &amp; Ποντίκια":
+                        keyboards_mouses();
                         break;
 
                       case "Ποντίκια":
-                        cable_mouses();
+                        insertProduct(element.NAME[0], "Desktop", "MousePads", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' ')); // cable_mouses();
+
+                        break;
+
+                      case "Δίσκοι":
+                        insertProduct(element.NAME[0], "Pc-Hardwear", "Δίσκοι-SSD", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' ')); // cable_mouses();
+
+                        break;
+
+                      case "Ram":
+                        insertProduct(element.NAME[0], "Pc-Hardwear", "Μνήμες-Ram", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
                         break;
 
                       case "PC Parts":
                         pc_parts();
+                        break;
+
+                      case "Καλώδια":
+                        insertProduct(element.NAME[0], "Pc-Hardwear", "Καλώδια", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
+                        break;
+
+                      case "Τροφοδοτικά Ρεύματος":
+                        insertProduct(element.NAME[0], "Pc-Hardwear", "Τροφοδοτικά", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
                         break;
 
                       case "Δικτυακός εξοπλισμός":
@@ -407,36 +423,36 @@ router.get("/", /*#__PURE__*/function () {
 
                       case "Toners":
                         // data.push(element.CATEGORY[0]["_"].split("->")[0].concat(" "+element.CATEGORY[0]["_"].split("->")[1]).concat(" "+element.CATEGORY[0]["_"].split("->")[2]).concat(" "+element.CATEGORY[0]["_"].split("->")[3]).concat(" "+element.CATEGORY[0]["_"].split("->")[4])); 
-                        var features = [];
-                        features.push({
-                          featureTitle: "Συμβατότητα",
-                          featureName: element.CATEGORY[0]["_"].split("->")[2]
+                        var compatibilities = [];
+                        compatibilities.push({
+                          company: element.CATEGORY[0]["_"].split("->")[2],
+                          model: ""
                         });
-                        insertProductWithFeature(element.NAME[0], "Laser", "Μελάνια", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", features, element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
+                        insertProductWithCompatibility(element.NAME[0], "Laser", "Μελάνια", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", compatibilities, element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
                         break;
 
                       case "Μελάνια":
                         // data.push(element.CATEGORY[0]["_"].split("->")[0].concat(" "+element.CATEGORY[0]["_"].split("->")[1]).concat(" "+element.CATEGORY[0]["_"].split("->")[2]).concat(" "+element.CATEGORY[0]["_"].split("->")[3]).concat(" "+element.CATEGORY[0]["_"].split("->")[4])); 
-                        features = [];
-                        features.push({
-                          featureTitle: "Συμβατότητα",
-                          featureName: element.CATEGORY[0]["_"].split("->")[2]
+                        compatibilities = [];
+                        compatibilities.push({
+                          company: element.CATEGORY[0]["_"].split("->")[2],
+                          model: ""
                         });
-                        insertProductWithFeature(element.NAME[0], "Inkjet", "Μελάνια", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", features, element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
+                        insertProductWithCompatibility(element.NAME[0], "Inkjet", "Μελάνια", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", compatibilities, element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
                         break;
 
                       case "Drums":
                         // data.push(element.CATEGORY[0]["_"].split("->")[0].concat(" "+element.CATEGORY[0]["_"].split("->")[1]).concat(" "+element.CATEGORY[0]["_"].split("->")[2]).concat(" "+element.CATEGORY[0]["_"].split("->")[3]).concat(" "+element.CATEGORY[0]["_"].split("->")[4])); 
-                        features = [];
-                        features.push({
-                          featureTitle: "Συμβατότητα",
-                          featureName: element.CATEGORY[0]["_"].split("->")[2]
+                        compatibilities = [];
+                        compatibilities.push({
+                          company: element.CATEGORY[0]["_"].split("->")[2],
+                          model: ""
                         });
-                        insertProductWithFeature(element.NAME[0], "Laser", "Drums", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", features, element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
+                        insertProductWithCompatibility(element.NAME[0], "Laser", "Drums", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", compatibilities, element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
                         break;
 
                       case "Ρολλά μηχανών":
-                        features = [];
+                        var features = [];
                         features.push({
                           featureTitle: "Διαστάσεις",
                           featureName: element.CATEGORY[0]["_"].split("->")[3]
@@ -483,7 +499,7 @@ router.get("/", /*#__PURE__*/function () {
 
                         break;
 
-                      case "Προβολείς Led":
+                      case "Προβολείς LED":
                         var features = [];
                         features.push({
                           featureTitle: "Τάση",
@@ -501,9 +517,43 @@ router.get("/", /*#__PURE__*/function () {
                     }
                   };
 
+                  var Tempered_glass_Cases = function Tempered_glass_Cases() {
+                    var temp = [];
+                    var compatibilities = [];
+
+                    function modelArray(item) {
+                      compatibilities.push({
+                        company: element.CATEGORY[0]["_"].split("->")[1],
+                        model: item
+                      });
+                    }
+
+                    switch (element.CATEGORY[0]["_"].split("->")[3].trim()) {
+                      case "Θήκες":
+                        // console.log("Θήκες || brand: "+element.CATEGORY[0]["_"].split("->")[1].trim() +"\n"+"model: "+element.CATEGORY[0]["_"].split("->")[2].trim()+"\n"+"type: "+element.CATEGORY[0]["_"].split("->")[3].trim()+"\n")
+                        temp = element.CATEGORY[0]["_"].split("->")[2].split("/");
+                        temp.forEach(modelArray); // console.log(compatibilities)
+
+                        insertProductWithCompatibility(element.NAME[0], "Kινητά", "Θήκες-Κινητών", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", compatibilities, element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
+                        break;
+
+                      case "Tempered Glass":
+                        temp = [];
+                        compatibilities = [];
+                        temp = element.CATEGORY[0]["_"].split("->")[2].split("/");
+                        temp.forEach(modelArray); // data2.push(compatibilities)
+
+                        insertProductWithCompatibility(element.NAME[0], "Kινητά", "Προστασία-Οθόνης", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", compatibilities, element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
+                        break;
+
+                      default:
+                        break;
+                    }
+                  };
+
                   var mobiles_smartwatches = function mobiles_smartwatches() {
                     switch (element.CATEGORY[0]["_"].split("->")[1].trim()) {
-                      case "Θήκες":
+                      case "Θήκες Κινητών":
                         // data.push(element.CATEGORY[0]["_"].split("->")[0].concat(" "+element.CATEGORY[0]["_"].split("->")[1]).concat(" "+element.CATEGORY[0]["_"].split("->")[2]).concat(" "+element.CATEGORY[0]["_"].split("->")[3]).concat(" "+element.CATEGORY[0]["_"].split("->")[4])); 
                         var compatibilities = [];
 
@@ -641,7 +691,7 @@ router.get("/", /*#__PURE__*/function () {
 
                         break;
 
-                      case "Βάσεις στήριξης &amp; selfie sticks":
+                      case "Βάσεις στήριξης":
                         insertProduct(element.NAME[0], "Kινητά", "Βάσεις-Στήριξης-Κινητών", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
                         break;
 
@@ -681,7 +731,7 @@ router.get("/", /*#__PURE__*/function () {
                   };
 
                   var batteries_powerbanks = function batteries_powerbanks() {
-                    switch (element.CATEGORY[0]["_"].split("->")[1].trim()) {
+                    switch (element.CATEGORY[0]["_"].split("->")[2].trim()) {
                       case "Power Banks":
                         insertProduct(element.NAME[0], "Μπαταρίες", "PowerBanks", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
                         break;
@@ -713,7 +763,7 @@ router.get("/", /*#__PURE__*/function () {
                         var features = [];
                         features.push({
                           featureTitle: "Χωρητικότητα",
-                          featureName: element.CATEGORY[0]["_"].split("->")[3]
+                          featureName: element.NAME[0].split(" ")[4]
                         });
                         insertProductWithFeature(element.NAME[0], "Αποθηκευτικά-Μέσα", "Memory-Cards", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", features, element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
                         break;
@@ -733,23 +783,22 @@ router.get("/", /*#__PURE__*/function () {
                   };
 
                   var headsetMicrophones = function headsetMicrophones() {
-                    switch (element.CATEGORY[0]["_"].split("->")[2].trim()) {
-                      case "Headphones":
-                        var features = [];
-                        features.push({
-                          featureTitle: "Ασύρματα/Ενσύρματα",
-                          featureName: element.CATEGORY[0]["_"].split("->")[3]
-                        });
-                        insertProductWithFeature(element.NAME[0], "Μultimedia", "Headsets", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", features, element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
-                        break;
+                    if (element.NAME[0].includes("Headset")) {
+                      insertProduct(element.NAME[0], "Μultimedia", "Headsets", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
+                    } else if (element.NAME[0].includes("Microphone")) {
+                      insertProduct(element.NAME[0], "Μultimedia", "Μικρόφωνα", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
+                    } // switch (element.CATEGORY[0]["_"].split("->")[2].trim()) {                        
+                    //     case "Headphones":
+                    //         let features = []; 
+                    //         features.push({featureTitle:"Ασύρματα/Ενσύρματα",featureName:element.CATEGORY[0]["_"].split("->")[3]});                            
+                    //         insertProductWithFeature(element.NAME[0],"Μultimedia","Headsets",element.MANUFACTURER[0],element.IMAGE_URL[0],element.PRICE[0],element.WEIGHT[0],element.MPN[0],"ISISPC",features ,element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '))
+                    //         break;
+                    //     case "Μικρόφωνα":
+                    //         insertProduct(element.NAME[0],"Μultimedia","Μικρόφωνα",element.MANUFACTURER[0],element.IMAGE_URL[0],element.PRICE[0],element.WEIGHT[0],element.MPN[0],"ISISPC",element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));break;
+                    //     default:   
+                    //         break;
+                    // }
 
-                      case "Μικρόφωνα":
-                        insertProduct(element.NAME[0], "Μultimedia", "Μικρόφωνα", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
-                        break;
-
-                      default:
-                        break;
-                    }
                   };
 
                   var cameras = function cameras() {
@@ -771,6 +820,12 @@ router.get("/", /*#__PURE__*/function () {
                         break;
 
                       default:
+                        if (element.NAME[0].split(" ")[1].trim() === "Action") {
+                          insertProduct(element.NAME[0], "Cameras", "Action-Cameras", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
+                        } else if (element.NAME[0].split(" ")[1].trim() === "Car") {
+                          insertProduct(element.NAME[0], "Cameras", "Car-Cameras", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
+                        }
+
                         break;
                     }
                   };
@@ -779,10 +834,23 @@ router.get("/", /*#__PURE__*/function () {
                     switch (element.CATEGORY[0]["_"].split("->")[1].trim()) {
                       case "Ηχεία":
                         var features = [];
-                        features.push({
-                          featureTitle: "Τύπος",
-                          featureName: element.CATEGORY[0]["_"].split("->")[2]
-                        });
+
+                        if (element.CATEGORY[0]["_"].split("->")[2].trim()) {
+                          features.push({
+                            featureTitle: "Τύπος",
+                            featureName: element.CATEGORY[0]["_"].split("->")[2]
+                          });
+                        } else {
+                          features.push({
+                            featureTitle: "Τύπος",
+                            featureName: "Ενσύρματα"
+                          });
+                          features.push({
+                            featureTitle: "Τύπος",
+                            featureName: "Bluetooth"
+                          });
+                        }
+
                         insertProductWithFeature(element.NAME[0], "Μultimedia", "Ηχεία", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", features, element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
                         break;
 
@@ -790,7 +858,7 @@ router.get("/", /*#__PURE__*/function () {
                         storage_devices();
                         break;
 
-                      case "Players MP3 / MP4":
+                      case "Players MP3 / MP4 / TV Box":
                         insertProduct(element.NAME[0], "Μultimedia", "mp3-mp4-players", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
                         break;
 
@@ -806,6 +874,10 @@ router.get("/", /*#__PURE__*/function () {
                         insertProduct(element.NAME[0], "Μultimedia", "Καλώδια-Adapters", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
                         break;
 
+                      case "Μπαταρίες":
+                        batteries_powerbanks();
+                        break;
+
                       case "Usb hubs / Card readers":
                         insertProduct(element.NAME[0], "Μultimedia", "Usb-Hubs-Card-Readers", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
                         break;
@@ -814,17 +886,21 @@ router.get("/", /*#__PURE__*/function () {
                         insertProduct(element.NAME[0], "Μultimedia", "Game-Controllers-Accessories", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
                         break;
 
-                      case "Pointing devices":
-                        insertProduct(element.NAME[0], "Μultimedia", "Pointing-Devices", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
-                        break;
+                      case "Τσάντες Μεταφοράς":
+                        if (element.NAME[0].includes("Notebook")) {
+                          insertProduct(element.NAME[0], "Laptop", "Τσάντες-Laptop", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
+                        }
 
-                      case "3D Pen":
-                        insertProduct(element.NAME[0], "Μultimedia", "3D-Pen", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
                         break;
-
-                      case "Θήκες tablet":
-                        insertProduct(element.NAME[0], "Tablet", "Θήκες-Tablet", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
-                        break;
+                      // case "Pointing devices":
+                      //     insertProduct(element.NAME[0],"Μultimedia","Pointing-Devices",element.MANUFACTURER[0],element.IMAGE_URL[0],element.PRICE[0],element.WEIGHT[0],element.MPN[0],"ISISPC",element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
+                      //     break;
+                      // case "3D Pen":
+                      //     insertProduct(element.NAME[0],"Μultimedia","3D-Pen",element.MANUFACTURER[0],element.IMAGE_URL[0],element.PRICE[0],element.WEIGHT[0],element.MPN[0],"ISISPC",element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
+                      //     break;
+                      // case "Θήκες tablet":
+                      //     insertProduct(element.NAME[0],"Tablet","Θήκες-Tablet",element.MANUFACTURER[0],element.IMAGE_URL[0],element.PRICE[0],element.WEIGHT[0],element.MPN[0],"ISISPC",element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
+                      //     break;
 
                       case "Ακουστικά / Μικρόφωνα":
                         headsetMicrophones();
@@ -845,8 +921,12 @@ router.get("/", /*#__PURE__*/function () {
                         insertProduct(element.NAME[0], "Ιατρικά-Είδη", "Οξύμετρα", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
                         break;
 
-                      case "Αποστειρωτές - Αντισηπτικά":
-                        insertProduct(element.NAME[0], "Ιατρικά-Είδη", "Αποστειρωτές-Αντισηπτικά", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
+                      case "Συσκευές Αποστείρωσης":
+                        insertProduct(element.NAME[0], "Ιατρικά-Είδη", "Συσκευές-Αποστείρωσης", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
+                        break;
+
+                      case "Αντισηπτικά":
+                        insertProduct(element.NAME[0], "Ιατρικά-Είδη", "Αντισηπτικά", element.MANUFACTURER[0], element.IMAGE_URL[0], element.PRICE[0], element.WEIGHT[0], element.MPN[0], "ISISPC", element.AVAILABILITY[0], element.TEXT[0].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, "&").replace(/&nbsp;/gi, ' '));
                         break;
 
                       case "Θερμόμετρα":
@@ -854,42 +934,47 @@ router.get("/", /*#__PURE__*/function () {
                         break;
 
                       default:
-                        data.push(element.CATEGORY[0]["_"].split("->")[0].concat(" " + element.CATEGORY[0]["_"].split("->")[1]).concat(" " + element.CATEGORY[0]["_"].split("->")[2]).concat(" " + element.CATEGORY[0]["_"].split("->")[3]).concat(" " + element.CATEGORY[0]["_"].split("->")[4]));
+                        // data2.push(element.CATEGORY[0]["_"].split("->")[0].concat(" " + element.CATEGORY[0]["_"].split("->")[1]).concat(" " + element.CATEGORY[0]["_"].split("->")[2]).concat(" " + element.CATEGORY[0]["_"].split("->")[3]).concat(" " + element.CATEGORY[0]["_"].split("->")[4]));
                         break;
                     }
                   };
 
                   switch (element.CATEGORY[0]["_"].split("->")[0].trim()) {
                     case "Προγράμματα &amp; Υπηρεσίες":
-                      // programsAndServices();
+                      programsAndServices();
                       break;
 
-                    case "Υπολογιστές &amp; Περιφερειακά":
-                      //  desktopAndPeripheral();
+                    case "PC / Laptop &amp; More":
+                      desktopAndPeripheral();
                       break;
 
                     case "Αναλώσιμα":
-                      // office_supplies();
+                      office_supplies();
                       break;
 
                     case "Φωτισμός &amp; Εξοπλισμός":
-                      // lighting();
+                      lighting();
                       break;
 
-                    case "Αξεσουάρ Κινητής &amp; Smartwatches":
-                      // mobiles_smartwatches();
+                    case "Αξεσουάρ Κινητής  - Tablet - Smartwatches":
+                      mobiles_smartwatches();
                       break;
 
                     case "Μπαταρίες &amp; Power Banks":
-                      // batteries_powerbanks();
+                      batteries_powerbanks();
                       break;
 
-                    case "Multimedia":
-                      // multimedia();
+                    case "Gadgets":
+                      multimedia();
                       break;
 
-                    case "Ιατρικά Είδη":
+                    case "Είδη Ατομικής Προστασίας":
                       medical_devices();
+                      break;
+
+                    case "Tempered Glass - Θήκες Κινητών":
+                      // console.log("brand: "+element.CATEGORY[0]["_"].split("->")[1].trim()+" model: "+console.log(element.CATEGORY[0]["_"].split("->")[2].trim()+" type: "+console.log(element.CATEGORY[0]["_"].split("->")[3].trim())))
+                      Tempered_glass_Cases();
                       break;
 
                     default:
@@ -903,7 +988,9 @@ router.get("/", /*#__PURE__*/function () {
                   _loop(index);
                 }
 
-                res.send(data); //res.send(result["www.isispc-eshop.gr"].PRODUCTS[0].PRODUCT[388].CATEGORY[0]["_"].split("->"));
+                res.send(data2); //res.send(result["www.isispc-eshop.gr"].PRODUCTS[0].PRODUCT[388].CATEGORY[0]["_"].split("->"));
+
+                console.log("This is the end"); // return res.send("Done!")
               });
             });
 

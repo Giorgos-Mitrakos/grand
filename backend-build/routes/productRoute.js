@@ -311,7 +311,7 @@ router.post("/compatibilities_by_category", /*#__PURE__*/function () {
             _connection["default"].getConnection(function (err, connection) {
               if (err) throw err; // not connected!
 
-              connection.query('SELECT * FROM products LEFT JOIN compatibilities ON products._id=compatibilities.product_id WHERE products.category=? && products.subcategory=? && products.visibility=1 && compatibilities.compatibility_company IS NOT NULL ORDER BY compatibilities.compatibility_company,compatibilities.compatibility_model ', [req.body.category, req.body.subcategory], function (err, result, fields) {
+              connection.query("SELECT compatibility_id,product_id,compatibility_company,compatibility_model \n        FROM compatibilities LEFT JOIN products \n        ON products._id=compatibilities.product_id \n        WHERE products.category=? && products.subcategory=? && products.visibility=1 && compatibilities.compatibility_company IS NOT NULL \n        ORDER BY compatibilities.compatibility_company,compatibilities.compatibility_model ", [req.body.category, req.body.subcategory], function (err, result, fields) {
                 if (err) throw err;
                 console.log("Read compatibility companies succeed");
                 res.send(result);
@@ -432,12 +432,51 @@ router.post("/products_by_category_admin", _util.isAuth, _util.isAdmin, /*#__PUR
     return _ref10.apply(this, arguments);
   };
 }());
-router.get("/:id", /*#__PURE__*/function () {
+router.post("/product_by_name_admin", _util.isAuth, _util.isAdmin, /*#__PURE__*/function () {
   var _ref11 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee11(req, res) {
-    var productId;
     return regeneratorRuntime.wrap(function _callee11$(_context11) {
       while (1) {
         switch (_context11.prev = _context11.next) {
+          case 0:
+            _connection["default"].getConnection(function (err, connection) {
+              if (err) throw err; // not connected!
+
+              var nameSearch = "%".concat(req.body.productName.trim(), "%");
+              connection.query('SELECT * FROM products WHERE name LIKE ? LIMIT 20 OFFSET ? ', [nameSearch, req.body.offset], function (err, result, fields) {
+                if (err) throw err;
+                var resp = result;
+                connection.query('SELECT COUNT(*) AS count FROM products WHERE name LIKE ?', [nameSearch], function (err, result, fields) {
+                  if (err) throw err;
+                  var count = result;
+                  res.send({
+                    resp: resp,
+                    count: count
+                  });
+                });
+              });
+              connection.release(); // Handle error after the release.
+
+              if (err) throw err;
+            });
+
+          case 1:
+          case "end":
+            return _context11.stop();
+        }
+      }
+    }, _callee11);
+  }));
+
+  return function (_x21, _x22) {
+    return _ref11.apply(this, arguments);
+  };
+}());
+router.get("/:id", /*#__PURE__*/function () {
+  var _ref12 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee12(req, res) {
+    var productId;
+    return regeneratorRuntime.wrap(function _callee12$(_context12) {
+      while (1) {
+        switch (_context12.prev = _context12.next) {
           case 0:
             productId = req.params.id;
 
@@ -459,7 +498,7 @@ router.get("/:id", /*#__PURE__*/function () {
                     });
                   }
 
-                  var sql = 'SELECT _id, name, category, brand, image, description,countInStock, numReview, subcategory, weight, supplier, availability, visibility, totalPrice FROM products WHERE _id=?';
+                  sql = 'SELECT _id, name, category, brand, image, description,countInStock, numReview, subcategory, weight, supplier, availability, visibility, totalPrice FROM products WHERE _id=?';
                   connection.query(sql, productId, function (err, result, fields) {
                     if (err) {
                       connection.rollback(function () {
@@ -467,18 +506,43 @@ router.get("/:id", /*#__PURE__*/function () {
                       });
                     }
 
-                    res.status(200).send(result[0]);
-                    connection.commit(function (err) {
+                    var product = result[0];
+                    sql = 'SELECT compatibility_company, compatibility_model FROM compatibilities WHERE product_id=?';
+                    connection.query(sql, productId, function (err, result, fields) {
                       if (err) {
                         connection.rollback(function () {
                           throw err;
                         });
                       }
 
-                      console.log('Transaction Completed Successfully.');
-                      connection.release(); // Handle error after the release.
+                      var compatibilities = result;
+                      sql = 'SELECT feature_title, feature FROM features WHERE product_id=?';
+                      connection.query(sql, productId, function (err, result, fields) {
+                        if (err) {
+                          connection.rollback(function () {
+                            throw err;
+                          });
+                        }
 
-                      if (err) throw err;
+                        var features = result;
+                        res.status(200).send({
+                          product: product,
+                          compatibilities: compatibilities,
+                          features: features
+                        });
+                        connection.commit(function (err) {
+                          if (err) {
+                            connection.rollback(function () {
+                              throw err;
+                            });
+                          }
+
+                          console.log('Transaction Completed Successfully.');
+                          connection.release(); // Handle error after the release.
+
+                          if (err) throw err;
+                        });
+                      });
                     });
                   });
                 });
@@ -488,21 +552,21 @@ router.get("/:id", /*#__PURE__*/function () {
 
           case 2:
           case "end":
-            return _context11.stop();
+            return _context12.stop();
         }
       }
-    }, _callee11);
+    }, _callee12);
   }));
 
-  return function (_x21, _x22) {
-    return _ref11.apply(this, arguments);
+  return function (_x23, _x24) {
+    return _ref12.apply(this, arguments);
   };
 }());
 router.post("/most_viewed", /*#__PURE__*/function () {
-  var _ref12 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee12(req, res) {
-    return regeneratorRuntime.wrap(function _callee12$(_context12) {
+  var _ref13 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee13(req, res) {
+    return regeneratorRuntime.wrap(function _callee13$(_context13) {
       while (1) {
-        switch (_context12.prev = _context12.next) {
+        switch (_context13.prev = _context13.next) {
           case 0:
             _connection["default"].getConnection(function (err, connection) {
               if (err) throw err; // not connected!
@@ -519,25 +583,25 @@ router.post("/most_viewed", /*#__PURE__*/function () {
 
           case 1:
           case "end":
-            return _context12.stop();
+            return _context13.stop();
         }
       }
-    }, _callee12);
+    }, _callee13);
   }));
 
-  return function (_x23, _x24) {
-    return _ref12.apply(this, arguments);
+  return function (_x25, _x26) {
+    return _ref13.apply(this, arguments);
   };
 }());
 router.post("/searchForItems", /*#__PURE__*/function () {
-  var _ref13 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee13(req, res) {
-    return regeneratorRuntime.wrap(function _callee13$(_context13) {
+  var _ref14 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee14(req, res) {
+    return regeneratorRuntime.wrap(function _callee14$(_context14) {
       while (1) {
-        switch (_context13.prev = _context13.next) {
+        switch (_context14.prev = _context14.next) {
           case 0:
             _connection["default"].getConnection(function (err, connection) {
               var sp = req.body.searchText.trim().split(" ");
-              var search = '';
+              var search = '(';
 
               for (var i = 0; i < sp.length; i++) {
                 if (i !== 0) {
@@ -548,25 +612,73 @@ router.post("/searchForItems", /*#__PURE__*/function () {
               }
 
               ;
+              search += ' OR( ';
+
+              for (var _i = 0; _i < sp.length; _i++) {
+                if (_i !== 0) {
+                  search += ' && ';
+                }
+
+                search += 'subcategory LIKE ' + "'%" + sp[_i] + "%'";
+              }
+
+              ;
+              search += ' ) ';
+              search += ' OR( ';
+
+              for (var _i2 = 0; _i2 < sp.length; _i2++) {
+                if (_i2 !== 0) {
+                  search += ' && ';
+                }
+
+                search += 'category LIKE ' + "'%" + sp[_i2] + "%'";
+              }
+
+              ;
+              search += ' )) ';
               var filters = '';
 
               if (req.body.filters !== null && req.body.filters.length !== 0) {
                 filters += '&&(';
 
-                for (var _i = 0; _i < req.body.filters.length; _i++) {
-                  if (_i !== 0) {
-                    filters += ' OR (category="' + req.body.filters[_i].category + '" && subcategory="' + req.body.filters[_i].subcategory + '")';
+                for (var _i3 = 0; _i3 < req.body.filters.length; _i3++) {
+                  if (_i3 !== 0) {
+                    filters += ' OR (category="' + req.body.filters[_i3].category + '" && subcategory="' + req.body.filters[_i3].subcategory + '")';
                   } else {
-                    filters += ' (category="' + req.body.filters[_i].category + '" && subcategory="' + req.body.filters[_i].subcategory + '")';
+                    filters += ' (category="' + req.body.filters[_i3].category + '" && subcategory="' + req.body.filters[_i3].subcategory + '")';
                   }
                 }
 
                 filters += ')';
               }
 
+              var sortBy = '';
+
+              switch (req.body.sortType) {
+                case 'Αλφαβητικά: Α-Ω':
+                  sortBy = 'name';
+                  break;
+
+                case 'Αλφαβητικά: Ω-Α':
+                  sortBy = 'name DESC';
+                  break;
+
+                case 'Τιμή αύξουσα':
+                  sortBy = 'totalPrice';
+                  break;
+
+                case 'Τιμή φθίνουσα':
+                  sortBy = 'totalPrice DESC';
+                  break;
+
+                default:
+                  sortBy = 'numReview DESC';
+                  break;
+              }
+
               if (err) throw err; // not connected!
 
-              connection.query("SELECT _id, name, category, brand, image, description,\n        countInStock, numReview, subcategory, weight, supplier, availability, \n        visibility, totalPrice FROM products \n        WHERE visibility=1 && \n        ".concat(search, " \n        ").concat(filters, "         \n        ORDER BY numReview DESC LIMIT ").concat(req.body.itemsPerPage, " OFFSET ").concat(req.body.offset), function (err, result, fields) {
+              connection.query("SELECT _id, name, category, brand, image, description,\n        countInStock, numReview, subcategory, weight, supplier, availability, \n        visibility, totalPrice FROM products \n        WHERE visibility=1 &&\n        ".concat(search, " \n        ").concat(filters, "         \n        ORDER BY ").concat(sortBy, " LIMIT ").concat(req.body.itemsPerPage, " OFFSET ").concat(req.body.offset), function (err, result, fields) {
                 if (err) throw err;
                 var resp = result;
                 connection.query("SELECT COUNT(*) AS count FROM products \n                    WHERE visibility=1 && \n                    ".concat(search, " \n                    ").concat(filters), function (err, result, fields) {
@@ -595,14 +707,14 @@ router.post("/searchForItems", /*#__PURE__*/function () {
 
           case 1:
           case "end":
-            return _context13.stop();
+            return _context14.stop();
         }
       }
-    }, _callee13);
+    }, _callee14);
   }));
 
-  return function (_x25, _x26) {
-    return _ref13.apply(this, arguments);
+  return function (_x27, _x28) {
+    return _ref14.apply(this, arguments);
   };
 }());
 var _default = router;

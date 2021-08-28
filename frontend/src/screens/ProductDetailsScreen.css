@@ -53,6 +53,10 @@
 .product-details-info{
     margin-top: 3rem;
 }
+
+.product-details-info ul{
+    list-style: disc;
+}
 .wish-list-link{
     font-size: 1.6rem;
     margin: 0.2rem;
@@ -134,10 +138,10 @@ label{
 * Style the tab */
 
 .display_desktop{
-    display: none;
+    display: block;
 }
 
-.mobile{
+.display_mobile{
     display: none;
 }
 
@@ -181,6 +185,7 @@ label{
   overflow: hidden;
   background-color: #f1f1f1; 
   width: 100%; 
+  border-radius: 1rem;
 }
 
 /* Style the buttons inside the tab */
@@ -210,7 +215,11 @@ label{
 
 /* Style the tab content */
 .tabcontent {
-  padding: 1rem 1rem;
+  padding: 1rem 1rem;  
+}
+
+#description>ul {
+    list-style-type:disc;
 }
 
 .tabcontent-row{
@@ -269,7 +278,7 @@ label{
     display: none;
 }
 
-.mobile{
+.display_mobile{
     display: block;
 }
 

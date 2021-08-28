@@ -3,18 +3,22 @@
     flex-direction: column;
 }
 
-.filter-features>li{
+
+.filter-features>ul{
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
 }
 
-.filter-features>li>li{
+
+.filter-features>li{
+    display: flex;
+    align-items: center;    
+}
+
+.filter-features>ul>li{
     display: flex;
     flex-wrap: wrap;
     padding: 0rem;
     margin: 0rem;
-
     /* background-color: #ddd; */
 }
 
@@ -64,11 +68,11 @@
     .filter-features>li{
         display: flex;
         flex-direction: column;
+        align-items: flex-start;
     }
 
-    .filter-features>li>li{
-        flex-direction: column;
-        align-items: flex-start;
+    .filter-features>li>ul>li{
+        margin-left: 0;
     }
 
     .filter-compatibility ul{

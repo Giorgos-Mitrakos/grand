@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import LoadingSpinner from '../components/LoadingSpinner.js';
 import './AdminAdministratorsScreen.css';
+import ReactTooltip from 'react-tooltip';
 import { deleteAdmin, insertAdmin, listAdmins } from '../action/userActions.js';
 
 function AdminAdministratorsScreen(props) {
@@ -23,7 +24,7 @@ function AdminAdministratorsScreen(props) {
     }, []);
 
     const insertNewAdminHandler = () => {
-        dispatch(insertAdmin(newAdminUsername,newAdminEmail,newAdminPassword));
+        dispatch(insertAdmin(newAdminUsername, newAdminEmail, newAdminPassword));
     }
 
     const removeAdminbHandler = (email) => {
@@ -87,7 +88,16 @@ function AdminAdministratorsScreen(props) {
                                                 <tr key={admin.email}>
                                                     <td>{admin.username}</td>
                                                     <td>{admin.email}</td>
-                                                    <td><button className="button radio-edit-button" onClick={() => removeAdminbHandler(admin.email)}>Διαγραφή</button></td>
+                                                    <td>
+                                                        <button className="button radio-edit-button" onClick={() => removeAdminbHandler(admin.email)}>
+                                                            <span class="material-icons" data-tip data-for="delete_administrator">
+                                                                delete
+                                                            </span>
+                                                        </button>
+                                                        <ReactTooltip backgroundColor="#deccf0" textColor="#312f8b" id="delete_administrator" place="top" effect="solid">
+                                                            Διαγραφή
+                                                        </ReactTooltip>
+                                                    </td>
                                                 </tr>)}
                                 </tbody>
                             </table>

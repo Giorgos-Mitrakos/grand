@@ -3,6 +3,7 @@ import multer from 'multer';
 import bcrypt from 'bcrypt';
 import { isAdmin, isAuth, isSuperAdmin } from '../util';
 import mysqlConnection from '../connection';
+const fs = require('fs')
 
 const router = express.Router();
 
@@ -17,7 +18,7 @@ const storageA = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-  if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg" || file.mimetype == "image/gif") {
+  if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg" || file.mimetype == "image/gif" || file.mimetype == "image/webp") {
     cb(null, true);
   } else {
     cb(null, false);
@@ -115,8 +116,26 @@ router.put("/insertcollectionproduct/:id", isAuth, isAdmin, upload.single('image
         res.send({ message: 'Product not found' });
       }
       else {
+
+        let imagePath = ''
+
+        if (req.body.image === result[0].image) {
+          imagePath = req.body.image
+        }
+        else {
+          fs.unlink('frontend/public' + result[0].image, (err) => {
+            if (err) {
+              console.error(err)
+              return
+            }
+
+            //file removed
+          })
+          imagePath = req.file.path.slice(15, req.file.path.length)
+        }
+
         sql = "UPDATE products SET name=?, image=?, price=?, description=? WHERE _id=?";
-        connection.query(sql, [req.body.name, req.body.image, req.body.price, req.body.description, collectionId], function (err, result, fields) {
+        connection.query(sql, [req.body.name, imagePath, req.body.price, req.body.description, collectionId], function (err, result, fields) {
           if (err) throw err;
 
         });
@@ -537,7 +556,7 @@ router.put("/category_percentage_change", isAuth, isAdmin, async (req, res, next
 
 router.put("/createproduct/:id", isAuth, isAdmin, upload.single('image'), async (req, res, next) => {
   const productId = req.params.id;
-  
+
   mysqlConnection.getConnection(function (err, connection) {
     connection.beginTransaction(function (err) {
       if (err) { throw err; }
@@ -556,91 +575,108 @@ router.put("/createproduct/:id", isAuth, isAdmin, upload.single('image'), async 
           return
         }
 
+        let imagePath = ""
+
+        if (req.body.image === result[0].image) {
+          imagePath = req.body.image
+        }
+        else {
+          fs.unlink('frontend/public' + result[0].image, (err) => {
+            if (err) {
+              console.error(err)
+              return
+            }
+
+            //file removed
+          })
+          imagePath = req.file.path.slice(15, req.file.path.length)
+        }
+
         sql = "UPDATE products SET name=?, category=?, brand=?, subcategory=?, supplier=?, image=?, price=?, percentage=?, availability=?, description=? WHERE _id=?";
         connection.query(sql, [req.body.name, req.body.category, req.body.brand, req.body.subcategory, req.body.supplier,
-        req.body.image, req.body.price, req.body.percentage, req.body.availability, req.body.description, productId], function (err, result, fields) {
-          if (err) {
-            connection.rollback(function () {
-              throw err;
-            });
-          }
-
-          sql = "INSERT INTO productsHistory (product_id, name, category, brand, subcategory, supplier, image, price, percentage, availability, visibility, description, CreatedBy, CreatedAt, countInStock, UpdatedBy, UpdatedAt) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, availability, visibility, description, CreatedBy, CreatedAt, countInStock, ?, ? FROM products WHERE _id=?";
-          connection.query(sql, [req.user.username, new Date, productId], function (err, result, fields) {
+          imagePath, req.body.price, req.body.percentage, req.body.availability, req.body.description, productId], function (err, result, fields) {
             if (err) {
               connection.rollback(function () {
                 throw err;
               });
             }
 
-            sql = "SELECT ID FROM productsHistory WHERE product_id=? ORDER BY UpdatedAt DESC LIMIT 5";
-            connection.query(sql, [productId], function (err, result, fields) {
+            sql = "INSERT INTO productsHistory (product_id, name, category, brand, subcategory, supplier, image, price, percentage, availability, visibility, description, CreatedBy, CreatedAt, countInStock, UpdatedBy, UpdatedAt) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, availability, visibility, description, CreatedBy, CreatedAt, countInStock, ?, ? FROM products WHERE _id=?";
+            connection.query(sql, [req.user.username, new Date, productId], function (err, result, fields) {
               if (err) {
                 connection.rollback(function () {
                   throw err;
                 });
               }
 
-              let idArray = []
-              for (let i = 0; i < result.length; i++) {
-                idArray.push(result[i].ID)
-              }
-
-              sql = "DELETE FROM productsHistory WHERE product_id=? && ID NOT IN (?)";
-              connection.query(sql, [productId, idArray], function (err, result, fields) {
+              sql = "SELECT ID FROM productsHistory WHERE product_id=? ORDER BY UpdatedAt DESC LIMIT 5";
+              connection.query(sql, [productId], function (err, result, fields) {
                 if (err) {
                   connection.rollback(function () {
                     throw err;
                   });
                 }
 
-                sql = "SELECT * FROM products WHERE _id=?";
-                connection.query(sql, [productId], function (err, result, fields) {
+                let idArray = []
+                for (let i = 0; i < result.length; i++) {
+                  idArray.push(result[i].ID)
+                }
+
+                sql = "DELETE FROM productsHistory WHERE product_id=? && ID NOT IN (?)";
+                connection.query(sql, [productId, idArray], function (err, result, fields) {
                   if (err) {
                     connection.rollback(function () {
                       throw err;
                     });
                   }
 
-                  let product = {}
-
-                  if (Object.keys(result).length !== 0) {
-                    Object.keys(result).forEach(function (key) {
-                      var row = result[key];
-                      product = {
-                        name: row.name,
-                        category: row.category,
-                        brand: row.brand,
-                        subcategory: row.subcategory,
-                        supplier: row.supplier,
-                        price: row.price,
-                        percentage: row.percentage,
-                        description: row.description,
-                        countInStock: row.countInStock
-                      };
-
-                    });
-                  }
-
-                  connection.commit(function (err) {
+                  sql = "SELECT * FROM products WHERE _id=?";
+                  connection.query(sql, [productId], function (err, result, fields) {
                     if (err) {
                       connection.rollback(function () {
                         throw err;
                       });
                     }
-                    console.log('Transaction Completed Successfully.');
-                    res.status(200).send(product);
-                    connection.release();
+
+                    let product = {}
+
+                    if (Object.keys(result).length !== 0) {
+                      Object.keys(result).forEach(function (key) {
+                        var row = result[key];
+                        product = {
+                          name: row.name,
+                          category: row.category,
+                          brand: row.brand,
+                          subcategory: row.subcategory,
+                          supplier: row.supplier,
+                          price: row.price,
+                          percentage: row.percentage,
+                          description: row.description,
+                          countInStock: row.countInStock
+                        };
+
+                      });
+                    }
+
+                    connection.commit(function (err) {
+                      if (err) {
+                        connection.rollback(function () {
+                          throw err;
+                        });
+                      }
+                      console.log('Transaction Completed Successfully.');
+                      res.status(200).send(product);
+                      connection.release();
+                    });
                   });
-                });
+
+                })
 
               })
 
             })
 
-          })
-
-        });
+          });
 
       });
     })

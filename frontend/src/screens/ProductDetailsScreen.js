@@ -112,7 +112,7 @@ function ProductDetailScreen(props) {
                                         </div>
                                     </li>
                                     <li className="product-details-info">
-                                        <div className="mobile">
+                                        <div className="display_mobile">
                                         <div className="description-wrapper">
                                             <div className="card-description-header" onClick={() => setActiveTab("description")}>
                                                 <h4 className="expand">Περιγραφή</h4>
@@ -159,7 +159,7 @@ function ProductDetailScreen(props) {
                                                 {compatibilities && compatibilities.length>0 && <button className={`tablinks ${activeTab === 'compatibility' ? 'active' : ''}`} onClick={() => setActiveTab("compatibility")}>Συμβατότητα</button>}
                                             </div>
 
-                                            <div id="Description" className="tabcontent" style={{ display: activeTab === 'description' ? 'block' : 'none' }}>
+                                            <div id="description" className="tabcontent" style={{ display: activeTab === 'description' ? 'block' : 'none' }}>
                                                 {ShowHtml(product.description)}
                                             </div>
 
@@ -179,9 +179,6 @@ function ProductDetailScreen(props) {
                                                     </div>)}
                                             </div>
                                         </div>
-                                        {/* <h3>Περιγραφή:</h3>
-                                        <br />
-                                        {ShowHtml(product.description)} */}
                                     </li>
                                 </ul>
                             </div>

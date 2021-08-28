@@ -1,9 +1,10 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import './CarouselCard.css';
 
 function CarouselCard (props){
     return (  
-        <div className="carousel-card">
+        <Link to={props.details}>
             <div className="carousel-card-container">
                 <div className="carousel-card-image-container">
                     <img className="carousel-card-image" src={props.src} alt={props.alt}/>
@@ -13,7 +14,7 @@ function CarouselCard (props){
                     <div className="carousel-card-price">{props.price.toFixed(2)} €</div>
                 </div>
             </div>
-        </div>
+        </Link>
     )
 }
 

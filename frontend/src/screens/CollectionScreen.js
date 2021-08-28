@@ -8,8 +8,8 @@ import { getPhoneModels, listPhoneBrands } from '../action/modelActions.js';
 import { addImageCaseToCart } from '../action/cartActions';
 import LoadingSpinner from '../components/LoadingSpinner.js';
 import ReactPaginate from 'react-paginate';
-import CarouselCard from '../components/CarouselCard.js';
 import { Helmet } from 'react-helmet';
+import Product from '../components/product';
 
 
 function CollectionScreen() {
@@ -62,7 +62,7 @@ function CollectionScreen() {
 
         }
     }, [collection, itemsPerPage, currentPage]);
-
+    
     function handlePageClick({ selected: selectedPage }) {
         setCurrentPage(selectedPage);
     }
@@ -103,7 +103,7 @@ function CollectionScreen() {
                 <title>Grand Mobile Accessories-Φτιάξε τη θήκη σου</title>
                 <meta name="description" content="Φτιάξε τη θήκη σου.Στο grandmobile.gr δημιουργούμε την θήκη της επιλογής σου. Ανέβασε την εικόνα σου
                     ή επέλεξε την θήκη που σου αρέσει απο την συλλογή μας." />
-                <meta name="keywords" content="θήκες, κινητά, tablet, smartphone, τάμπλετ" />
+                <meta name="keywords" content="θήκες,φτιάξε τη θήκη σου, θήκες κινητών, κινητά, tablet, θήκες tablet, θήκες ταμπλετ, smartphone, τάμπλετ,Χαλκίδα,xalkida" />
             </Helmet>
             <div className="title">
                 <h2>ΦΤΙΑΞΕ ΤΗ ΘΗΚΗ ΣΟΥ</h2>
@@ -123,8 +123,9 @@ function CollectionScreen() {
                         <p>
                             Στο grandmobile.gr δημιουργούμε την θήκη της επιλογής σου. Ανέβασε την εικόνα σου
                         <br />ή επέλεξε την θήκη που σου αρέσει απο την συλλογή μας.
-                        </p>
+                        </p>                        
                     </div>
+                    
                     <form className="make-your-case-upload" onSubmit={submitHandler} encType="multipart/form-data">
                         <ul>
                             <li>
@@ -195,7 +196,7 @@ function CollectionScreen() {
                     <div className="collection">
                         {currentPageData.map(col => (
                             <Link key={col._id} to={"/collection/" + col._id}>
-                                <CarouselCard src={col.image} details={"/collection/" + col._id} alt={col.name} productName={col.name} price={col.totalPrice} />
+                                <Product src={col.image} details={"/collection/" + col._id} alt={col.name} productName={col.name} price={col.totalPrice} />
                             </Link>))}
                     </div>
             }

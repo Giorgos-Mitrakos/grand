@@ -13,6 +13,7 @@ import {
     listPaymentMethodsAdmin, listSendingMethods, listSuppliers
 } from '../action/productActions';
 import './AdminListsScreen.css';
+import ReactTooltip from 'react-tooltip';
 
 function AdminListsScreen(props) {
 
@@ -280,8 +281,25 @@ function AdminListsScreen(props) {
                                                     <tr key={send.sendingMethod_id}>
                                                         <td>{send.sendingMethod}</td>
                                                         <td>{send.sendingMethodCost} €</td>
-                                                        <td><button className="button radio-edit-button" onClick={() => openSendingMethodsEditModal(send.sendingMethod_id, send.sendingMethod, send.sendingMethodCost)}>Επεξεργασία</button></td>
-                                                        <td><button className="button radio-edit-button" onClick={() => removeSendingMethod(send.sendingMethod_id)}>Διαγραφή</button></td>
+                                                        <td>
+                                                            <button className="button radio-edit-button" onClick={() => openSendingMethodsEditModal(send.sendingMethod_id, send.sendingMethod, send.sendingMethodCost)}>
+                                                                <span class="material-icons" data-tip data-for="edit_sending_method">
+                                                                    edit
+                                                                </span>
+                                                            </button>
+                                                            <ReactTooltip backgroundColor="#deccf0" textColor="#312f8b" id="edit_sending_method" place="top" effect="solid">
+                                                                Επεξεργασία
+                                                            </ReactTooltip>
+                                                        </td>
+                                                        <td><button className="button radio-edit-button" onClick={() => removeSendingMethod(send.sendingMethod_id)}>
+                                                            <span class="material-icons" data-tip data-for="delete_sending_method">
+                                                                delete
+                                                            </span>
+                                                        </button>
+                                                            <ReactTooltip backgroundColor="#deccf0" textColor="#312f8b" id="delete_sending_method" place="top" effect="solid">
+                                                                Διαγραφή
+                                                            </ReactTooltip>
+                                                        </td>
                                                     </tr>
                                                 )}
                                     </tbody>
@@ -415,8 +433,26 @@ function AdminListsScreen(props) {
                                                     <tr key={pay.paymentMethod_id}>
                                                         <td>{pay.paymentMethod}</td>
                                                         <td>{pay.paymentMethodCost} €</td>
-                                                        <td><button className="button radio-edit-button" onClick={() => openPaymentMethodsEditModal(pay.paymentMethod_id, pay.paymentMethod, pay.paymentMethodCost)}>Επεξεργασία</button></td>
-                                                        <td><button className="button radio-edit-button" onClick={() => removePaymentMethod(pay.paymentMethod_id)}>Διαγραφή</button></td>
+                                                        <td>
+                                                            <button className="button radio-edit-button" onClick={() => openPaymentMethodsEditModal(pay.paymentMethod_id, pay.paymentMethod, pay.paymentMethodCost)}>
+                                                                <span class="material-icons" data-tip data-for="edit_payment_method">
+                                                                    edit
+                                                                </span>
+                                                            </button>
+                                                            <ReactTooltip backgroundColor="#deccf0" textColor="#312f8b" id="edit_payment_method" place="top" effect="solid">
+                                                                Επεξεργασία
+                                                            </ReactTooltip>
+                                                        </td>
+                                                        <td>
+                                                            <button className="button radio-edit-button" onClick={() => removePaymentMethod(pay.paymentMethod_id)}>
+                                                                <span class="material-icons" data-tip data-for="delete_payment_method">
+                                                                    delete
+                                                                </span>
+                                                            </button>
+                                                            <ReactTooltip backgroundColor="#deccf0" textColor="#312f8b" id="delete_payment_method" place="top" effect="solid">
+                                                                Διαγραφή
+                                                            </ReactTooltip>
+                                                        </td>
                                                     </tr>
                                                 )}
                                     </tbody>
@@ -492,7 +528,15 @@ function AdminListsScreen(props) {
                                             suppliers.map(sup =>
                                                 <tr key={sup.supplier_id}>
                                                     <td>{sup.supplier}</td>
-                                                    <td><button className="button radio-edit-button" onClick={() => removeSupplierHandler(sup.supplier_id)}>Διαγραφή</button></td>
+                                                    <td><button className="button radio-edit-button" onClick={() => removeSupplierHandler(sup.supplier_id)}>
+                                                        <span class="material-icons" data-tip data-for="delete_supplier">
+                                                            delete
+                                                        </span>
+                                                    </button>
+                                                        <ReactTooltip backgroundColor="#deccf0" textColor="#312f8b" id="delete_supplier" place="top" effect="solid">
+                                                            Διαγραφή
+                                                        </ReactTooltip>
+                                                    </td>
                                                 </tr>)}
                                 </tbody>
                             </table>
@@ -525,7 +569,16 @@ function AdminListsScreen(props) {
                                             manufacturers.map(manufacturer =>
                                                 <tr key={manufacturer.manufacturer_id}>
                                                     <td>{manufacturer.name}</td>
-                                                    <td><button className="button radio-edit-button" onClick={() => removeManufacturerHandler(manufacturer.manufacturer_id)}>Διαγραφή</button></td>
+                                                    <td>
+                                                        <button className="button radio-edit-button" onClick={() => removeManufacturerHandler(manufacturer.manufacturer_id)}>
+                                                            <span class="material-icons" data-tip data-for="delete_manufacturer">
+                                                            delete
+                                                        </span>
+                                                        </button>
+                                                        <ReactTooltip backgroundColor="#deccf0" textColor="#312f8b" id="delete_manufacturer" place="top" effect="solid">
+                                                            Διαγραφή
+                                                        </ReactTooltip>
+                                                        </td>
                                                 </tr>)}
                                 </tbody>
                             </table>

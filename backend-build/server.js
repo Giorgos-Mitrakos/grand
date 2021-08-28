@@ -38,6 +38,8 @@ var _paymentRoute = _interopRequireDefault(require("./routes/paymentRoute.js"));
 
 var _getProductsFromHellasphone = _interopRequireDefault(require("./routes/getProductsFromHellasphone.js"));
 
+var _getProductsFromIsis = _interopRequireDefault(require("./routes/getProductsFromIsis.js"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 _dotenv["default"].config();
@@ -48,7 +50,7 @@ app.use(_helmet["default"].contentSecurityPolicy({
     defaultSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com/icon?family=Material+Icons", "https://www.google-analytics.com", " https://www.google.com"],
     scriptSrc: ["'self'", "https://www.googletagmanager.com/gtag/js?id=G-2E0012DK1M", "https://secure.trust-provider.com", "http://www.trustlogo.com", "'unsafe-inline'", "'unsafe-eval'"],
     fontSrc: ["'self'", 'https://fonts.googleapis.com/icon?family=Material+Icons', "https://fonts.gstatic.com/s/materialicons/v85/flUhRq6tzZclQEJ-Vdg-IuiaDsNZIhQ8tQ.ttf"],
-    imgSrc: ["'self'", "http://www.trustlogo.com", "https://secure.trust-provider.com", "https://www.positivessl.com/", "https://hellasphone.com.gr", "http://www.hellasphone.com.gr/", "https://www.wholesaling.gr/", "https://www.isispc-eshop.gr/"]
+    imgSrc: ["'self'", "http://www.trustlogo.com", "https://secure.trust-provider.com", "https://www.positivessl.com/", "https://hellasphone.com.gr", "http://www.hellasphone.com.gr/", "https://www.wholesaling.gr/", "https://www.isispc-eshop.gr/", "https://hellasphone.gr/", "https://www.hellasphone.gr/"]
   }
 }));
 app.use(_bodyParser["default"].urlencoded({
@@ -71,6 +73,7 @@ app.use("/api/hellasphone-xml/", _phoneHellasXmlRoute["default"]);
 app.use("/api/email/", _emailRoute["default"]);
 app.use("/api/payment/", _paymentRoute["default"]);
 app.use("/api/getProducts/", _getProductsFromHellasphone["default"]);
+app.use("/api/getProductsFromIsis/", _getProductsFromIsis["default"]);
 app.get('*', function (req, res) {
   res.sendFile(_path["default"].join("".concat(__dirname, "/../frontend/public/index.html")));
 });

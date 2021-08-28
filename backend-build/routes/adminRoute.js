@@ -21,6 +21,8 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
+var fs = require('fs');
+
 var router = _express["default"].Router();
 
 var storageA = _multer["default"].diskStorage({
@@ -34,7 +36,7 @@ var storageA = _multer["default"].diskStorage({
 });
 
 var fileFilter = function fileFilter(req, file, cb) {
-  if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg" || file.mimetype == "image/gif") {
+  if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg" || file.mimetype == "image/gif" || file.mimetype == "image/webp") {
     cb(null, true);
   } else {
     cb(null, false);
@@ -195,8 +197,23 @@ router.put("/insertcollectionproduct/:id", _util.isAuth, _util.isAdmin, upload.s
                     message: 'Product not found'
                   });
                 } else {
+                  var imagePath = '';
+
+                  if (req.body.image === result[0].image) {
+                    imagePath = req.body.image;
+                  } else {
+                    fs.unlink('frontend/public' + result[0].image, function (err) {
+                      if (err) {
+                        console.error(err);
+                        return;
+                      } //file removed
+
+                    });
+                    imagePath = req.file.path.slice(15, req.file.path.length);
+                  }
+
                   sql = "UPDATE products SET name=?, image=?, price=?, description=? WHERE _id=?";
-                  connection.query(sql, [req.body.name, req.body.image, req.body.price, req.body.description, collectionId], function (err, result, fields) {
+                  connection.query(sql, [req.body.name, imagePath, req.body.price, req.body.description, collectionId], function (err, result, fields) {
                     if (err) throw err;
                   });
                   sql = "SELECT * FROM products WHERE _id=?";
@@ -723,8 +740,23 @@ router.put("/createproduct/:id", _util.isAuth, _util.isAdmin, upload.single('ima
                     return;
                   }
 
+                  var imagePath = "";
+
+                  if (req.body.image === result[0].image) {
+                    imagePath = req.body.image;
+                  } else {
+                    fs.unlink('frontend/public' + result[0].image, function (err) {
+                      if (err) {
+                        console.error(err);
+                        return;
+                      } //file removed
+
+                    });
+                    imagePath = req.file.path.slice(15, req.file.path.length);
+                  }
+
                   sql = "UPDATE products SET name=?, category=?, brand=?, subcategory=?, supplier=?, image=?, price=?, percentage=?, availability=?, description=? WHERE _id=?";
-                  connection.query(sql, [req.body.name, req.body.category, req.body.brand, req.body.subcategory, req.body.supplier, req.body.image, req.body.price, req.body.percentage, req.body.availability, req.body.description, productId], function (err, result, fields) {
+                  connection.query(sql, [req.body.name, req.body.category, req.body.brand, req.body.subcategory, req.body.supplier, imagePath, req.body.price, req.body.percentage, req.body.availability, req.body.description, productId], function (err, result, fields) {
                     if (err) {
                       connection.rollback(function () {
                         throw err;

@@ -66,7 +66,10 @@ import { PRODUCT_LIST_SUCCESS, PRODUCT_LIST_FAIL,
        RESET_SEARCH_FILTERS,
        GET_PRODUCT_HISTORY_REQUEST,
        GET_PRODUCT_HISTORY_SUCCESS,
-       GET_PRODUCT_HISTORY_FAIL} from '../constants/productConstant';
+       GET_PRODUCT_HISTORY_FAIL,
+       GET_PRODUCT_BY_NAME_ADMIN_REQUEST,
+       GET_PRODUCT_BY_NAME_ADMIN_SUCCESS,
+       GET_PRODUCT_BY_NAME_ADMIN_FAIL} from '../constants/productConstant';
 
 function sortCompanies( a, b ) {
 if ( a.company < b.company ){
@@ -117,6 +120,12 @@ function productListReducer(state={products:[]},action){
         case PRODUCT_LIST_BY_CATEGORY_ADMIN_SUCCESS:
             return {loading:false, products : action.payload.resp, count: action.payload.count[0].count};
         case PRODUCT_LIST_BY_CATEGORY_ADMIN_FAIL:
+            return {loading:false, error : action.payload};
+        case GET_PRODUCT_BY_NAME_ADMIN_REQUEST:
+            return {loading:true, products: []};
+        case GET_PRODUCT_BY_NAME_ADMIN_SUCCESS:
+            return {loading:false, products : action.payload.resp, count: action.payload.count[0].count};
+        case GET_PRODUCT_BY_NAME_ADMIN_FAIL:
             return {loading:false, error : action.payload};
         case PRODUCT_VISIBILITY_CHANGE_REQUEST:
             return {loading:true, products:[...state.products]};

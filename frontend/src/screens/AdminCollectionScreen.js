@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { changeCollectionVisibility, listCollectionAdmin, saveCollection } from '../action/collectionActions.js';
 import LoadingSpinner from '../components/LoadingSpinner.js';
+import ReactTooltip from 'react-tooltip';
 import './AdminProductsScreen.css';
 
 function AdminCollectionScreen(props) {
@@ -87,12 +88,12 @@ function AdminCollectionScreen(props) {
                                         onChange={(e) => setName(e.target.value)}>
                                     </input>
                                 </li>
-                                {!id && <li>
+                                <li>
                                     <label htmlFor="product-image">Φωτογραφία:</label>
-                                    <input type="file" name="product-image" id="product-image" required
+                                    <input type="file" name="product-image" id="product-image" required={!image}
                                         accept=".jpg, .jpeg, .png" onChange={(e) => setImage(e.target.files[0])}>
                                     </input>
-                                </li>}
+                                </li>
                                 <li>
                                     <label htmlFor="product-price">Τιμή:</label>
                                     <input type="text" name="product-price" id="product-price" value={price} required
@@ -144,7 +145,14 @@ function AdminCollectionScreen(props) {
                                         </input>
                                     </td>
                                     <td>
-                                        <button className="button admin-button" onClick={() => openModal(col)}>Επεξεργασία</button>
+                                        <button className="button admin-button" onClick={() => openModal(col)}>
+                                        <span class="material-icons" data-tip data-for="admin_edit_collection">
+                                                edit
+                                            </span>
+                                        </button>
+                                        <ReactTooltip backgroundColor="#deccf0" textColor="#312f8b" id="admin_edit_collection" place="top" effect="solid">
+                                            Επεξεργασία
+                                        </ReactTooltip>
                                     </td>
                                 </tr>
                             ))}

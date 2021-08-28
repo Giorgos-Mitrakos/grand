@@ -11,3 +11,7 @@
 .order-list{
     overflow-x:auto;
 }
+
+.order_info_button:hover{
+    color: teal;
+}
