@@ -3,8 +3,7 @@
     flex-direction: column;
 }
 
-
-.filter-features>ul{
+.filter-features>li>ul{
     display: flex;
 }
 
@@ -63,12 +62,20 @@
     color: #312f8b;
 }
 
+.disableLabel{
+    color: gray;
+}
+
 @media only screen and (max-width: 1024px) {
 
     .filter-features>li{
         display: flex;
         flex-direction: column;
         align-items: flex-start;
+    }
+
+    .filter-features>li>ul{
+        flex-direction: column;
     }
 
     .filter-features>li>ul>li{

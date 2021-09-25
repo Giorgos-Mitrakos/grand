@@ -8,7 +8,7 @@ import { productListReducer, productDetailsReducer, mostViewedProductsReducer,
     featureTitlesByCategoryReducer, featureNamesByCategoryReducer, 
     productFeaturesReducer, sendingListReducer, paymentListReducer, 
     compatibilitiesByCategoryReducer, compatibilityCompaniesReducer, 
-    compatibilityModelsReducer, productCompatibilitiesReducer, suppliersListReducer, searchForItemsReducer, itemsPerPageReducer, textSearchReducer, productHistoryReducer } from "./reducers/productReducer";
+    compatibilityModelsReducer, productCompatibilitiesReducer, suppliersListReducer, searchForItemsReducer, itemsPerPageReducer, textSearchReducer, productHistoryReducer, filtersStoreReducer } from "./reducers/productReducer";
 import { modelListReducer, phoneModelListReducer, phonesBrandListReducer } from "./reducers/modelReducer";
 import { cartReducer } from "./reducers/cartReducer";
 import Cookie from 'js-cookie';
@@ -96,7 +96,8 @@ const reducer=combineReducers({
     adminsList:adminsListReducer,
     productHistory:productHistoryReducer,
     orderHistory:orderHistoryReducer,
-    NewsletterList:NewsletterListReducer
+    NewsletterList:NewsletterListReducer,
+    filtersStore:filtersStoreReducer
 })
 
 const composeEchancer= window._REDUX_DEVTOOLS_EXTENSION_COMPOSE_ || compose;

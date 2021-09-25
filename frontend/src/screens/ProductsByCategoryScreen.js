@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './ProductsByCategoryScreen.css';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useLocation, useHistory } from 'react-router-dom';
 import ProductMenu from '../menu/ProductMenu';
 import Product from '../components/product.js';
 import { useDispatch, useSelector } from 'react-redux';
-import { getCompatibilities, getFeatureNameByCategory, getFeatures, getFeatureTitlesByCategory, getProductsByCategory } from '../action/productActions';
+import {
+    getCompatibilities, getFeatureNameByCategory, getFeatures,
+    getFeatureTitlesByCategory, getProductsByCategory, storeBrandFilters, storeCompatibleCompanyFilters, storeCompatibleModelFilters, storeFilters
+} from '../action/productActions';
 import { productMenuToggle } from '../action/menuActions';
 import ReactPaginate from 'react-paginate';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -15,7 +18,7 @@ function ProductsByCategoryScreen(props) {
     const compatibilitiesByCategory = useSelector(state => state.compatibilitiesByCategory);
     const { compatibilities, loading: loadingCompatibilities, error: errorCompatibilities } = compatibilitiesByCategory;
     const productList = useSelector(state => state.productList);
-    const { products, loading, error } = productList;
+    const { products, count, distinctBrands, excludedBrands, loading, error } = productList;
     const productMenu = useSelector(state => state.productMenu);
     const { isProductMenuOpen } = productMenu;
     const featureTitlesByCategory = useSelector(state => state.featureTitlesByCategory);
@@ -24,36 +27,31 @@ function ProductsByCategoryScreen(props) {
     const { featureNames } = featureNamesByCategory;
     const productFeatures = useSelector(state => state.productFeatures);
     const { features } = productFeatures;
-    const [currentPage, setCurrentPage] = useState(0);
-    const [itemsPerPage, setItemsPerPage] = useState(12);
-    const [data, setData] = useState([]);
+    const filtersStore = useSelector(state => state.filtersStore);
+    const { atrFilter, brFilter, compCompFilter, compModelFilter } = filtersStore;
+    const [currentPage, setCurrentPage] = useState();
+    const [itemsPerPage, setItemsPerPage] = useState();
     const [sortType, setSortType] = useState("Προεπιλογή");
-    const [filters, setFilters] = useState([]);
-    const [brandFilters, setBrandFilters] = useState([]);
-    const [compatibleCompanyFilters, setCompatibleCompanyFilters] = useState([]);
-    const [compatibleModelFilters, setCompatibleModelFilters] = useState([]);
     const [pageCount, setPageCount] = useState(0);
-    const [currentPageData, setCurrentPageData] = useState([]);
     const [filterModal, setFilterModal] = useState(false);
-    const offset = currentPage * itemsPerPage;
+    const [inclBrands, setInclBrands] = useState([])
+    let location = useLocation();
+    let query = useQuery();
     const dispatch = useDispatch();
     let { category, subcategory } = useParams();
     const [uniqueBrands, setUniqueBrands] = useState([]);
+    const history = useHistory();
+    const modalRef = useRef();
 
     const findUniqueBrands = () => {
-        if (products && products.length !== 0) {
-            let arr = [];
-            products.forEach(x => {
-                if (arr.indexOf(x.brand) === -1) {
-                    arr.push(x.brand)
-                }
-            })
+        if (distinctBrands && distinctBrands.length !== 0) {
 
-            setUniqueBrands(arr);
+            setUniqueBrands(distinctBrands);
         }
     }
 
     useEffect(() => {
+
         setUniqueBrands([]);
         findUniqueBrands();
         return () => {
@@ -65,50 +63,26 @@ function ProductsByCategoryScreen(props) {
         if (window.innerWidth < 1024) {
             dispatch(productMenuToggle(false));
         }
-        else{
+        else {
             dispatch(productMenuToggle(true));
         }
         // alert(props.match.params.category)
 
-    }, [dispatch,props.match.params.category, props.match.params.subcategory]);
+    }, [dispatch, props.match.params.category, props.match.params.subcategory]);
 
     useEffect(() => {
-        if (data) {
-            setPageCount(Math.ceil(data.length / itemsPerPage));
-            setCurrentPageData(data.slice(offset, offset + itemsPerPage))
+        setPageCount(Math.ceil(count / itemsPerPage));
+        if(count && currentPage>(count/itemsPerPage))
+        {
+            setCurrentPage(0)
         }
-        return () => {
-
-        }
-    }, [data, itemsPerPage, currentPage]);
+    }, [count, itemsPerPage]);
 
     useEffect(() => {
-        if (data) {
-            setCurrentPageData(data.slice(offset, offset + itemsPerPage))
-        }
-        return () => {
-
-        }
-    }, [currentPage]);
-
-    useEffect(() => {
-        dispatch(getProductsByCategory(category, subcategory));
-        dispatch(getFeatureTitlesByCategory(category, subcategory));
-        dispatch(getFeatureNameByCategory(category, subcategory));
-        dispatch(getFeatures());
-        dispatch(getCompatibilities(category, subcategory));
-        window.scrollTo(0, 0);
-        setFilters([]);
-        setBrandFilters([]);
-        setCompatibleCompanyFilters([]);
-        setCompatibleModelFilters([]);
-        return () => {
-
-        };
-    }, [dispatch,category, subcategory])
-
-    useEffect(() => {
-
+        if(currentPage)
+        {
+        query.set("Page",currentPage+ 1)
+        history.push({ search: query.toString() })}
         window.scrollTo(0, 80)
 
         return () => {
@@ -117,179 +91,357 @@ function ProductsByCategoryScreen(props) {
     }, [currentPage])
 
     useEffect(() => {
-
-        sortedData();
-
-        return () => {
-
-        };
-    }, [sortType])
+        if (parseInt(query.get("ItemsPerPage"))) {
+            setItemsPerPage(parseInt(query.get("ItemsPerPage")))
+        }
+        else {
+            setItemsPerPage(12)
+        }
+    }, [query.get("ItemsPerPage")]);
 
     useEffect(() => {
-        setCurrentPage(0);
-        setData(products);
-        return () => {
-
-        };
-    }, [products])
+        if (parseInt(query.get("Page"))) {
+            setCurrentPage(parseInt(query.get("Page") - 1))
+        }
+        else {
+            setCurrentPage(0)
+        }
+    }, [query.get("Page")]);
 
     useEffect(() => {
-        var multiFilter = products;
-        if (filters.length !== 0) {
-            let ft = features.filter(x => filters.includes(x.feature));
-            let arr = [];
-            ft.forEach(element => {
-                arr.push(element.product_id)
-            });
+        if (query.get("SortBy")) {
+            setSortType(query.get("SortBy"))
+        }
+        else {
+            setSortType("Προεπιλογή")
+        }
+    }, [query.get("SortBy")]);
 
-            multiFilter = products.filter(x => arr.includes(x._id));
+    useEffect(() => {
+        if (query.get("filter") === null) {
+            dispatch(storeFilters([]))
         }
-        if (brandFilters.length !== 0) {
-            multiFilter = multiFilter.filter(x => brandFilters.includes(x.brand));
+        else {
 
+//             const filt = query.get("filter").split('&')
+
+//             dispatch(storeFilters(filt));
         }
-        if (compatibleCompanyFilters.length !== 0) {
-            multiFilter = multiFilter.filter(x => compatibilityCompaniesId.includes(x._id));
+    }, [query.get("filter")]);
+
+    useEffect(() => {
+        if (query.get("comp") === null) {
+            dispatch(storeCompatibleCompanyFilters([]))
         }
-        if (compatibleModelFilters.length !== 0) {
-            multiFilter = multiFilter.filter(x => compatibilityModelsId.includes(x._id));
+        // else {
+
+        //     const filt = query.get("filter").split('&')
+
+        //     dispatch(storeFilters(filt));
+        // }
+    }, [query.get("comp")]);
+
+    useEffect(() => {
+        if (query.get("model") === null) {
+            dispatch(storeCompatibleModelFilters([]))
         }
-        setData(multiFilter);
-        setSortType("Προεπιλογή");
+        // else {
+
+        //     const filt = query.get("filter").split('&')
+
+        //     dispatch(storeFilters(filt));
+        // }
+    }, [query.get("model")]);
+
+    useEffect(() => {
+        if (query.get("brand") === null) {
+            dispatch(storeBrandFilters([]))
+        }
+        // else {
+        //     const filt = query.get("brand")
+        //     setBrandFilters(filt)
+        // }
+    }, [query.get("brand")]);
+
+    const setFilterURLString = () => {
+        let filterStr = ''
+        if (atrFilter.length > 0) {
+            for (let index = 0; index < atrFilter.length; index++) {
+                if (index === 0) {
+                    filterStr += atrFilter[index]
+                }
+                else {
+                    filterStr += '&' + atrFilter[index]
+                }
+            }
+        }
+
+        if (atrFilter.length > 0) {
+            query.set("filter", filterStr)
+        }
+        else {
+            query.delete("filter")
+        }
+        history.push({ search: query.toString() })
+    }
+
+    const setCCompURLString = () => {
+        let filterStr = ''
+        if (compCompFilter.length > 0) {
+            for (let index = 0; index < compCompFilter.length; index++) {
+                if (index === 0) {
+                    filterStr += compCompFilter[index]
+                }
+                else {
+                    filterStr += '&' + compCompFilter[index]
+                }
+            }
+        }
+
+        if (compCompFilter.length > 0) {
+            query.set("comp", filterStr)
+        }
+        else {
+            query.delete("comp")
+        }
+        history.push({ search: query.toString() })
+    }
+
+    const setCModelURLString = () => {
+        let filterStr = ''
+        if (compModelFilter.length > 0) {
+            for (let index = 0; index < compModelFilter.length; index++) {
+                if (index === 0) {
+                    filterStr += compModelFilter[index]
+                }
+                else {
+                    filterStr += '&' + compModelFilter[index]
+                }
+            }
+        }
+
+        if (compModelFilter.length > 0) {
+            query.set("model", filterStr)
+        }
+        else {
+            query.delete("model")
+        }
+        history.push({ search: query.toString() })
+    }
+
+    const setBrandFilterURLString = () => {
+        let filterStr = ''
+        if (brFilter.length > 0) {
+            for (let index = 0; index < brFilter.length; index++) {
+                if (index === 0) {
+                    filterStr += brFilter[index]
+                }
+                else {
+                    filterStr += '&' + brFilter[index]
+                }
+            }
+        }
+
+        if (brFilter.length > 0) {
+            query.set("brand", filterStr)
+        }
+        else {
+            query.delete("brand")
+        }
+        history.push({ search: query.toString() })
+    }
+
+    useEffect(() => {
+        if (atrFilter.length > 0) {
+            setFilterURLString()
+        }
+        else {
+            query.delete("filter")
+            history.push({ search: query.toString() })
+        }
+    }, [atrFilter]);
+
+    useEffect(() => {
+        if (compCompFilter.length > 0) {
+            setCCompURLString()
+        }
+        else {
+            query.delete("comp")
+            history.push({ search: query.toString() })
+        }
+    }, [compCompFilter]);
+
+    useEffect(() => {
+        if (compModelFilter.length > 0) {
+            setCModelURLString()
+        }
+        else {
+            query.delete("model")
+            history.push({ search: query.toString() })
+        }
+    }, [compModelFilter]);
+
+    useEffect(() => {
+        if (brFilter.length > 0) {
+            setBrandFilterURLString()
+        }
+        else {
+            query.delete("brand")
+            history.push({ search: query.toString() })
+        }
+    }, [brFilter]);
+
+    useEffect(() => {
+        let filt = [];
+        excludedBrands && excludedBrands.forEach(element => {
+
+            filt.push(element.brand);
+        });
+        setInclBrands(filt)
+    }, [excludedBrands])
+
+    useEffect(() => {
+        if(itemsPerPage)
+        dispatch(getProductsByCategory(category, subcategory, itemsPerPage, currentPage, sortType, atrFilter, brFilter, compCompFilter, compModelFilter));
+        window.scrollTo(0, 0);
+        // setFilters([]);
+        // setBrandFilters([]);
+        // setCompatibleCompanyFilters([]);
+        // setCompatibleModelFilters([]);
         return () => {
 
         };
-    }, [filters, brandFilters, compatibleCompanyFilters, compatibleModelFilters])
+    }, [dispatch, category, subcategory, itemsPerPage, currentPage, sortType, atrFilter, brFilter, compCompFilter, compModelFilter])
 
-    // useEffect(() => {
 
-    //     // Handler to call on window resize
+    useEffect(() => {
+        dispatch(getFeatureTitlesByCategory(category, subcategory));
+        dispatch(getFeatureNameByCategory(category, subcategory));
+        dispatch(getFeatures());
+        dispatch(getCompatibilities(category, subcategory));
+        window.scrollTo(0, 0);
+        return () => {
 
-    //     function handleResize() {
+        };
+    }, [dispatch, category, subcategory])
 
-    //         // Set window width/height to state
-    //         if (window.innerWidth > 1024) {
-    //             dispatch(productMenuToggle(true));
+    
 
-    //         }
-    //         else {
-    //             dispatch(productMenuToggle(false));
-    //         }
+    useEffect(() => {
+        const handleHoverOutside = (event) => {
+            if (!modalRef?.current?.contains(event.target)) {
+                setFilterModal(false);
+            }
+        };
+        document.addEventListener("mouseover", handleHoverOutside);
+    }, [modalRef]);
 
-    //     }
-    //     // Add event listener
-
-    //     window.addEventListener("resize", handleResize);
-    //     // Call handler right away so state gets updated with initial window size
-
-    //     handleResize();
-    //     // Remove event listener on cleanup
-    //     return () => window.removeEventListener("resize", handleResize);
-
-    // }, [dispatch]); // Empty array ensures that effect is only run on mount
+    function useQuery() {
+        return new URLSearchParams(location.search);
+    }
 
     function handlePageClick({ selected: selectedPage }) {
+        query.set("Page", parseInt(selectedPage) + 1)
+        history.push({ search: query.toString() })
         setCurrentPage(parseInt(selectedPage));
     }
 
     const filterHandler = (checked, value) => {
         if (checked) {
-            let filt = [...filters];
+            let filt = [...atrFilter];
             filt.push(value);
-            setFilters(filt);
+            dispatch(storeFilters(filt))
         }
         else {
-            let i = filters.indexOf(value);
-            let filt = [...filters];
+            let i = atrFilter.indexOf(value);
+            let filt = [...atrFilter];
             filt.splice(i, 1);
-            setFilters(filt);
+            dispatch(storeFilters(filt));
         }
+        query.delete("Page")
+        history.push({ search: query.toString() })
+        setCurrentPage(0)
     }
 
     const filterBrandHandler = (checked, value) => {
         if (checked) {
-            let filt = [...brandFilters];
+            let filt = [...brFilter];
             filt.push(value);
-            setBrandFilters(filt);
+            dispatch(storeBrandFilters(filt))
         }
         else {
-            let i = brandFilters.indexOf(value);
-            let filt = [...brandFilters];
+            let i = brFilter.indexOf(value);
+            let filt = [...brFilter];
             filt.splice(i, 1);
-            setBrandFilters(filt);
+            dispatch(storeBrandFilters(filt))
         }
+        query.delete("Page")
+        history.push({ search: query.toString() })
+        setCurrentPage(0)
     }
 
     const filterByCompatibilityCompany = (checked, value) => {
         if (checked) {
-            let filt = [...compatibleCompanyFilters];
+            let filt = [...compCompFilter];
             filt.push(value);
-            setCompatibleCompanyFilters(filt);
+            dispatch(storeCompatibleCompanyFilters(filt))
         }
         else {
-            let i = compatibleCompanyFilters.indexOf(value);
-            let filt = [...compatibleCompanyFilters];
+            let i = compCompFilter.indexOf(value);
+            let filt = [...compCompFilter];
             filt.splice(i, 1);
-            setCompatibleCompanyFilters(filt);
+            dispatch(storeCompatibleCompanyFilters(filt))
         }
+        query.delete("Page")
+        history.push({ search: query.toString() })
+        setCurrentPage(0)
     }
 
     const filterByCompatibilityModel = (checked, value) => {
         if (checked) {
-            let filt = [...compatibleModelFilters];
+            let filt = [...compModelFilter];
             filt.push(value);
-            setCompatibleModelFilters(filt);
+            dispatch(storeCompatibleModelFilters(filt));
         }
         else {
-            let i = compatibleModelFilters.indexOf(value);
-            let filt = [...compatibleModelFilters];
+            let i = compModelFilter.indexOf(value);
+            let filt = [...compModelFilter];
             filt.splice(i, 1);
-            setCompatibleModelFilters(filt);
+            dispatch(storeCompatibleModelFilters(filt));
         }
-    }
-
-    const sortedData = () => {
-        let sorted = [];
-
-        switch (sortType) {
-            case "Προεπιλογή":
-                setData(data);
-                break;
-            case "Αλφαβητικά: Α-Ω":
-                sorted = [...data].sort((a, b) => a.name > b.name ? 1 : -1);
-                setData(sorted);
-                break;
-            case "Αλφαβητικά: Ω-Α":
-                sorted = [...data].sort((a, b) => a.name > b.name ? 1 : -1);
-                sorted.reverse();
-                setData(sorted);
-                break;
-            case "Τιμή αύξουσα":
-                sorted = [...data].sort((a, b) => a.totalPrice - b.totalPrice);
-                setData(sorted);
-                break;
-            case "Τιμή φθίνουσα":
-                sorted = [...data].sort((a, b) => b.totalPrice - a.totalPrice);
-                setData(sorted);
-                break;
-            default:
-                break;
-        }
+        query.delete("Page")
+        history.push({ search: query.toString() })
+        setCurrentPage(0)
     }
 
     const compCompanies = compatibilities && [...new Set(compatibilities.map(mod => mod.compatibility_company))]
 
-    const compatibilityCompaniesId = compatibilities && [...new Set(compatibilities.filter(comp => compatibleCompanyFilters.includes(comp.compatibility_company)).map(id => id.product_id))]
+    // const compatibilityCompaniesId = compatibilities && [...new Set(compatibilities.filter(comp => compCompFilter.includes(comp.compatibility_company)).map(id => id.product_id))]
 
-    const compModels = compatibilities && [...new Set(compatibilities.filter(comp => compatibleCompanyFilters.includes(comp.compatibility_company)).map(mod => mod.compatibility_model))]
+    const compModels = compatibilities && [...new Set(compatibilities.filter(comp => compCompFilter.includes(comp.compatibility_company)).map(mod => mod.compatibility_model))]
 
-    const compatibilityModelsId = compatibilities && [...new Set(compatibilities.filter(comp => compatibleModelFilters.includes(comp.compatibility_model)).map(id => id.product_id))]
+    // const compatibilityModelsId = compatibilities && [...new Set(compatibilities.filter(comp => compatibleModelFilters.includes(comp.compatibility_model)).map(id => id.product_id))]
+
+    const itemsPerPageHandler = (ipp) => {
+        query.set("ItemsPerPage", ipp)
+        history.push({ search: query.toString() })
+        setItemsPerPage(ipp)
+        query.set("Page", 1)
+        history.push({ search: query.toString() })
+        setCurrentPage(0)
+    }
+
+    const sortTypeHandler = (srt) => {
+        query.set("SortBy", srt)
+        history.push({ search: query.toString() })
+        setSortType(srt)
+    }
 
     return (
         <div className="products-by-category-wrapper">
             <Helmet>
                 <title>{`Grand Mobile Accessories-${subcategory}`}</title>
-                <meta name="description" content={`Στο grandmobile.gr θα βρείτε μεγάλη ποικιλία από ${subcategory} στις καλύτερες τιμές! `}/>
+                <meta name="description" content={`Στο grandmobile.gr θα βρείτε μεγάλη ποικιλία από ${subcategory} στις καλύτερες τιμές! `} />
                 <meta name="keywords" content={`${category},${subcategory},Χαλκίδα,xalkida`} />
             </Helmet>
             <div className="product-menu-sidebar" style={{ display: isProductMenuOpen ? "block" : "none" }}>
@@ -311,12 +463,18 @@ function ProductsByCategoryScreen(props) {
                 <ul className="filter_items">
                     <li>
                         <button className="filter-button" onClick={() => setFilterModal(true)}>Φίλτρα</button>
-                        <div id="filterModal" className="modal" style={{ display: filterModal ? "block" : "none" }}>
-                            <div className="filter-modal-content">
-                                <div className="modalHeader">
+                        <div id="filterModal"
+                            className="modal filterModal"
+                            style={{ display: filterModal ? "block" : "none" }}
+                        >
+                            <div className="filter-modal-content" ref={modalRef}>
+                                <div className="filterHeader">
                                     <h2>Φίλτρα</h2>
+                                    <button className="exitButton" onClick={() => setFilterModal(false)}><span className="material-icons">
+                                        close
+                                    </span></button>
                                 </div>
-                                <FilterContainer
+                                <FilterContainer                                    
                                     loadingFeatureTitles={loadingFeatureTitles}
                                     errorFeatureTitles={errorFeatureTitles}
                                     featureTitles={featureTitles}
@@ -326,21 +484,23 @@ function ProductsByCategoryScreen(props) {
                                     errorCompatibilities={errorCompatibilities}
                                     compatibilities={compatibilities}
                                     compCompanies={compCompanies}
+                                    filter={atrFilter}
+                                    brandFilter={brFilter}
+                                    compFilter={compCompFilter}
+                                    modelFilter={compModelFilter}
+                                    excludedBrands={inclBrands}
                                     filterByCompatibilityCompany={filterByCompatibilityCompany}
                                     compModels={compModels}
                                     filterByCompatibilityModel={filterByCompatibilityModel}
                                     uniqueBrands={uniqueBrands}
                                     subcategory={subcategory}
                                     filterBrandHandler={filterBrandHandler} />
-                                <div className="okCancelButton-wrapper">
-                                    <button className="okCancelButton button" onClick={() => setFilterModal(false)}>Εφαρμογή</button>
-                                </div>
                             </div>
                         </div>
                     </li>
                     <li>
                         <label>Εμφάνιση:</label>
-                        <select className="filter_items_per_page select-model" onChange={(e) => setItemsPerPage(parseInt(e.target.value))}>
+                        <select className="filter_items_per_page select-model" value={itemsPerPage} onChange={(e) => itemsPerPageHandler(parseInt(e.target.value))}>
                             <option value="12">12</option>
                             <option value="24">24</option>
                             <option value="48">48</option>
@@ -349,12 +509,12 @@ function ProductsByCategoryScreen(props) {
                     </li>
                     <li>
                         <label>Ταξινόμηση:</label>
-                        <select className="filter_items_per_page select-model" value={sortType} onChange={(e) => setSortType(e.target.value)} selected={sortType}>
+                        <select className="filter_items_per_page select-model" value={sortType} onChange={(e) => sortTypeHandler(e.target.value)} selected={sortType}>
                             <option value="Προεπιλογή">Προεπιλογή</option>
-                            <option value="Αλφαβητικά: Α-Ω">Αλφαβητικά: Α-Ω</option>
-                            <option value="Αλφαβητικά: Ω-Α">Αλφαβητικά: Ω-Α</option>
-                            <option value="Τιμή αύξουσα">Τιμή αύξουσα</option>
-                            <option value="Τιμή φθίνουσα">Τιμή φθίνουσα</option>
+                            <option value="alphabetic">Αλφαβητικά: Α-Ω</option>
+                            <option value="alphabeticDESC">Αλφαβητικά: Ω-Α</option>
+                            <option value="price">Τιμή αύξουσα</option>
+                            <option value="priceDESC">Τιμή φθίνουσα</option>
                         </select>
                     </li>
                 </ul>
@@ -362,7 +522,7 @@ function ProductsByCategoryScreen(props) {
                     {loading ? <LoadingSpinner /> :
                         error ? <div>{error}</div> :
                             <div className="collection">
-                                {currentPageData.map(product => (
+                                {products.map(product => (
                                     <Product key={product._id} src={product.image} id={product._id} details={"/product/" + product._id} alt={product.name} productName={product.name} price={product.totalPrice} />
                                 ))}
                             </div>

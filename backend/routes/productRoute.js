@@ -109,19 +109,221 @@ router.get("/collectionDetails/:id", async (req, res) => {
 })
 
 router.post("/products_by_category", async (req, res) => {
+
+    let brandsStr = "";
+    if (req.body.brandFilters.length != 0) {
+        let filt = req.body.brandFilters;
+        for (let i = 0; i < filt.length; i++) {
+            let brand = filt[i]
+            if (i === 0) {
+                brandsStr += `&& (products.brand= '${brand}'`
+            }
+            else {
+                brandsStr += ` OR products.brand= '${brand}'`
+            }
+        }
+        brandsStr += `)`
+    }
+
+    let features = "";
+    if (req.body.filter.length != 0) {
+        features += `EXISTS
+        ( SELECT product_id 
+            FROM features 
+            WHERE products._id=features.product_id`
+        let filt = req.body.filter;
+        for (let i = 0; i < filt.length; i++) {
+            let feature = filt[i].split('_')
+            if (i === 0) {
+                features += ` AND ((feature_title= '${feature[0]}' 
+                AND feature= '${feature[1]}')`
+            }
+            else {
+                features += ` OR (feature_title= '${feature[0]}' 
+                AND feature= '${feature[1]}')`
+            }
+        }
+        features += `)) AND`
+    }
+
+    let compCompanyStr = "";
+    if (req.body.compCompanyFilter.length > 0) {
+        let compCompFilter = req.body.compCompanyFilter;
+        let compModelFilter = req.body.compModelFilter;
+
+        compCompanyStr += `EXISTS
+        ( SELECT product_id 
+            FROM compatibilities 
+            WHERE products._id=compatibilities.product_id`
+
+        if (req.body.compModelFilter.length === 0) {
+
+            for (let i = 0; i < compCompFilter.length; i++) {
+                let company = compCompFilter[i]
+                if (i === 0) {
+                    compCompanyStr += ` AND ((compatibility_company= '${company}')`
+                }
+                else {
+                    compCompanyStr += ` OR (compatibility_company= '${company}')`
+                }
+            }
+
+            compCompanyStr += `)) AND`
+        }
+        else
+        {
+            for (let i = 0; i < compCompFilter.length; i++) {
+                let company = compCompFilter[i]
+                if (i === 0) {                    
+                    for (let j = 0; j < compModelFilter.length; j++) {
+                        let model = compModelFilter[j];
+                        if(j===0)
+                        {
+                            compCompanyStr += ` AND ((`
+                        }
+                        else
+                        {
+                            compCompanyStr += ` OR (`
+                        }
+                        compCompanyStr += `compatibility_company= '${company}'
+                        AND compatibility_model='${model}')`
+                    }                    
+                }
+                else {
+                    for (let j = 0; j < compModelFilter.length; j++) {
+                        let model = compModelFilter[j];
+                        compCompanyStr += ` OR (`
+                        
+                        compCompanyStr += `compatibility_company= '${company}'
+                        AND compatibility_model='${model}')`
+                    }
+                    
+                }
+            }
+
+            compCompanyStr += `)) AND`
+        }
+        console.log(compCompanyStr)
+    }
+
+    let page = parseInt(req.body.page) || 0
+    let iPerPage = parseInt(req.body.itemsPerPage) || 12
+    let offset = page * iPerPage
+    let sortedBy = "";
+    switch (req.body.sortType) {
+        case "alphabetic":
+            sortedBy = "ORDER BY name"
+            break;
+
+        case "alphabeticDESC":
+            sortedBy = "ORDER BY name DESC"
+            break;
+
+        case "price":
+            sortedBy = "ORDER BY totalPrice"
+            break;
+
+        case "priceDESC":
+            sortedBy = "ORDER BY totalPrice DESC"
+            break;
+
+        default:
+            sortedBy = "ORDER BY name"
+            break;
+    }
     mysqlConnection.getConnection(function (err, connection) {
         if (err) throw err; // not connected!
+        connection.beginTransaction(function (err) {
+            if (err) { throw err; }
+            var sql = `SELECT Count(*) as count
+            FROM products
+            WHERE 
+            ${features} 
+            ${compCompanyStr}
+            products.category=? 
+            && products.subcategory=? 
+            && products.visibility=1
+            ${brandsStr}
+            `;
+            connection.query(sql, [req.body.category, req.body.subcategory], function (err, result, fields) {
+                if (err) {
+                    connection.rollback(function () {
+                        throw err;
+                    });
+                }
 
-        connection.query('SELECT _id, name, category, brand, image, description,countInStock, numReview, subcategory, weight, supplier, availability, visibility, totalPrice FROM products WHERE products.category=? && products.subcategory=? && products.visibility=1',
-            [req.body.category, req.body.subcategory], function (err, result, fields) {
-                if (err) throw err;
-                console.log("Read products succeed");
-                res.send(result);
+                let count = result[0].count;
+
+                connection.query(`SELECT _id, name, category, brand, image, description,countInStock, numReview, subcategory, weight, supplier, availability, visibility, totalPrice 
+                FROM products
+                WHERE 
+                ${features}
+                ${compCompanyStr}
+                products.category=? 
+                && products.subcategory=? 
+                && products.visibility=1
+                ${brandsStr}
+                ${sortedBy}
+                LIMIT ?
+                OFFSET ?`,
+                    [req.body.category, req.body.subcategory, iPerPage, offset], function (err, result, fields) {
+                        if (err) {
+                            connection.rollback(function () {
+                                throw err;
+                            });
+                        }
+
+                        let products = result;
+
+                        connection.query(`SELECT DISTINCT brand
+                            FROM products
+                            WHERE products.category=? 
+                            && products.subcategory=? 
+                            && products.visibility=1`,
+                            [req.body.category, req.body.subcategory], function (err, result, fields) {
+                                if (err) {
+                                    connection.rollback(function () {
+                                        throw err;
+                                    });
+                                }
+
+                                let dictinctBrands = result;
+
+                                connection.query(`SELECT DISTINCT brand
+                                        FROM products                                        
+                                        WHERE 
+                                        ${features}
+                                        ${compCompanyStr}
+                                        products.category=? 
+                                        && products.subcategory=? 
+                                        && products.visibility=1`,
+                                    [req.body.category, req.body.subcategory], function (err, result, fields) {
+                                        if (err) {
+                                            connection.rollback(function () {
+                                                throw err;
+                                            });
+                                        }
+
+                                        let excludedBrands = result;
+
+                                        connection.commit(function (err) {
+                                            if (err) {
+                                                connection.rollback(function () {
+                                                    throw err;
+                                                });
+                                            }
+                                            res.status(200).send({ products, count, dictinctBrands, excludedBrands });
+                                            console.log('Transaction Completed Successfully.');
+                                        });
+                                    });
+                            });
+                    })
                 connection.release();
 
                 // Handle error after the release.
                 if (err) throw err;
             })
+        })
     });
 })
 
@@ -293,7 +495,7 @@ router.post("/product_by_name_admin", isAuth, isAdmin, async (req, res) => {
     mysqlConnection.getConnection(function (err, connection) {
         if (err) throw err; // not connected!
 
-        const nameSearch= `%${req.body.productName.trim()}%`
+        const nameSearch = `%${req.body.productName.trim()}%`
 
         connection.query('SELECT * FROM products WHERE name LIKE ? LIMIT 20 OFFSET ? ',
             [nameSearch, req.body.offset], function (err, result, fields) {

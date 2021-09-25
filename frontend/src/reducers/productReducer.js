@@ -69,7 +69,11 @@ import { PRODUCT_LIST_SUCCESS, PRODUCT_LIST_FAIL,
        GET_PRODUCT_HISTORY_FAIL,
        GET_PRODUCT_BY_NAME_ADMIN_REQUEST,
        GET_PRODUCT_BY_NAME_ADMIN_SUCCESS,
-       GET_PRODUCT_BY_NAME_ADMIN_FAIL} from '../constants/productConstant';
+       GET_PRODUCT_BY_NAME_ADMIN_FAIL,
+       STORE_FILTERS,
+       STORE_BRAND_FILTERS,
+       STORE_COMPATIBILITY_COMPANY_FILTERS,
+       STORE_COMPATIBILITY_MODEL_FILTERS} from '../constants/productConstant';
 
 function sortCompanies( a, b ) {
 if ( a.company < b.company ){
@@ -101,7 +105,7 @@ function sortCompatibilities( a, b ) {
     return 0;
 }
 
-function productListReducer(state={products:[]},action){
+function productListReducer(state={products:[], count:"", distinctBrands: [], excludedBrands: [] },action){
     switch(action.type){
         case PRODUCT_LIST_REQUEST:
             return {loading:true, products: []};
@@ -110,9 +114,11 @@ function productListReducer(state={products:[]},action){
         case PRODUCT_LIST_FAIL:
             return {loading:false, error : action.payload};
         case PRODUCT_LIST_BY_CATEGORY_REQUEST:
-            return {loading:true, products: []};
+            return {loading:true, products: [], distinctBrands: [], excludedBrands: []};
         case PRODUCT_LIST_BY_CATEGORY_SUCCESS:
-            return {loading:false, products : action.payload};
+            return {loading:false, products : action.payload.products, count:action.payload.count,
+                 distinctBrands:action.payload.dictinctBrands,
+                 excludedBrands:action.payload.excludedBrands};
         case PRODUCT_LIST_BY_CATEGORY_FAIL:
             return {loading:false, error : action.payload};
         case PRODUCT_LIST_BY_CATEGORY_ADMIN_REQUEST:
@@ -385,8 +391,7 @@ function compatibilitiesByCategoryReducer(state={compatibilities:[]},action){
         case COMPATIBILITIES_BY_CATEGORY_SUCCESS:
             return {loading:false, compatibilities : action.payload};
         case COMPATIBILITIES_BY_CATEGORY_FAIL:
-            return {loading:false, error : action.payload};
-    
+            return {loading:false, error : action.payload};    
         default:
             return state;
     }
@@ -566,6 +571,21 @@ function productHistoryReducer(state={prodHistory:[], productCompHistory:[],prod
     }
 }
 
+function filtersStoreReducer(state={atrFilter:[], brFilter: [], compCompFilter: [], compModelFilter: []},action){
+    switch(action.type){
+        case STORE_FILTERS:
+            return {...state, atrFilter:action.payload};
+        case STORE_BRAND_FILTERS:
+            return {...state, brFilter:action.payload};
+        case STORE_COMPATIBILITY_COMPANY_FILTERS:
+            return {...state, compCompFilter:action.payload};
+        case STORE_COMPATIBILITY_MODEL_FILTERS:
+            return {...state, compModelFilter:action.payload};
+        default:
+            return state;
+    }
+}
+
 
 
 export {productListReducer, productDetailsReducer, mostViewedProductsReducer,
@@ -574,4 +594,5 @@ export {productListReducer, productDetailsReducer, mostViewedProductsReducer,
     featureTitlesByCategoryReducer, featureNamesByCategoryReducer, productFeaturesReducer,
     paymentListReducer,compatibilitiesByCategoryReducer,compatibilityCompaniesReducer,
     compatibilityModelsReducer,productCompatibilitiesReducer,suppliersListReducer,
-    searchForItemsReducer,itemsPerPageReducer,textSearchReducer, productHistoryReducer}
+    searchForItemsReducer,itemsPerPageReducer,textSearchReducer, productHistoryReducer,
+    filtersStoreReducer}

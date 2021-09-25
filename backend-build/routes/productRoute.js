@@ -180,24 +180,195 @@ router.get("/collectionDetails/:id", /*#__PURE__*/function () {
 }());
 router.post("/products_by_category", /*#__PURE__*/function () {
   var _ref5 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(req, res) {
+    var brandsStr, filt, i, brand, features, _filt, _i, feature, compCompanyStr, compCompFilter, compModelFilter, _i2, company, _i3, _company, j, model, _j, _model, page, iPerPage, offset, sortedBy;
+
     return regeneratorRuntime.wrap(function _callee5$(_context5) {
       while (1) {
         switch (_context5.prev = _context5.next) {
           case 0:
+            brandsStr = "";
+
+            if (req.body.brandFilters.length != 0) {
+              filt = req.body.brandFilters;
+
+              for (i = 0; i < filt.length; i++) {
+                brand = filt[i];
+
+                if (i === 0) {
+                  brandsStr += "&& (products.brand= '".concat(brand, "'");
+                } else {
+                  brandsStr += " OR products.brand= '".concat(brand, "'");
+                }
+              }
+
+              brandsStr += ")";
+            }
+
+            features = "";
+
+            if (req.body.filter.length != 0) {
+              features += "EXISTS\n        ( SELECT product_id \n            FROM features \n            WHERE products._id=features.product_id";
+              _filt = req.body.filter;
+
+              for (_i = 0; _i < _filt.length; _i++) {
+                feature = _filt[_i].split('_');
+
+                if (_i === 0) {
+                  features += " AND ((feature_title= '".concat(feature[0], "' \n                AND feature= '").concat(feature[1], "')");
+                } else {
+                  features += " OR (feature_title= '".concat(feature[0], "' \n                AND feature= '").concat(feature[1], "')");
+                }
+              }
+
+              features += ")) AND";
+            }
+
+            compCompanyStr = "";
+
+            if (req.body.compCompanyFilter.length > 0) {
+              compCompFilter = req.body.compCompanyFilter;
+              compModelFilter = req.body.compModelFilter;
+              compCompanyStr += "EXISTS\n        ( SELECT product_id \n            FROM compatibilities \n            WHERE products._id=compatibilities.product_id";
+
+              if (req.body.compModelFilter.length === 0) {
+                for (_i2 = 0; _i2 < compCompFilter.length; _i2++) {
+                  company = compCompFilter[_i2];
+
+                  if (_i2 === 0) {
+                    compCompanyStr += " AND ((compatibility_company= '".concat(company, "')");
+                  } else {
+                    compCompanyStr += " OR (compatibility_company= '".concat(company, "')");
+                  }
+                }
+
+                compCompanyStr += ")) AND";
+              } else {
+                for (_i3 = 0; _i3 < compCompFilter.length; _i3++) {
+                  _company = compCompFilter[_i3];
+
+                  if (_i3 === 0) {
+                    for (j = 0; j < compModelFilter.length; j++) {
+                      model = compModelFilter[j];
+
+                      if (j === 0) {
+                        compCompanyStr += " AND ((";
+                      } else {
+                        compCompanyStr += " OR (";
+                      }
+
+                      compCompanyStr += "compatibility_company= '".concat(_company, "'\n                        AND compatibility_model='").concat(model, "')");
+                    }
+                  } else {
+                    for (_j = 0; _j < compModelFilter.length; _j++) {
+                      _model = compModelFilter[_j];
+                      compCompanyStr += " OR (";
+                      compCompanyStr += "compatibility_company= '".concat(_company, "'\n                        AND compatibility_model='").concat(_model, "')");
+                    }
+                  }
+                }
+
+                compCompanyStr += ")) AND";
+              }
+
+              console.log(compCompanyStr);
+            }
+
+            page = parseInt(req.body.page) || 0;
+            iPerPage = parseInt(req.body.itemsPerPage) || 12;
+            offset = page * iPerPage;
+            sortedBy = "";
+            _context5.t0 = req.body.sortType;
+            _context5.next = _context5.t0 === "alphabetic" ? 13 : _context5.t0 === "alphabeticDESC" ? 15 : _context5.t0 === "price" ? 17 : _context5.t0 === "priceDESC" ? 19 : 21;
+            break;
+
+          case 13:
+            sortedBy = "ORDER BY name";
+            return _context5.abrupt("break", 23);
+
+          case 15:
+            sortedBy = "ORDER BY name DESC";
+            return _context5.abrupt("break", 23);
+
+          case 17:
+            sortedBy = "ORDER BY totalPrice";
+            return _context5.abrupt("break", 23);
+
+          case 19:
+            sortedBy = "ORDER BY totalPrice DESC";
+            return _context5.abrupt("break", 23);
+
+          case 21:
+            sortedBy = "ORDER BY name";
+            return _context5.abrupt("break", 23);
+
+          case 23:
             _connection["default"].getConnection(function (err, connection) {
               if (err) throw err; // not connected!
 
-              connection.query('SELECT _id, name, category, brand, image, description,countInStock, numReview, subcategory, weight, supplier, availability, visibility, totalPrice FROM products WHERE products.category=? && products.subcategory=? && products.visibility=1', [req.body.category, req.body.subcategory], function (err, result, fields) {
-                if (err) throw err;
-                console.log("Read products succeed");
-                res.send(result);
-                connection.release(); // Handle error after the release.
+              connection.beginTransaction(function (err) {
+                if (err) {
+                  throw err;
+                }
 
-                if (err) throw err;
+                var sql = "SELECT Count(*) as count\n            FROM products\n            WHERE \n            ".concat(features, " \n            ").concat(compCompanyStr, "\n            products.category=? \n            && products.subcategory=? \n            && products.visibility=1\n            ").concat(brandsStr, "\n            ");
+                connection.query(sql, [req.body.category, req.body.subcategory], function (err, result, fields) {
+                  if (err) {
+                    connection.rollback(function () {
+                      throw err;
+                    });
+                  }
+
+                  var count = result[0].count;
+                  connection.query("SELECT _id, name, category, brand, image, description,countInStock, numReview, subcategory, weight, supplier, availability, visibility, totalPrice \n                FROM products\n                WHERE \n                ".concat(features, "\n                ").concat(compCompanyStr, "\n                products.category=? \n                && products.subcategory=? \n                && products.visibility=1\n                ").concat(brandsStr, "\n                ").concat(sortedBy, "\n                LIMIT ?\n                OFFSET ?"), [req.body.category, req.body.subcategory, iPerPage, offset], function (err, result, fields) {
+                    if (err) {
+                      connection.rollback(function () {
+                        throw err;
+                      });
+                    }
+
+                    var products = result;
+                    connection.query("SELECT DISTINCT brand\n                            FROM products\n                            WHERE products.category=? \n                            && products.subcategory=? \n                            && products.visibility=1", [req.body.category, req.body.subcategory], function (err, result, fields) {
+                      if (err) {
+                        connection.rollback(function () {
+                          throw err;
+                        });
+                      }
+
+                      var dictinctBrands = result;
+                      connection.query("SELECT DISTINCT brand\n                                        FROM products                                        \n                                        WHERE \n                                        ".concat(features, "\n                                        ").concat(compCompanyStr, "\n                                        products.category=? \n                                        && products.subcategory=? \n                                        && products.visibility=1"), [req.body.category, req.body.subcategory], function (err, result, fields) {
+                        if (err) {
+                          connection.rollback(function () {
+                            throw err;
+                          });
+                        }
+
+                        var excludedBrands = result;
+                        connection.commit(function (err) {
+                          if (err) {
+                            connection.rollback(function () {
+                              throw err;
+                            });
+                          }
+
+                          res.status(200).send({
+                            products: products,
+                            count: count,
+                            dictinctBrands: dictinctBrands,
+                            excludedBrands: excludedBrands
+                          });
+                          console.log('Transaction Completed Successfully.');
+                        });
+                      });
+                    });
+                  });
+                  connection.release(); // Handle error after the release.
+
+                  if (err) throw err;
+                });
               });
             });
 
-          case 1:
+          case 24:
           case "end":
             return _context5.stop();
         }
@@ -614,24 +785,24 @@ router.post("/searchForItems", /*#__PURE__*/function () {
               ;
               search += ' OR( ';
 
-              for (var _i = 0; _i < sp.length; _i++) {
-                if (_i !== 0) {
+              for (var _i4 = 0; _i4 < sp.length; _i4++) {
+                if (_i4 !== 0) {
                   search += ' && ';
                 }
 
-                search += 'subcategory LIKE ' + "'%" + sp[_i] + "%'";
+                search += 'subcategory LIKE ' + "'%" + sp[_i4] + "%'";
               }
 
               ;
               search += ' ) ';
               search += ' OR( ';
 
-              for (var _i2 = 0; _i2 < sp.length; _i2++) {
-                if (_i2 !== 0) {
+              for (var _i5 = 0; _i5 < sp.length; _i5++) {
+                if (_i5 !== 0) {
                   search += ' && ';
                 }
 
-                search += 'category LIKE ' + "'%" + sp[_i2] + "%'";
+                search += 'category LIKE ' + "'%" + sp[_i5] + "%'";
               }
 
               ;
@@ -641,11 +812,11 @@ router.post("/searchForItems", /*#__PURE__*/function () {
               if (req.body.filters !== null && req.body.filters.length !== 0) {
                 filters += '&&(';
 
-                for (var _i3 = 0; _i3 < req.body.filters.length; _i3++) {
-                  if (_i3 !== 0) {
-                    filters += ' OR (category="' + req.body.filters[_i3].category + '" && subcategory="' + req.body.filters[_i3].subcategory + '")';
+                for (var _i6 = 0; _i6 < req.body.filters.length; _i6++) {
+                  if (_i6 !== 0) {
+                    filters += ' OR (category="' + req.body.filters[_i6].category + '" && subcategory="' + req.body.filters[_i6].subcategory + '")';
                   } else {
-                    filters += ' (category="' + req.body.filters[_i3].category + '" && subcategory="' + req.body.filters[_i3].subcategory + '")';
+                    filters += ' (category="' + req.body.filters[_i6].category + '" && subcategory="' + req.body.filters[_i6].subcategory + '")';
                   }
                 }
 

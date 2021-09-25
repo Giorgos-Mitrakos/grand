@@ -12,9 +12,9 @@ function FilterContainer(props) {
                             {props.featureTitles.map(x =>
                                 <li key={x.feature_title}>{x.feature_title} :
                                     <ul>
-                                        {props.featureNames.map(y => (y.feature_title === x.feature_title) &&
+                                        {props.featureNames && props.featureNames.map(y => (y.feature_title === x.feature_title) &&
                                             <li key={y.feature}>
-                                                <input type="checkbox" className="filterByFeatures" value={y.feature}
+                                                <input type="checkbox" className="filterByFeatures" value={x.feature_title+'_'+y.feature} checked={props.filter.includes(x.feature_title+'_'+y.feature)}
                                                     onChange={(e) => props.filterHandler(e.target.checked, e.target.value)}></input>
                                                 <label>{y.feature}</label>
                                             </li>)}
@@ -31,7 +31,11 @@ function FilterContainer(props) {
                                 <li>Συμβατότητα: </li>
                                 {props.compCompanies.map(comp =>
                                     <li key={comp}>
-                                        <input type="checkbox" className="filterByCompatibilityCompanies" value={comp} onChange={(e) => props.filterByCompatibilityCompany(e.target.checked, e.target.value)}></input>
+                                        <input type="checkbox" 
+                                        className="filterByCompatibilityCompanies" 
+                                        value={comp} 
+                                        checked={props.compFilter.includes(comp)}
+                                        onChange={(e) => props.filterByCompatibilityCompany(e.target.checked, e.target.value)}></input>
                                         <label>{comp}</label>
                                     </li>)}
                             </ul>
@@ -43,7 +47,11 @@ function FilterContainer(props) {
                         {props.compModels &&
                             props.compModels.map(mod =>
                                 <li key={mod}>
-                                    <input type="checkbox" className="filterByCompatibilityCompanies" value={mod} onChange={(e) => props.filterByCompatibilityModel(e.target.checked, e.target.value)}></input>
+                                    <input type="checkbox" 
+                                    className="filterByCompatibilityCompanies" 
+                                    value={mod}
+                                    checked={props.modelFilter.includes(mod)}
+                                    onChange={(e) => props.filterByCompatibilityModel(e.target.checked, e.target.value)}></input>
                                     <label>{mod}</label>
                                 </li>
                             )}
@@ -56,8 +64,11 @@ function FilterContainer(props) {
                         <li>Κατασκευαστής :</li>
                         {props.uniqueBrands.map((x, index) =>
                             <li key={index}>
-                                <input type="checkbox" className="filterByFeatures" value={x} onChange={(e) => props.filterBrandHandler(e.target.checked, e.target.value)}></input>
-                                <label>{x}</label>
+                                <input type="checkbox" className={`filterByFeatures ${!props.excludedBrands.includes(x.brand)?'disableLabel':''}`} value={x.brand} 
+                                onChange={(e) => props.filterBrandHandler(e.target.checked, e.target.value)}
+                                checked={props.brandFilter.includes(x.brand)}
+                                disabled={!props.excludedBrands.includes(x.brand)}></input>
+                                <label className={!props.excludedBrands.includes(x.brand)?'disableLabel':''}>{x.brand}</label>
                             </li>)}
                     </ul>
                 </div>}
