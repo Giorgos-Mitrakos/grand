@@ -46,7 +46,7 @@ import {
     SUPPLIERS_INSERT_FAIL, SUPPLIERS_DELETE_REQUEST, SUPPLIERS_DELETE_SUCCESS,
     SUPPLIERS_DELETE_FAIL, MANUFACTURER_DELETE_REQUEST, MANUFACTURER_DELETE_SUCCESS,
     MANUFACTURER_DELETE_FAIL, SEARCH_FOR_ITEMS_REQUEST, SEARCH_FOR_ITEMS_SUCCESS,
-    SEARCH_FOR_ITEMS_FAIL, SELECT_ITEMS_PER_PAGE, SET_SEARCH_TEXT, SET_SEARCH_FILTERS, RESET_SEARCH_FILTERS, GET_PRODUCT_HISTORY_REQUEST, GET_PRODUCT_HISTORY_SUCCESS, GET_PRODUCT_HISTORY_FAIL, GET_PRODUCT_BY_NAME_ADMIN_REQUEST, GET_PRODUCT_BY_NAME_ADMIN_SUCCESS, GET_PRODUCT_BY_NAME_ADMIN_FAIL, STORE_FILTERS, STORE_BRAND_FILTERS, STORE_COMPATIBILITY_COMPANY_FILTERS, STORE_COMPATIBILITY_MODEL_FILTERS
+    SEARCH_FOR_ITEMS_FAIL, SELECT_ITEMS_PER_PAGE, SET_SEARCH_TEXT, SET_SEARCH_FILTERS, RESET_SEARCH_FILTERS, GET_PRODUCT_HISTORY_REQUEST, GET_PRODUCT_HISTORY_SUCCESS, GET_PRODUCT_HISTORY_FAIL, GET_PRODUCT_BY_NAME_ADMIN_REQUEST, GET_PRODUCT_BY_NAME_ADMIN_SUCCESS, GET_PRODUCT_BY_NAME_ADMIN_FAIL, STORE_FILTERS, STORE_BRAND_FILTERS, STORE_COMPATIBILITY_COMPANY_FILTERS, STORE_COMPATIBILITY_MODEL_FILTERS, INSERT_ALL_PHONES_COMPATIBILITY_REQUEST, INSERT_ALL_PHONES_COMPATIBILITY_SUCCESS, INSERT_ALL_PHONES_COMPATIBILITY_FAIL, DELETE_ALL_PRODUCT_COMPATIBILITY_REQUEST, DELETE_ALL_PRODUCT_COMPATIBILITY_SUCCESS, DELETE_ALL_PRODUCT_COMPATIBILITY_FAIL, DELETE_COMPATIBILITY_COMPANY_REQUEST, DELETE_COMPATIBILITY_COMPANY_SUCCESS, DELETE_COMPATIBILITY_COMPANY_FAIL, DELETE_COMPATIBILITY_MODEL_REQUEST, DELETE_COMPATIBILITY_MODEL_SUCCESS, DELETE_COMPATIBILITY_MODEL_FAIL
 } from "../constants/productConstant";
 import Axios from "axios";
 
@@ -670,6 +670,22 @@ const insertCompatibilityCompany = (company) => async (dispatch, getState) => {
     }
 }
 
+const deleteCompatibilityCompany = (companyID,company) => async (dispatch, getState) => {
+    try {
+        dispatch({ type: DELETE_COMPATIBILITY_COMPANY_REQUEST });
+        const { userSignin: { userInfo } } = getState();
+        const { data } = await Axios.post("/api/admin/deletecompatibilitycompany", { companyID,company }, {
+            headers: {
+                'Authorization': 'Bearer ' + userInfo.token
+            }
+        });
+        dispatch({ type: DELETE_COMPATIBILITY_COMPANY_SUCCESS, payload: data, success: true });
+    }
+    catch (error) {
+        dispatch({ type: DELETE_COMPATIBILITY_COMPANY_FAIL, payload: error.message });
+    }
+}
+
 const insertCompatibilityModel = (companyId, model) => async (dispatch, getState) => {
     try {
         dispatch({ type: INSERT_COMPATIBILITY_MODEL_REQUEST });
@@ -683,6 +699,22 @@ const insertCompatibilityModel = (companyId, model) => async (dispatch, getState
     }
     catch (error) {
         dispatch({ type: INSERT_COMPATIBILITY_MODEL_FAIL, payload: error.message });
+    }
+}
+
+const deleteCompatibilityModel = (modelID,model,companyId,company) => async (dispatch, getState) => {
+    try {
+        dispatch({ type: DELETE_COMPATIBILITY_MODEL_REQUEST });
+        const { userSignin: { userInfo } } = getState();
+        const { data } = await Axios.post("/api/admin/deletecompatibilitymodel", { modelID,model,companyId,company }, {
+            headers: {
+                'Authorization': 'Bearer ' + userInfo.token
+            }
+        });
+        dispatch({ type: DELETE_COMPATIBILITY_MODEL_SUCCESS, payload: data, success: true });
+    }
+    catch (error) {
+        dispatch({ type: DELETE_COMPATIBILITY_MODEL_FAIL, payload: error.message });
     }
 }
 
@@ -718,6 +750,22 @@ const insertCompatibility = (productId, company, model) => async (dispatch, getS
     }
 }
 
+const insertAllPhonesCompatibility = (productId) => async (dispatch, getState) => {
+    try {
+        dispatch({ type: INSERT_ALL_PHONES_COMPATIBILITY_REQUEST });
+        const { userSignin: { userInfo } } = getState();
+        const { data } = await Axios.post("/api/admin/insertallphonescompatibility", {productId}, {
+            headers: {
+                'Authorization': 'Bearer ' + userInfo.token
+            }
+        });
+        dispatch({ type: INSERT_ALL_PHONES_COMPATIBILITY_SUCCESS, payload: data, success: true });
+    }
+    catch (error) {
+        dispatch({ type: INSERT_ALL_PHONES_COMPATIBILITY_FAIL, payload: error.message });
+    }
+}
+
 const deleteProductCompatibility = (compatId) => async (dispatch, getState) => {
     try {
         dispatch({ type: DELETE_PRODUCT_COMPATIBILITY_REQUEST });
@@ -731,6 +779,22 @@ const deleteProductCompatibility = (compatId) => async (dispatch, getState) => {
     }
     catch (error) {
         dispatch({ type: DELETE_PRODUCT_COMPATIBILITY_FAIL, payload: error.message });
+    }
+}
+
+const deleteAllProductCompatibilities = (product_id) => async (dispatch, getState) => {
+    try {
+        dispatch({ type: DELETE_ALL_PRODUCT_COMPATIBILITY_REQUEST });
+        const { userSignin: { userInfo } } = getState();
+        const { data } =await Axios.post("/api/admin/deleteallcompatibilities", { product_id }, {
+            headers: {
+                'Authorization': 'Bearer ' + userInfo.token
+            }
+        });
+        dispatch({ type: DELETE_ALL_PRODUCT_COMPATIBILITY_SUCCESS, payload: data });
+    }
+    catch (error) {
+        dispatch({ type: DELETE_ALL_PRODUCT_COMPATIBILITY_FAIL, payload: error.message });
     }
 }
 
@@ -793,5 +857,6 @@ export {
     insertSupplier, deleteSupplier, deleteManufacturer, searchForItem,
     selectItemsPerPage, searchTextStore, filtersStore, resetFiltersStore,
     getProductHistory, getProductByNameAdmin, storeFilters, storeBrandFilters,
-    storeCompatibleCompanyFilters, storeCompatibleModelFilters
+    storeCompatibleCompanyFilters, storeCompatibleModelFilters, insertAllPhonesCompatibility,
+    deleteAllProductCompatibilities, deleteCompatibilityCompany, deleteCompatibilityModel
 }

@@ -1,4 +1,4 @@
-const { MODEL_LIST_REQUEST, MODEL_LIST_SUCCESS, MODEL_LIST_FAIL, PHONE_BRAND_LIST_REQUEST, PHONE_BRAND_LIST_SUCCESS, PHONE_BRAND_LIST_FAIL, BRAND_INSERT_REQUEST, BRAND_INSERT_SUCCESS, BRAND_INSERT_FAIL, PHONE_MODEL_LIST_REQUEST, PHONE_MODEL_LIST_SUCCESS, PHONE_MODEL_LIST_FAIL, MODEL_INSERT_REQUEST, MODEL_INSERT_SUCCESS, MODEL_INSERT_FAIL } = require("../constants/modelConstants");
+const { MODEL_LIST_REQUEST, MODEL_LIST_SUCCESS, MODEL_LIST_FAIL, PHONE_BRAND_LIST_REQUEST, PHONE_BRAND_LIST_SUCCESS, PHONE_BRAND_LIST_FAIL, BRAND_INSERT_REQUEST, BRAND_INSERT_SUCCESS, BRAND_INSERT_FAIL, PHONE_MODEL_LIST_REQUEST, PHONE_MODEL_LIST_SUCCESS, PHONE_MODEL_LIST_FAIL, MODEL_INSERT_REQUEST, MODEL_INSERT_SUCCESS, MODEL_INSERT_FAIL, BRAND_DELETE_REQUEST, BRAND_DELETE_SUCCESS, BRAND_DELETE_FAIL, MODEL_DELETE_REQUEST, MODEL_DELETE_SUCCESS, MODEL_DELETE_FAIL } = require("../constants/modelConstants");
 
 function modelListReducer(state={phoneModels:[]},action){
     switch(action.type){
@@ -27,6 +27,12 @@ function phonesBrandListReducer(state={phoneBrands:[]},action){
             return {loadingBrand:false, phoneBrands : action.payload};
         case BRAND_INSERT_FAIL:
             return {loadingBrand:false, errorBrand : action.payload};
+        case BRAND_DELETE_REQUEST:
+            return {loadingBrand:true, phoneBrands:[]};
+        case BRAND_DELETE_SUCCESS:
+            return {loadingBrand:false, phoneBrands : action.payload};
+        case BRAND_DELETE_FAIL:
+            return {loadingBrand:false, errorBrand : action.payload};
         default:
             return state;
     }
@@ -45,6 +51,12 @@ function phoneModelListReducer(state={phoneModels:[]},action){
         case MODEL_INSERT_SUCCESS:
             return {loadingModel:false, phoneModels : action.payload};
         case MODEL_INSERT_FAIL:
+            return {loadingModel:false, errorModel : action.payload};
+        case MODEL_DELETE_REQUEST:
+            return {loadingModel:true, phoneModels:[...state.phoneModels]};
+        case MODEL_DELETE_SUCCESS:
+            return {loadingModel:false, phoneModels : action.payload};
+        case MODEL_DELETE_FAIL:
             return {loadingModel:false, errorModel : action.payload};
         default:
             return state;

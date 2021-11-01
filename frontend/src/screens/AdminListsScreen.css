@@ -70,6 +70,25 @@
     margin-top: 0.6rem;
 }
 
+.radiobutton>button{
+    flex:1;
+    margin-top: 0.6rem;
+}
+
+.edit_button{
+    padding: 0.4rem;
+    margin-right: 0.2rem;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    background-color: #deccf0;
+    color: #312f8b;
+}
+
+.textAlignLeft{
+    padding-left: 1rem;
+    text-align: left;
+}
+
 .auto-scroll{
     max-height: 14rem;
     overflow-y: scroll;

@@ -83,11 +83,11 @@ router.post("/createproduct", _util.isAuth, _util.isAdmin, upload.single('image'
             _connection["default"].getConnection(function (err, connection) {
               if (err) throw err; // not connected!
 
-              var sql = "INSERT INTO products (name, category, brand, subcategory, supplier, image, price, percentage,availability, description, CreatedBy, CreatedAt, countInStock) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 10)";
-              connection.query(sql, [req.body.name, req.body.category, req.body.brand, req.body.subcategory, req.body.supplier, req.file.path.slice(15, req.file.path.length), req.body.price, req.body.percentage, req.body.availability, req.body.description, req.user.username, new Date(), req.body.countInStock], function (err, result, fields) {
+              var sql = "INSERT INTO products (name, category, brand, subcategory, supplier, image, typicalImage, price, percentage,availability, description, CreatedBy, CreatedAt, countInStock) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 10)";
+              connection.query(sql, [req.body.name, req.body.category, req.body.brand, req.body.subcategory, req.body.supplier, req.file.path.slice(15, req.file.path.length), req.body.typicalImage, req.body.price, req.body.percentage, req.body.availability, req.body.description, req.user.username, new Date(), req.body.countInStock], function (err, result, fields) {
                 if (err) throw err;
                 var insertedId = result.insertId;
-                sql = "INSERT INTO productsHistory (product_id, name, category, brand, subcategory, supplier, image, price, percentage, availability, description, CreatedBy, CreatedAt, countInStock) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, availability, description, CreatedBy, CreatedAt, countInStock FROM products WHERE _id=?";
+                sql = "INSERT INTO productsHistory (product_id, name, category, brand, subcategory, supplier, image, typicalImage, price, percentage, availability, description, CreatedBy, CreatedAt, countInStock) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, availability, description, CreatedBy, CreatedAt, countInStock FROM products WHERE _id=?";
                 connection.query(sql, [insertedId], function (err, result, fields) {
                   if (err) throw err;
                 });
@@ -755,15 +755,22 @@ router.put("/createproduct/:id", _util.isAuth, _util.isAdmin, upload.single('ima
                     imagePath = req.file.path.slice(15, req.file.path.length);
                   }
 
-                  sql = "UPDATE products SET name=?, category=?, brand=?, subcategory=?, supplier=?, image=?, price=?, percentage=?, availability=?, description=? WHERE _id=?";
-                  connection.query(sql, [req.body.name, req.body.category, req.body.brand, req.body.subcategory, req.body.supplier, imagePath, req.body.price, req.body.percentage, req.body.availability, req.body.description, productId], function (err, result, fields) {
+                  var typicalImage = false;
+
+                  if (req.body.typicalImage === 'true') {
+                    typicalImage = true;
+                  }
+
+                  console.log(typicalImage);
+                  sql = "UPDATE products SET name=?, category=?, brand=?, subcategory=?, \n        supplier=?, image=?, price=?, percentage=?, availability=?, description=?, \n        typicalImage=? WHERE _id=?";
+                  connection.query(sql, [req.body.name, req.body.category, req.body.brand, req.body.subcategory, req.body.supplier, imagePath, req.body.price, req.body.percentage, req.body.availability, req.body.description, typicalImage, productId], function (err, result, fields) {
                     if (err) {
                       connection.rollback(function () {
                         throw err;
                       });
                     }
 
-                    sql = "INSERT INTO productsHistory (product_id, name, category, brand, subcategory, supplier, image, price, percentage, availability, visibility, description, CreatedBy, CreatedAt, countInStock, UpdatedBy, UpdatedAt) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, availability, visibility, description, CreatedBy, CreatedAt, countInStock, ?, ? FROM products WHERE _id=?";
+                    sql = "INSERT INTO productsHistory (product_id, name, category, brand, subcategory, supplier, image, typicalImage, price, percentage, availability, visibility, description, CreatedBy, CreatedAt, countInStock, UpdatedBy, UpdatedAt) SELECT _id, name, category, brand, subcategory, supplier, image, typicalImage, price, percentage, availability, visibility, description, CreatedBy, CreatedAt, countInStock, ?, ? FROM products WHERE _id=?";
                     connection.query(sql, [req.user.username, new Date(), productId], function (err, result, fields) {
                       if (err) {
                         connection.rollback(function () {
@@ -815,7 +822,8 @@ router.put("/createproduct/:id", _util.isAuth, _util.isAdmin, upload.single('ima
                                   price: row.price,
                                   percentage: row.percentage,
                                   description: row.description,
-                                  countInStock: row.countInStock
+                                  countInStock: row.countInStock,
+                                  typicalImage: row.typicalImage
                                 };
                               });
                             }
@@ -1963,11 +1971,136 @@ router.post("/insertcompatibilitycompany", _util.isAuth, _util.isAdmin, /*#__PUR
     return _ref36.apply(this, arguments);
   };
 }());
-router.post("/insertcompatibilitymodel", _util.isAuth, _util.isAdmin, /*#__PURE__*/function () {
+router.post("/deletecompatibilitycompany", _util.isAuth, _util.isAdmin, /*#__PURE__*/function () {
   var _ref37 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee37(req, res, next) {
     return regeneratorRuntime.wrap(function _callee37$(_context37) {
       while (1) {
         switch (_context37.prev = _context37.next) {
+          case 0:
+            _connection["default"].getConnection(function (err, connection) {
+              if (err) throw err; // not connected!
+
+              /* Begin transaction */
+
+              connection.beginTransaction(function (err) {
+                if (err) {
+                  throw err;
+                }
+
+                var sql = "DELETE FROM compatibility_model WHERE compatibility_company_id=?";
+                connection.query(sql, [req.body.companyID], function (err, result, fields) {
+                  if (err) {
+                    connection.rollback(function () {
+                      throw err;
+                    });
+                  }
+
+                  sql = "DELETE FROM compatibility_company WHERE compatibility_company_id=?";
+                  connection.query(sql, [req.body.companyID], function (err, result, fields) {
+                    if (err) {
+                      connection.rollback(function () {
+                        throw err;
+                      });
+                    }
+
+                    var sql = "SELECT phone_brand_id FROM phone_brands WHERE brand=? ";
+                    connection.query(sql, [req.body.company], function (err, result) {
+                      var _result$;
+
+                      if (err) {
+                        connection.rollback(function () {
+                          throw err;
+                        });
+                      }
+
+                      var phoneID = (_result$ = result[0]) === null || _result$ === void 0 ? void 0 : _result$.phone_brand_id;
+
+                      if (phoneID > 0) {
+                        sql = "DELETE FROM phone_models WHERE phone_brand_id=?";
+                        connection.query(sql, [phoneID], function (err, result, fields) {
+                          if (err) {
+                            connection.rollback(function () {
+                              throw err;
+                            });
+                          }
+
+                          sql = "DELETE FROM phone_brands WHERE phone_brand_id=?";
+                          connection.query(sql, [phoneID], function (err, result, fields) {
+                            if (err) {
+                              connection.rollback(function () {
+                                throw err;
+                              });
+                            }
+
+                            sql = "SELECT * FROM compatibility_company ORDER BY company ";
+                            connection.query(sql, [req.body.companyID], function (err, result) {
+                              if (err) {
+                                connection.rollback(function () {
+                                  throw err;
+                                });
+                              }
+
+                              console.log("Read phone brands succeed");
+                              connection.commit(function (err) {
+                                if (err) {
+                                  connection.rollback(function () {
+                                    throw err;
+                                  });
+                                }
+                              });
+                              res.send(result);
+                              console.log('Transaction Completed Successfully.');
+                              connection.release();
+                            });
+                          });
+                        });
+                      } else {
+                        sql = "SELECT * FROM compatibility_company ORDER BY company ";
+                        connection.query(sql, [req.body.companyID], function (err, result) {
+                          if (err) {
+                            connection.rollback(function () {
+                              throw err;
+                            });
+                          }
+
+                          console.log("Read phone brands succeed");
+                          connection.commit(function (err) {
+                            if (err) {
+                              connection.rollback(function () {
+                                throw err;
+                              });
+                            }
+
+                            res.send(result);
+                            console.log('Transaction Completed Successfully.');
+                            connection.release();
+                          });
+                        });
+                      }
+                    });
+                  });
+                });
+              });
+              /* End transaction */
+            });
+
+          case 1:
+          case "end":
+            return _context37.stop();
+        }
+      }
+    }, _callee37);
+  }));
+
+  return function (_x91, _x92, _x93) {
+    return _ref37.apply(this, arguments);
+  };
+}());
+router.post("/insertcompatibilitymodel", _util.isAuth, _util.isAdmin, /*#__PURE__*/function () {
+  var _ref38 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee38(req, res, next) {
+    return regeneratorRuntime.wrap(function _callee38$(_context38) {
+      while (1) {
+        switch (_context38.prev = _context38.next) {
           case 0:
             _connection["default"].getConnection(function (err, connection) {
               if (err) throw err; // not connected!
@@ -1989,21 +2122,129 @@ router.post("/insertcompatibilitymodel", _util.isAuth, _util.isAdmin, /*#__PURE_
 
           case 1:
           case "end":
-            return _context37.stop();
+            return _context38.stop();
         }
       }
-    }, _callee37);
+    }, _callee38);
   }));
 
-  return function (_x91, _x92, _x93) {
-    return _ref37.apply(this, arguments);
+  return function (_x94, _x95, _x96) {
+    return _ref38.apply(this, arguments);
+  };
+}());
+router.post("/deletecompatibilitymodel/", _util.isAuth, _util.isAdmin, /*#__PURE__*/function () {
+  var _ref39 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee39(req, res, next) {
+    return regeneratorRuntime.wrap(function _callee39$(_context39) {
+      while (1) {
+        switch (_context39.prev = _context39.next) {
+          case 0:
+            _connection["default"].getConnection(function (err, connection) {
+              if (err) throw err; // not connected!
+
+              /* Begin transaction */
+
+              connection.beginTransaction(function (err) {
+                if (err) {
+                  throw err;
+                }
+
+                var sql = "DELETE FROM compatibility_model WHERE compatibility_model_id=?";
+                connection.query(sql, [req.body.modelID], function (err, result, fields) {
+                  if (err) {
+                    connection.rollback(function () {
+                      throw err;
+                    });
+                  }
+
+                  sql = "SELECT phone_brand_id FROM phone_brands WHERE brand=?";
+                  connection.query(sql, [req.body.company], function (err, result) {
+                    var _result$2;
+
+                    if (err) {
+                      connection.rollback(function () {
+                        throw err;
+                      });
+                    }
+
+                    var brandID = (_result$2 = result[0]) === null || _result$2 === void 0 ? void 0 : _result$2.phone_brand_id;
+
+                    if (brandID > 0) {
+                      sql = "DELETE FROM phone_models WHERE phone_brand_id=? AND model=? ";
+                      connection.query(sql, [brandID, req.body.model], function (err, result) {
+                        if (err) {
+                          connection.rollback(function () {
+                            throw err;
+                          });
+                        }
+
+                        sql = "SELECT * FROM compatibility_model WHERE compatibility_company_id=? ORDER BY model ";
+                        connection.query(sql, [req.body.compatibilityCompanyId], function (err, result) {
+                          if (err) {
+                            connection.rollback(function () {
+                              throw err;
+                            });
+                          }
+
+                          console.log("Read phone brands succeed");
+                          connection.commit(function (err) {
+                            if (err) {
+                              connection.rollback(function () {
+                                throw err;
+                              });
+                            }
+
+                            res.send(result);
+                            console.log('Transaction Completed Successfully.');
+                            connection.release();
+                          });
+                        });
+                      });
+                    } else {
+                      sql = "SELECT * FROM compatibility_model WHERE compatibility_company_id=? ORDER BY model ";
+                      connection.query(sql, [req.body.compatibilityCompanyId], function (err, result) {
+                        if (err) {
+                          connection.rollback(function () {
+                            throw err;
+                          });
+                        }
+
+                        console.log("Read phone brands succeed");
+                        connection.commit(function (err) {
+                          if (err) {
+                            connection.rollback(function () {
+                              throw err;
+                            });
+                          }
+
+                          res.send(result);
+                          console.log('Transaction Completed Successfully.');
+                          connection.release();
+                        });
+                      });
+                    }
+                  });
+                });
+              });
+              /* End transaction */
+            });
+
+          case 1:
+          case "end":
+            return _context39.stop();
+        }
+      }
+    }, _callee39);
+  }));
+
+  return function (_x97, _x98, _x99) {
+    return _ref39.apply(this, arguments);
   };
 }());
 router.post("/insertcompatibility", _util.isAuth, _util.isAdmin, /*#__PURE__*/function () {
-  var _ref38 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee38(req, res, next) {
-    return regeneratorRuntime.wrap(function _callee38$(_context38) {
+  var _ref40 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee40(req, res, next) {
+    return regeneratorRuntime.wrap(function _callee40$(_context40) {
       while (1) {
-        switch (_context38.prev = _context38.next) {
+        switch (_context40.prev = _context40.next) {
           case 0:
             _connection["default"].getConnection(function (err, connection) {
               if (err) throw err; // not connected!
@@ -2013,7 +2254,7 @@ router.post("/insertcompatibility", _util.isAuth, _util.isAdmin, /*#__PURE__*/fu
                   throw err;
                 }
 
-                var sql = "INSERT INTO compatibilities (product_id,compatibility_company,compatibility_model) VALUES (?,?,?)";
+                var sql = "SELECT COUNT(*) as count FROM compatibilities\n                WHERE product_id=? \n                AND compatibility_company=?\n                AND compatibility_model=?";
                 connection.query(sql, [req.body.productId, req.body.company, req.body.model], function (err, result, fields) {
                   if (err) {
                     connection.rollback(function () {
@@ -2021,17 +2262,111 @@ router.post("/insertcompatibility", _util.isAuth, _util.isAdmin, /*#__PURE__*/fu
                     });
                   }
 
-                  var compat_id = result.insertId;
-                  var sql = "INSERT INTO compatibilitiesHistory (product_id, compatibility_company, compatibility_model, UpdatedBy, UpdatedAt, actions) VALUES (?,?,?,?,?,?)";
-                  connection.query(sql, [req.body.productId, req.body.company, req.body.model, req.user.username, new Date(), "Προσθήκη"], function (err, result, fields) {
+                  var count = result[0];
+
+                  if (count.count === 0) {
+                    var sql = "INSERT INTO compatibilities (product_id,compatibility_company,compatibility_model) VALUES (?,?,?)";
+                    connection.query(sql, [req.body.productId, req.body.company, req.body.model], function (err, result, fields) {
+                      if (err) {
+                        connection.rollback(function () {
+                          throw err;
+                        });
+                      }
+
+                      var compat_id = result.insertId;
+                      var sql = "INSERT INTO compatibilitiesHistory (product_id, compatibility_company, compatibility_model, UpdatedBy, UpdatedAt, actions) VALUES (?,?,?,?,?,?)";
+                      connection.query(sql, [req.body.productId, req.body.company, req.body.model, req.user.username, new Date(), "Προσθήκη"], function (err, result, fields) {
+                        if (err) {
+                          connection.rollback(function () {
+                            throw err;
+                          });
+                        }
+
+                        sql = "SELECT * FROM compatibilities WHERE product_id=? ORDER BY compatibility_company ASC, compatibility_model ASC";
+                        connection.query(sql, [req.body.productId], function (err, result, fields) {
+                          if (err) {
+                            connection.rollback(function () {
+                              throw err;
+                            });
+                          }
+
+                          var compatibilities = result;
+                          connection.commit(function (err) {
+                            if (err) {
+                              connection.rollback(function () {
+                                throw err;
+                              });
+                            }
+
+                            res.status(201).send(compatibilities);
+                            console.log('Transaction Completed Successfully.');
+                          });
+                        });
+                      });
+                    });
+                  } else {
+                    var _sql = "SELECT * FROM compatibilities WHERE product_id=? ORDER BY compatibility_company ASC, compatibility_model ASC";
+                    connection.query(_sql, [req.body.productId], function (err, result, fields) {
+                      if (err) {
+                        connection.rollback(function () {
+                          throw err;
+                        });
+                      }
+
+                      res.status(200).send(result);
+                    });
+                  }
+                });
+                connection.release(); // Handle error after the release.
+
+                if (err) throw err;
+              });
+            });
+
+          case 1:
+          case "end":
+            return _context40.stop();
+        }
+      }
+    }, _callee40);
+  }));
+
+  return function (_x100, _x101, _x102) {
+    return _ref40.apply(this, arguments);
+  };
+}());
+router.post("/insertallphonescompatibility", _util.isAuth, _util.isAdmin, /*#__PURE__*/function () {
+  var _ref41 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee41(req, res, next) {
+    return regeneratorRuntime.wrap(function _callee41$(_context41) {
+      while (1) {
+        switch (_context41.prev = _context41.next) {
+          case 0:
+            _connection["default"].getConnection(function (err, connection) {
+              if (err) throw err; // not connected!
+
+              connection.beginTransaction(function (err) {
+                if (err) {
+                  throw err;
+                }
+
+                var sql = "INSERT INTO compatibilities (product_id,compatibility_company,compatibility_model)\n                SELECT ".concat(req.body.productId, ",phone_brands.brand,phone_models.model \n                FROM phone_brands\n                INNER JOIN phone_models\n                ON phone_brands.phone_brand_id=phone_models.phone_brand_id\n                WHERE (SELECT COUNT(*) FROM compatibilities\n                WHERE product_id=").concat(req.body.productId, "\n                AND compatibility_company=phone_brands.brand\n                AND compatibility_model=phone_models.model )=0");
+                connection.query(sql, function (err, result, fields) {
+                  if (err) {
+                    connection.rollback(function () {
+                      throw err;
+                    });
+                  }
+
+                  var sql = "INSERT INTO compatibilitiesHistory (product_id, compatibility_company, compatibility_model, UpdatedBy, UpdatedAt, actions)\n                  SELECT ".concat(req.body.productId, ",phone_brands.brand,phone_models.model, ?, ?, \"\u039C\u03B1\u03B6\u03B9\u03BA\u03AE \u03A0\u03C1\u03BF\u03C3\u03B8\u03AE\u03BA\u03B7\" FROM phone_brands\n                  INNER JOIN phone_models\n                  ON phone_brands.phone_brand_id=phone_models.phone_brand_id\n                  WHERE (SELECT COUNT(*) FROM compatibilitiesHistory\n                  WHERE product_id=").concat(req.body.productId, "\n                  AND compatibility_company=phone_brands.brand\n                  AND compatibility_model=phone_models.model )=0");
+                  connection.query(sql, [req.user.username, new Date()], function (err, result, fields) {
                     if (err) {
                       connection.rollback(function () {
                         throw err;
                       });
                     }
 
-                    sql = "SELECT * FROM compatibilities WHERE compatibility_id=? ORDER BY compatibility_company ASC, compatibility_model ASC";
-                    connection.query(sql, [compat_id], function (err, result, fields) {
+                    var sql = "SELECT * FROM compatibilities WHERE product_id=? ORDER BY compatibility_company ASC,compatibility_model ASC";
+                    connection.query(sql, [req.body.productId], function (err, result, fields) {
                       if (err) {
                         connection.rollback(function () {
                           throw err;
@@ -2060,21 +2395,56 @@ router.post("/insertcompatibility", _util.isAuth, _util.isAdmin, /*#__PURE__*/fu
 
           case 1:
           case "end":
-            return _context38.stop();
+            return _context41.stop();
         }
       }
-    }, _callee38);
+    }, _callee41);
   }));
 
-  return function (_x94, _x95, _x96) {
-    return _ref38.apply(this, arguments);
+  return function (_x103, _x104, _x105) {
+    return _ref41.apply(this, arguments);
+  };
+}());
+router.post("/deleteallcompatibilities", _util.isAuth, _util.isAdmin, /*#__PURE__*/function () {
+  var _ref42 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee42(req, res, next) {
+    return regeneratorRuntime.wrap(function _callee42$(_context42) {
+      while (1) {
+        switch (_context42.prev = _context42.next) {
+          case 0:
+            _connection["default"].getConnection(function (err, connection) {
+              if (err) throw err; // not connected!
+
+              var sql = "DELETE FROM compatibilities WHERE product_id=?";
+              connection.query(sql, [req.body.product_id], function (err, result, fields) {
+                if (err) throw err;
+                sql = "SELECT * FROM compatibilities WHERE product_id=? ORDER BY compatibility_company ASC,compatibility_model ASC";
+                connection.query(sql, [req.body.product_id], function (err, result, fields) {
+                  if (err) throw err;
+                  res.status(201).send(result);
+                });
+              });
+              connection.release(); // Handle error after the release.
+
+              if (err) throw err;
+            });
+
+          case 1:
+          case "end":
+            return _context42.stop();
+        }
+      }
+    }, _callee42);
+  }));
+
+  return function (_x106, _x107, _x108) {
+    return _ref42.apply(this, arguments);
   };
 }());
 router.post("/getproductcompatibilities", _util.isAuth, _util.isAdmin, /*#__PURE__*/function () {
-  var _ref39 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee39(req, res, next) {
-    return regeneratorRuntime.wrap(function _callee39$(_context39) {
+  var _ref43 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee43(req, res, next) {
+    return regeneratorRuntime.wrap(function _callee43$(_context43) {
       while (1) {
-        switch (_context39.prev = _context39.next) {
+        switch (_context43.prev = _context43.next) {
           case 0:
             _connection["default"].getConnection(function (err, connection) {
               if (err) throw err; // not connected!
@@ -2091,21 +2461,21 @@ router.post("/getproductcompatibilities", _util.isAuth, _util.isAdmin, /*#__PURE
 
           case 1:
           case "end":
-            return _context39.stop();
+            return _context43.stop();
         }
       }
-    }, _callee39);
+    }, _callee43);
   }));
 
-  return function (_x97, _x98, _x99) {
-    return _ref39.apply(this, arguments);
+  return function (_x109, _x110, _x111) {
+    return _ref43.apply(this, arguments);
   };
 }());
 router.post("/deletecompatibility", _util.isAuth, _util.isAdmin, /*#__PURE__*/function () {
-  var _ref40 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee40(req, res, next) {
-    return regeneratorRuntime.wrap(function _callee40$(_context40) {
+  var _ref44 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee44(req, res, next) {
+    return regeneratorRuntime.wrap(function _callee44$(_context44) {
       while (1) {
-        switch (_context40.prev = _context40.next) {
+        switch (_context44.prev = _context44.next) {
           case 0:
             _connection["default"].getConnection(function (err, connection) {
               if (err) throw err; // not connected!
@@ -2153,21 +2523,21 @@ router.post("/deletecompatibility", _util.isAuth, _util.isAdmin, /*#__PURE__*/fu
 
           case 1:
           case "end":
-            return _context40.stop();
+            return _context44.stop();
         }
       }
-    }, _callee40);
+    }, _callee44);
   }));
 
-  return function (_x100, _x101, _x102) {
-    return _ref40.apply(this, arguments);
+  return function (_x112, _x113, _x114) {
+    return _ref44.apply(this, arguments);
   };
 }());
 router.post("/getAdmins", _util.isAuth, _util.isAdmin, _util.isSuperAdmin, /*#__PURE__*/function () {
-  var _ref41 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee41(req, res) {
-    return regeneratorRuntime.wrap(function _callee41$(_context41) {
+  var _ref45 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee45(req, res) {
+    return regeneratorRuntime.wrap(function _callee45$(_context45) {
       while (1) {
-        switch (_context41.prev = _context41.next) {
+        switch (_context45.prev = _context45.next) {
           case 0:
             _connection["default"].getConnection(function (err, connection) {
               if (err) throw err; // not connected!
@@ -2184,21 +2554,21 @@ router.post("/getAdmins", _util.isAuth, _util.isAdmin, _util.isSuperAdmin, /*#__
 
           case 1:
           case "end":
-            return _context41.stop();
+            return _context45.stop();
         }
       }
-    }, _callee41);
+    }, _callee45);
   }));
 
-  return function (_x103, _x104) {
-    return _ref41.apply(this, arguments);
+  return function (_x115, _x116) {
+    return _ref45.apply(this, arguments);
   };
 }());
 router.post("/insertAdmin", _util.isAuth, _util.isAdmin, _util.isSuperAdmin, /*#__PURE__*/function () {
-  var _ref42 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee42(req, res) {
-    return regeneratorRuntime.wrap(function _callee42$(_context42) {
+  var _ref46 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee46(req, res) {
+    return regeneratorRuntime.wrap(function _callee46$(_context46) {
       while (1) {
-        switch (_context42.prev = _context42.next) {
+        switch (_context46.prev = _context46.next) {
           case 0:
             _connection["default"].getConnection(function (err, connection) {
               if (err) throw err; // not connected!
@@ -2248,21 +2618,21 @@ router.post("/insertAdmin", _util.isAuth, _util.isAdmin, _util.isSuperAdmin, /*#
 
           case 1:
           case "end":
-            return _context42.stop();
+            return _context46.stop();
         }
       }
-    }, _callee42);
+    }, _callee46);
   }));
 
-  return function (_x105, _x106) {
-    return _ref42.apply(this, arguments);
+  return function (_x117, _x118) {
+    return _ref46.apply(this, arguments);
   };
 }());
 router.post("/deleteAdmin", _util.isAuth, _util.isAdmin, _util.isSuperAdmin, /*#__PURE__*/function () {
-  var _ref43 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee43(req, res) {
-    return regeneratorRuntime.wrap(function _callee43$(_context43) {
+  var _ref47 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee47(req, res) {
+    return regeneratorRuntime.wrap(function _callee47$(_context47) {
       while (1) {
-        switch (_context43.prev = _context43.next) {
+        switch (_context47.prev = _context47.next) {
           case 0:
             _connection["default"].getConnection(function (err, connection) {
               if (err) throw err; // not connected!
@@ -2308,22 +2678,22 @@ router.post("/deleteAdmin", _util.isAuth, _util.isAdmin, _util.isSuperAdmin, /*#
 
           case 1:
           case "end":
-            return _context43.stop();
+            return _context47.stop();
         }
       }
-    }, _callee43);
+    }, _callee47);
   }));
 
-  return function (_x107, _x108) {
-    return _ref43.apply(this, arguments);
+  return function (_x119, _x120) {
+    return _ref47.apply(this, arguments);
   };
 }());
 router.post("/getProductHistory", _util.isAuth, _util.isAdmin, _util.isSuperAdmin, /*#__PURE__*/function () {
-  var _ref44 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee44(req, res) {
+  var _ref48 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee48(req, res) {
     var productId;
-    return regeneratorRuntime.wrap(function _callee44$(_context44) {
+    return regeneratorRuntime.wrap(function _callee48$(_context48) {
       while (1) {
-        switch (_context44.prev = _context44.next) {
+        switch (_context48.prev = _context48.next) {
           case 0:
             productId = req.body.productId;
 
@@ -2387,22 +2757,22 @@ router.post("/getProductHistory", _util.isAuth, _util.isAdmin, _util.isSuperAdmi
 
           case 2:
           case "end":
-            return _context44.stop();
+            return _context48.stop();
         }
       }
-    }, _callee44);
+    }, _callee48);
   }));
 
-  return function (_x109, _x110) {
-    return _ref44.apply(this, arguments);
+  return function (_x121, _x122) {
+    return _ref48.apply(this, arguments);
   };
 }());
 router.post("/getOrderHistory", _util.isAuth, _util.isAdmin, _util.isSuperAdmin, /*#__PURE__*/function () {
-  var _ref45 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee45(req, res) {
+  var _ref49 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee49(req, res) {
     var orderId;
-    return regeneratorRuntime.wrap(function _callee45$(_context45) {
+    return regeneratorRuntime.wrap(function _callee49$(_context49) {
       while (1) {
-        switch (_context45.prev = _context45.next) {
+        switch (_context49.prev = _context49.next) {
           case 0:
             orderId = req.body.orderId;
 
@@ -2488,21 +2858,21 @@ router.post("/getOrderHistory", _util.isAuth, _util.isAdmin, _util.isSuperAdmin,
 
           case 2:
           case "end":
-            return _context45.stop();
+            return _context49.stop();
         }
       }
-    }, _callee45);
+    }, _callee49);
   }));
 
-  return function (_x111, _x112) {
-    return _ref45.apply(this, arguments);
+  return function (_x123, _x124) {
+    return _ref49.apply(this, arguments);
   };
 }());
 router.post("/newsletterlist", _util.isAuth, _util.isAdmin, /*#__PURE__*/function () {
-  var _ref46 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee46(req, res) {
-    return regeneratorRuntime.wrap(function _callee46$(_context46) {
+  var _ref50 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee50(req, res) {
+    return regeneratorRuntime.wrap(function _callee50$(_context50) {
       while (1) {
-        switch (_context46.prev = _context46.next) {
+        switch (_context50.prev = _context50.next) {
           case 0:
             _connection["default"].getConnection(function (err, connection) {
               if (err) throw err; // not connected!
@@ -2546,14 +2916,14 @@ router.post("/newsletterlist", _util.isAuth, _util.isAdmin, /*#__PURE__*/functio
 
           case 1:
           case "end":
-            return _context46.stop();
+            return _context50.stop();
         }
       }
-    }, _callee46);
+    }, _callee50);
   }));
 
-  return function (_x113, _x114) {
-    return _ref46.apply(this, arguments);
+  return function (_x125, _x126) {
+    return _ref50.apply(this, arguments);
   };
 }());
 var _default = router;

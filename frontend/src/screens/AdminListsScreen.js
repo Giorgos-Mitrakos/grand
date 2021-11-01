@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { getPhoneModels, insertPhoneBrand, insertPhoneModel, listPhoneBrands } from '../action/modelActions';
+import { deletePhoneBrand, deletePhoneModel, getPhoneModels, insertPhoneBrand, insertPhoneModel, listPhoneBrands } from '../action/modelActions';
 import {
-    createPaymentMethod, createSendingMethods, deleteManufacturer, deletePaymentMethod,
+    createPaymentMethod, createSendingMethods, deleteCompatibilityCompany, deleteCompatibilityModel, deleteManufacturer, deletePaymentMethod,
     deleteSendingMethod, deleteSupplier, editPaymentMethods, editSendingMethods, getCompatibilityModels, getFeatureNames,
     insertCompatibilityCompany, insertCompatibilityModel,
     insertFeatureName, insertFeatureTitle, insertManufacturer,
@@ -115,9 +115,17 @@ function AdminListsScreen(props) {
         setNewBrand("");
     }
 
+    const removePhoneBrandHandler = (phone_Brand_Id, phone_brand) => {
+        dispatch(deletePhoneBrand(phone_Brand_Id, phone_brand))
+    }
+
     const insertPhoneModelHandler = () => {
         dispatch(insertPhoneModel(phoneBrandId, newModel));
         setNewModel("");
+    }
+
+    const removePhoneModelHandler = (phone_model_id, phone_model) => {
+        dispatch(deletePhoneModel(phone_model_id, phone_model, phoneBrandId, phoneBrand));
     }
 
     const insertFeatureNameHandler = () => {
@@ -183,22 +191,70 @@ function AdminListsScreen(props) {
         setNewCompatibilityCompany("");
     }
 
+    const removeCompatibilityCompanyHandler = (companyID, company) => {
+        dispatch(deleteCompatibilityCompany(companyID, company))
+    }
+
     const insertCompatibilityModelHandler = () => {
         dispatch(insertCompatibilityModel(compatibilityCompanyId, newCompatibilityModel));
         setNewCompatibilityModel('');
     }
 
+    const removeCompatibilityModelHandler = (modelID, model) =>{
+        dispatch(deleteCompatibilityModel(modelID, model, compatibilityCompanyId, compatibilityCompany))
+    }
+
     useEffect(() => {
-        dispatch(listPhoneBrands());
-        dispatch(listFeatureTitles());
-        dispatch(listManufacturers());
         dispatch(listSendingMethods());
-        dispatch(listCompatibilityCompanies());
-        dispatch(listSuppliers());
         return () => {
 
         }
     }, []);
+
+    useEffect(() => {
+        setCompatibilityModal(false)
+    }, [phoneBrands, phoneModels]);
+
+    useEffect(() => {
+        setPhoneBrandModelModal(false)
+    }, [companies, models]);
+
+    useEffect(() => {
+        if (compatibilityModal === true)
+            {
+                dispatch(listCompatibilityCompanies());
+            }
+            else
+            {
+                setCompatibilityCompanyId('')
+            }
+    }, [compatibilityModal]);
+
+    useEffect(() => {
+        if (phoneBrandModelModal === true)
+        {
+            dispatch(listPhoneBrands());
+        }
+        else
+        {
+            setPhoneBrandId('')
+        }
+    }, [phoneBrandModelModal]);
+
+    useEffect(() => {
+        if (supplierModal === true)
+            dispatch(listSuppliers());
+    }, [supplierModal]);
+
+    useEffect(() => {
+        if (brandModal === true)
+            dispatch(listManufacturers());
+    }, [brandModal]);
+
+    useEffect(() => {
+        if (featureNameModal === true)
+            dispatch(listFeatureTitles());
+    }, [featureNameModal]);
 
     return (
         <div>
@@ -225,6 +281,13 @@ function AdminListsScreen(props) {
                                                 <input type="radio" id={phonesBrand.phone_brand_id} name="phoneBrands"
                                                     value={phonesBrand.brand} onChange={(e) => radioChangeHandler(e)}></input>
                                                 <label htmlFor={phonesBrand.phone_brand_id}>{phonesBrand.brand}</label>
+                                                <button className="edit_button"
+                                                    id={phoneBrand.phone_brand_id}
+                                                    onClick={() => removePhoneBrandHandler(phonesBrand.phone_brand_id, phonesBrand.brand)}>
+                                                    <span class="material-icons">
+                                                        delete
+                                                    </span>
+                                                </button>
                                             </div>
                                         )}
                             </div>
@@ -238,13 +301,28 @@ function AdminListsScreen(props) {
                         </div>
                         <div>
                             <label className="header-label">Μοντέλα {phoneBrand}</label>
-                            {phoneModels &&
-                                <ul className="auto-scroll">
-                                    {loadingModel ? <div>Loading...</div> :
-                                        errorModel ? <div>{errorModel}</div> :
-                                            phoneModels.map(phoneModel =>
-                                                <li>{phoneModel.model}</li>)}
-                                </ul>}
+                            {phoneModels && phoneBrandId &&
+                                <div className="auto-scroll">
+                                    <table>
+                                        <tbody>
+                                            {loadingModel ? <div>Loading...</div> :
+                                                errorModel ? <div>{errorModel}</div> :
+                                                    phoneModels.map(phoneModel =>
+                                                        <tr key={phoneModel.phone_model_id}>
+                                                            <td className="textAlignLeft">{phoneModel.model}</td>
+                                                            <td>
+                                                                <button className="edit_button"
+                                                                    id={phoneBrand.phone_brand_id}
+                                                                    onClick={() => removePhoneModelHandler(phoneModel.phone_model_id, phoneModel.model)}>
+                                                                    <span class="material-icons">
+                                                                        delete
+                                                                    </span>
+                                                                </button>
+                                                            </td>
+                                                        </tr>)}
+                                        </tbody>
+                                    </table>
+                                </div>}
                             {phoneBrand && <div>
                                 <div>
                                     <label>Νέο Μοντέλο</label>
@@ -572,13 +650,13 @@ function AdminListsScreen(props) {
                                                     <td>
                                                         <button className="button radio-edit-button" onClick={() => removeManufacturerHandler(manufacturer.manufacturer_id)}>
                                                             <span class="material-icons" data-tip data-for="delete_manufacturer">
-                                                            delete
-                                                        </span>
+                                                                delete
+                                                            </span>
                                                         </button>
-                                                        <ReactTooltip backgroundColor="#deccf0" textColor="#312f8b" id="delete_manufacturer" place="top" effect="solid">
+                                                        {/* <ReactTooltip backgroundColor="#deccf0" textColor="#312f8b" id="delete_manufacturer" place="top" effect="solid">
                                                             Διαγραφή
-                                                        </ReactTooltip>
-                                                        </td>
+                                                        </ReactTooltip> */}
+                                                    </td>
                                                 </tr>)}
                                 </tbody>
                             </table>
@@ -641,7 +719,7 @@ function AdminListsScreen(props) {
             </div>
             <div className="color-wrapper">
                 <div className="card-list-header" onClick={() => setCompatibilityModal(!compatibilityModal)}>
-                    <h4 className="expand">Συμβατότητα</h4>
+                    <h4 className="expand">Συμβατότητα ( Εδώ καταχωρείς όλα εκτός από Κινητά )</h4>
                     <i className="material-icons expand">{!compatibilityModal ? "expand_more" : "expand_less"}</i>
                 </div>
                 {compatibilityModal &&
@@ -656,6 +734,13 @@ function AdminListsScreen(props) {
                                                 <input type="radio" id={comp.compatibility_company_id} name="compatibilityCompanies"
                                                     value={comp.company} onChange={(e) => compatibilityCompaniesChangeHandler(e)}></input>
                                                 <label htmlFor={comp.compatibility_company_id}>{comp.company}</label>
+                                                <button className="edit_button"
+                                                    id={comp.compatibility_company_id}
+                                                    onClick={() => removeCompatibilityCompanyHandler(comp.compatibility_company_id, comp.company)}>
+                                                    <span class="material-icons">
+                                                        delete
+                                                    </span>
+                                                </button>
                                             </div>
                                         )}
                             </div>
@@ -669,13 +754,28 @@ function AdminListsScreen(props) {
                         </div>
                         <div>
                             <label className="header-label">Μοντέλο {compatibilityCompany}</label>
-                            {models &&
-                                <ul className="auto-scroll">
-                                    {loadingCompatibilityModels ? <div>Loading...</div> :
-                                        errorCompatibilityModels ? <div>{errorCompatibilityModels}</div> :
-                                            models.map(mod =>
-                                                <li>{mod.model}</li>)}
-                                </ul>}
+                            {models && compatibilityCompanyId &&
+                                <div className="auto-scroll">
+                                    <table>
+                                        <tbody>
+                                            {loadingCompatibilityModels ? <div>Loading...</div> :
+                                                errorCompatibilityModels ? <div>{errorCompatibilityModels}</div> :
+                                                    models.map(mod =>
+                                                        <tr>
+                                                            <td className="textAlignLeft">{mod.model}</td>
+                                                            <td>
+                                                                <button className="edit_button"
+                                                                    id={mod.compatibility_model_id}
+                                                                    onClick={() => removeCompatibilityModelHandler(mod.compatibility_model_id, mod.model)}>
+                                                                    <span class="material-icons">
+                                                                        delete
+                                                                    </span>
+                                                                </button>
+                                                            </td>
+                                                        </tr>)}
+                                        </tbody>
+                                    </table>
+                                </div>}
                             {compatibilityCompany && <div>
                                 <div>
                                     <label>Νέο Μοντέλο</label>

@@ -151,8 +151,8 @@ function ProductMenu(props) {
                 <i className="material-icons expand">{!multimediaModal ? "expand_more" : "expand_less"}</i>
             </div>
             {multimediaModal && <ul className="first-modal">
-                <Link to="/products/Μultimedia/Οθόνες"><li>Οθόνες</li></Link>
-                <Link to="/products/Μultimedia/Ηχεία"><li>Ηχεία</li></Link>
+                <Link to="/products/Multimedia/Οθόνες"><li>Οθόνες</li></Link>
+                <Link to="/products/Multimedia/Ηχεία"><li>Ηχεία</li></Link>
                 <li className="menu-header" onClick={() => setCamerasModal(!camerasModal)}>
                     <h5>Cameras</h5>
                     <i className="material-icons expand">{!camerasModal ? "expand_more" : "expand_less"}</i>
@@ -169,10 +169,10 @@ function ProductMenu(props) {
                     <Link to="/products/Cameras/Τρίποδα"><li>Τρίποδα</li></Link>
                     <Link to="/products/Cameras/Αξεσουάρ-Κάμερας"><li>Αξεσουάρ Κάμερας</li></Link>
                 </ul>}
-                <Link to="/products/Μultimedia/mp3-mp4-players"><li>MP3 & MP4 Players</li></Link>
-                <Link to="/products/Μultimedia/Μικρόφωνα"><li>Μικρόφωνα</li></Link>
-                <Link to="/products/Μultimedia/Headsets"><li>Headsets</li></Link>
-                <Link to="/products/Μultimedia/Usb-Hubs-Card-Readers"><li>Usb Hubs - Card Readers</li></Link>
+                <Link to="/products/Multimedia/mp3-mp4-players"><li>MP3 & MP4 Players</li></Link>
+                <Link to="/products/Multimedia/Μικρόφωνα"><li>Μικρόφωνα</li></Link>
+                <Link to="/products/Multimedia/Headsets"><li>Headsets</li></Link>
+                <Link to="/products/Multimedia/Usb-Hubs-Card-Readers"><li>Usb Hubs - Card Readers</li></Link>
                 <li className="menu-header" onClick={() => setStorageModal(!storageModal)}>
                     <h5>Αποθηκευτικά Μέσα</h5>
                     <i className="material-icons expand">{!storageModal ? "expand_more" : "expand_less"}</i>
@@ -182,36 +182,36 @@ function ProductMenu(props) {
                     <Link to="/products/Αποθηκευτικά-Μέσα/Flash-Drivers"><li>Flash Drivers</li></Link>
                     <Link to="/products/Αποθηκευτικά-Μέσα/Memory-Cards"><li>Memory Cards</li></Link>
                 </ul>}
-                <Link to="/products/Μultimedia/Game-Controllers-Accessories"><li>Game Controllers & Accessories</li></Link>
-                <Link to="/products/Μultimedia/Pointing-Devices"><li>Pointing Devices</li></Link>
-                <Link to="/products/Μultimedia/3D-Pen"><li>3D Pen</li></Link>
+                <Link to="/products/Multimedia/Game-Controllers-Accessories"><li>Game Controllers & Accessories</li></Link>
+                <Link to="/products/Multimedia/Pointing-Devices"><li>Pointing Devices</li></Link>
+                <Link to="/products/Multimedia/3D-Pen"><li>3D Pen</li></Link>
                 <li className="menu-header" onClick={() => setSoundSystemModal(!soundSystemModal)}>
                     <h5>Ηχοσυστήματα</h5>
                     <i className="material-icons expand">{!soundSystemModal ? "expand_more" : "expand_less"}</i>
                 </li>
                 {soundSystemModal && <ul className="second-modal">
-                    <Link to="/products/Μultimedia/Αξεσουάρ-Ήχου"><li>Αξεσουάρ Ήχου</li></Link>
-                    <Link to="/products/Μultimedia/Ηχοσυστήματα-Αυτοκινήτου"><li>Ηχοσυστήματα Αυτοκινήτου</li></Link>
-                    <Link to="/products/Μultimedia/Ηχοσυστήματα"><li>Ηχοσυστήματα</li></Link>
-                    <Link to="/products/Μultimedia/Φορητά-Ηχοσυστήματα"><li>Φορητά Ηχοσυστήματα</li></Link>
-                    <Link to="/products/Μultimedia/Πικάπ"><li>Πικάπ</li></Link>
-                    <Link to="/products/Μultimedia/Ραδιόφωνα"><li>Ραδιόφωνα</li></Link>
-                    <Link to="/products/Μultimedia/Karaoke"><li>Karaoke</li></Link>
-                    <Link to="/products/Μultimedia/Walkie-Talkie-Συσκευές-Υπαγόρευσης"><li>Walkie Talkie-Συσκευές Υπαγόρευσης</li></Link>
+                    <Link to="/products/Multimedia/Αξεσουάρ-Ήχου"><li>Αξεσουάρ Ήχου</li></Link>
+                    <Link to="/products/Multimedia/Ηχοσυστήματα-Αυτοκινήτου"><li>Ηχοσυστήματα Αυτοκινήτου</li></Link>
+                    <Link to="/products/Multimedia/Ηχοσυστήματα"><li>Ηχοσυστήματα</li></Link>
+                    <Link to="/products/Multimedia/Φορητά-Ηχοσυστήματα"><li>Φορητά Ηχοσυστήματα</li></Link>
+                    <Link to="/products/Multimedia/Πικάπ"><li>Πικάπ</li></Link>
+                    <Link to="/products/Multimedia/Ραδιόφωνα"><li>Ραδιόφωνα</li></Link>
+                    <Link to="/products/Multimedia/Karaoke"><li>Karaoke</li></Link>
+                    <Link to="/products/Multimedia/Walkie-Talkie-Συσκευές-Υπαγόρευσης"><li>Walkie Talkie-Συσκευές Υπαγόρευσης</li></Link>
                 </ul>}
                 <li className="menu-header" onClick={() => setTvModal(!tvModal)}>
                     <h5>Τηλεοράσεις</h5>
                     <i className="material-icons expand">{!tvModal ? "expand_more" : "expand_less"}</i>
                 </li>
                 {tvModal && <ul className="second-modal">
-                    <Link to="/products/Μultimedia/Τηλεοράσεις"><li>Τηλεοράσεις</li></Link>
-                    <Link to="/products/Μultimedia/Φορήτες-Τηλεοράσεις"><li>Φορήτες Τηλεοράσεις</li></Link>
-                    <Link to="/products/Μultimedia/Home-Cinema"><li>Home Cinema</li></Link>
-                    <Link to="/products/Μultimedia/Media-Players"><li>Media Players</li></Link>
-                    <Link to="/products/Μultimedia/Βάσεις-Στήριξης-TV"><li>Βάσεις Στήριξης TV</li></Link>
-                    <Link to="/products/Μultimedia/Κεραίες-TV"><li>Κεραίες</li></Link>
-                    <Link to="/products/Μultimedia/Ψηφιακοί-Δεκτές-Αποκωδικοποιητές"><li>Ψηφιακοί Δεκτές/<br/>Αποκωδικοποιητές</li></Link>
-                    <Link to="/products/Μultimedia/Αξεσουάρ-TV"><li>Αξεσουάρ Τηλεόρασης</li></Link>
+                    <Link to="/products/Multimedia/Τηλεοράσεις"><li>Τηλεοράσεις</li></Link>
+                    <Link to="/products/Multimedia/Φορήτες-Τηλεοράσεις"><li>Φορήτες Τηλεοράσεις</li></Link>
+                    <Link to="/products/Multimedia/Home-Cinema"><li>Home Cinema</li></Link>
+                    <Link to="/products/Multimedia/Media-Players"><li>Media Players</li></Link>
+                    <Link to="/products/Multimedia/Βάσεις-Στήριξης-TV"><li>Βάσεις Στήριξης TV</li></Link>
+                    <Link to="/products/Multimedia/Κεραίες-TV"><li>Κεραίες</li></Link>
+                    <Link to="/products/Multimedia/Ψηφιακοί-Δεκτές-Αποκωδικοποιητές"><li>Ψηφιακοί Δεκτές/<br/>Αποκωδικοποιητές</li></Link>
+                    <Link to="/products/Multimedia/Αξεσουάρ-TV"><li>Αξεσουάρ Τηλεόρασης</li></Link>
                 </ul>}
             </ul>}
             <div className="menu-header" onClick={() => setOfficeSuppliesModal(!officeSuppliesModal)}>

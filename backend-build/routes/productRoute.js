@@ -669,7 +669,7 @@ router.get("/:id", /*#__PURE__*/function () {
                     });
                   }
 
-                  sql = 'SELECT _id, name, category, brand, image, description,countInStock, numReview, subcategory, weight, supplier, availability, visibility, totalPrice FROM products WHERE _id=?';
+                  sql = 'SELECT _id, name, category, brand, image, typicalImage, description,countInStock, numReview, subcategory, weight, supplier, availability, visibility, totalPrice FROM products WHERE _id=?';
                   connection.query(sql, productId, function (err, result, fields) {
                     if (err) {
                       connection.rollback(function () {

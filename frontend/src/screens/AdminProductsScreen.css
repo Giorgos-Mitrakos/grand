@@ -109,6 +109,17 @@ tbody>tr:nth-child(odd){
     width: 64%
 }
 
+#typical_image{
+    display: flex;
+    text-align: left;
+    height: 2rem;
+    align-items: center;
+}
+
+#typical_image>input{
+    width: auto;
+}
+
 .column_flex{
     display: flex;
     flex-direction: column;
@@ -210,4 +221,23 @@ tbody>tr:nth-child(odd){
     color: #312f8b;
     font-size: 1rem;
 }
+
+.continuebtn{
+    margin-top: 1rem;
+    width: 100%;
+}
+
+.continuebtn:disabled{    
+    color: #9291df;
+}
+
+.comp_table{
+    height: 30rem;
+    overflow-y: auto;
+}
+
+.comp_table_foot{
+    justify-content: flex-end;
+}
+
 

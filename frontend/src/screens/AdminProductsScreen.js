@@ -7,7 +7,7 @@ import {
     listFeatures, deleteFeature, listCategories, listSubcategories, changeVisibility,
     getProductsByCategoryAdmin, changeCategoryPercentage, listCompatibilityCompanies,
     getCompatibilityModels, insertCompatibility, getProductCompatibilities, deleteProductCompatibility,
-    listSuppliers, importProducts, getProductByNameAdmin
+    listSuppliers, importProducts, getProductByNameAdmin, insertAllPhonesCompatibility, deleteAllProductCompatibilities
 } from '../action/productActions';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ReactPaginate from 'react-paginate';
@@ -29,6 +29,7 @@ function AdminProductsScreen(props) {
     const [subcategory, setSubcategory] = useState('');
     const [supplier, setSupplier] = useState('');
     const [image, setImage] = useState('');
+    const [typicalImage, setTypicalImage] = useState(false);
     const [preview, setPreview] = useState();
     const [price, setPrice] = useState('');
     const [desirablePrice, setDesirablePrice] = useState('');
@@ -86,7 +87,6 @@ function AdminProductsScreen(props) {
             const reader = new FileReader();
             reader.onloadend = () => {
                 setPreview(reader.result)
-                console.log(reader.result)
             }
             reader.readAsDataURL(image)
         }
@@ -147,6 +147,7 @@ function AdminProductsScreen(props) {
         setSubcategory(product.subcategory);
         setSupplier(product.supplier);
         setImage(product.image);
+        setTypicalImage(product.typicalImage)
         setPrice(product.price);
         setDesirablePrice('');
         setAvailability(product.availability);
@@ -172,7 +173,8 @@ function AdminProductsScreen(props) {
             && price === supplier.price
             && pricePercentage === oldProduct.pricePercentage
             && availability === oldProduct.availability
-            && description === oldProduct.description) {
+            && description === oldProduct.description
+            && typicalImage===oldProduct.typicalImage) {
 
         }
         else {
@@ -184,6 +186,7 @@ function AdminProductsScreen(props) {
             product.append('supplier', supplier);
             product.append('subcategory', subcategory);
             product.append('image', image);
+            product.append('typicalImage', typicalImage);
             product.append('price', price);
             product.append('percentage', pricePercentage);
             product.append('availability', availability);
@@ -263,8 +266,16 @@ function AdminProductsScreen(props) {
         dispatch(insertCompatibility(id, compatibilityCompany, compatibilityModel));
     }
 
+    const addAllMobilesInCompatibility = () => {
+        dispatch(insertAllPhonesCompatibility(id));
+    }
+
     const deleteCompatibilityHandler = (compatibilityId) => {
         dispatch(deleteProductCompatibility(compatibilityId));
+    }
+
+    const deleteAllCompatibilityHandler = (product_id) => {
+        dispatch(deleteAllProductCompatibilities(product_id));
     }
 
     function handlePageClick({ selected: selectedPage }) {
@@ -440,6 +451,13 @@ function AdminProductsScreen(props) {
                                         accept=".jpg, .jpeg, .png, .webp" onChange={(e) => handleChange(e)}>
                                     </input>
                                 </li>
+                                <li>
+                                    <div id="typical_image">
+                                        <label htmlFor="product-typical-image">Ενδεικτική Φωτογραφία:</label>
+                                        <input type="checkbox" id="product-typical-image" checked={typicalImage}
+                                        onChange={(e) => setTypicalImage(!typicalImage)}></input>
+                                    </div>
+                                </li>
                                 <li id="row">
                                     <label htmlFor="product-price">Τιμή:</label>
                                     <input type="text" name="product-price" id="product-price" value={price} required
@@ -513,11 +531,17 @@ function AdminProductsScreen(props) {
                                                 )}
                                             </select>}
                                 </div>
-                                <div>
+                                <div style={{ alignItems: 'flex-end' }}>
                                     <button className="button continuebtn" onClick={addCompatibility} disabled={compatibilityModel === ""}>Προσθήκη</button>
                                 </div>
                             </li>
-                            <li>
+                            {(subcategory === 'Θήκες-Κινητών' || subcategory === 'Προστασία-Οθόνης')
+                                && <li style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                    <div>
+                                        <button className="button continuebtn" onClick={addAllMobilesInCompatibility}>Όλα τα κινητά</button>
+                                    </div>
+                                </li>}
+                            <li className="comp_table">
                                 <table>
                                     <thead>
                                         <tr>
@@ -539,6 +563,14 @@ function AdminProductsScreen(props) {
                                                     </tr>
                                                 ))}
                                     </tbody>
+                                    <tfoot className="comp_table_foot">
+                                        <td></td>
+                                        <td></td>
+                                        <td>
+                                            <button className="button admin-button" onClick={() => deleteAllCompatibilityHandler(id)}>Διαγραφή Όλων</button>
+                                        </td>
+
+                                    </tfoot>
                                 </table>
                             </li>
                             <hr></hr>
@@ -608,7 +640,7 @@ function AdminProductsScreen(props) {
         }
         <div className="search_by_name">
             <label>Αναζήτηση με Όνομα: </label>
-            <input type="text" value={nameSearch} placeholder="Όνομα Προϊόντος" onChange={(e)=>setNameSearch(e.target.value)}></input>
+            <input type="text" value={nameSearch} placeholder="Όνομα Προϊόντος" onChange={(e) => setNameSearch(e.target.value)}></input>
             <button className="button admin-button" onClick={searchByNameHandler}>
                 <span class="material-icons" data-tip data-for="admin_search_product_by_name">
                     search

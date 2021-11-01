@@ -39,14 +39,14 @@ router.post("/createproduct", isAuth, isAdmin, upload.single('image'), async (re
   mysqlConnection.getConnection(function (err, connection) {
     if (err) throw err; // not connected!
 
-    var sql = "INSERT INTO products (name, category, brand, subcategory, supplier, image, price, percentage,availability, description, CreatedBy, CreatedAt, countInStock) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 10)";
+    var sql = "INSERT INTO products (name, category, brand, subcategory, supplier, image, typicalImage, price, percentage,availability, description, CreatedBy, CreatedAt, countInStock) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 10)";
     connection.query(sql, [req.body.name, req.body.category, req.body.brand, req.body.subcategory, req.body.supplier, req.file.path.slice(15, req.file.path.length),
-    req.body.price, req.body.percentage, req.body.availability, req.body.description, req.user.username, new Date, req.body.countInStock], function (err, result, fields) {
+    req.body.typicalImage,req.body.price, req.body.percentage, req.body.availability, req.body.description, req.user.username, new Date, req.body.countInStock], function (err, result, fields) {
       if (err) throw err;
 
       let insertedId = result.insertId
 
-      sql = "INSERT INTO productsHistory (product_id, name, category, brand, subcategory, supplier, image, price, percentage, availability, description, CreatedBy, CreatedAt, countInStock) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, availability, description, CreatedBy, CreatedAt, countInStock FROM products WHERE _id=?";
+      sql = "INSERT INTO productsHistory (product_id, name, category, brand, subcategory, supplier, image, typicalImage, price, percentage, availability, description, CreatedBy, CreatedAt, countInStock) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, availability, description, CreatedBy, CreatedAt, countInStock FROM products WHERE _id=?";
       connection.query(sql, [insertedId], function (err, result, fields) {
         if (err) throw err;
 
@@ -592,16 +592,27 @@ router.put("/createproduct/:id", isAuth, isAdmin, upload.single('image'), async 
           imagePath = req.file.path.slice(15, req.file.path.length)
         }
 
-        sql = "UPDATE products SET name=?, category=?, brand=?, subcategory=?, supplier=?, image=?, price=?, percentage=?, availability=?, description=? WHERE _id=?";
-        connection.query(sql, [req.body.name, req.body.category, req.body.brand, req.body.subcategory, req.body.supplier,
-          imagePath, req.body.price, req.body.percentage, req.body.availability, req.body.description, productId], function (err, result, fields) {
+        let typicalImage=0;
+        if(req.body.typicalImage==='true')
+        {
+          typicalImage=1
+        }
+        
+        console.log(typicalImage)
+        sql = `UPDATE products SET name=?, category=?, brand=?, subcategory=?, 
+        supplier=?, image=?, price=?, percentage=?, availability=?, description=?, 
+        typicalImage=? WHERE _id=?`;
+        connection.query(sql, [req.body.name, req.body.category, req.body.brand, 
+          req.body.subcategory, req.body.supplier, imagePath, req.body.price, 
+          req.body.percentage, req.body.availability, req.body.description,
+          typicalImage, productId], function (err, result, fields) {
             if (err) {
               connection.rollback(function () {
                 throw err;
               });
             }
 
-            sql = "INSERT INTO productsHistory (product_id, name, category, brand, subcategory, supplier, image, price, percentage, availability, visibility, description, CreatedBy, CreatedAt, countInStock, UpdatedBy, UpdatedAt) SELECT _id, name, category, brand, subcategory, supplier, image, price, percentage, availability, visibility, description, CreatedBy, CreatedAt, countInStock, ?, ? FROM products WHERE _id=?";
+            sql = "INSERT INTO productsHistory (product_id, name, category, brand, subcategory, supplier, image, typicalImage, price, percentage, availability, visibility, description, CreatedBy, CreatedAt, countInStock, UpdatedBy, UpdatedAt) SELECT _id, name, category, brand, subcategory, supplier, image, typicalImage, price, percentage, availability, visibility, description, CreatedBy, CreatedAt, countInStock, ?, ? FROM products WHERE _id=?";
             connection.query(sql, [req.user.username, new Date, productId], function (err, result, fields) {
               if (err) {
                 connection.rollback(function () {
@@ -652,7 +663,8 @@ router.put("/createproduct/:id", isAuth, isAdmin, upload.single('image'), async 
                           price: row.price,
                           percentage: row.percentage,
                           description: row.description,
-                          countInStock: row.countInStock
+                          countInStock: row.countInStock,
+                          typicalImage: row.typicalImage
                         };
 
                       });
@@ -1407,6 +1419,122 @@ router.post("/insertcompatibilitycompany", isAuth, isAdmin, async (req, res, nex
 
 })
 
+router.post("/deletecompatibilitycompany", isAuth, isAdmin, async (req, res, next) => {
+
+  mysqlConnection.getConnection(function (err, connection) {
+    if (err) throw err; // not connected!
+    /* Begin transaction */
+    connection.beginTransaction(function (err) {
+      if (err) { throw err; }
+
+      let sql = "DELETE FROM compatibility_model WHERE compatibility_company_id=?";
+      connection.query(sql, [req.body.companyID], function (err, result, fields) {
+        if (err) {
+          connection.rollback(function () {
+            throw err;
+          });
+        }
+
+        sql = "DELETE FROM compatibility_company WHERE compatibility_company_id=?";
+        connection.query(sql, [req.body.companyID], function (err, result, fields) {
+          if (err) {
+            connection.rollback(function () {
+              throw err;
+            });
+          }
+
+          let sql = "SELECT phone_brand_id FROM phone_brands WHERE brand=? ";
+          connection.query(sql, [req.body.company], function (err, result) {
+            if (err) {
+              connection.rollback(function () {
+                throw err;
+              });
+            }
+
+            let phoneID = result[0]?.phone_brand_id;
+
+            if (phoneID > 0) {
+
+              sql = "DELETE FROM phone_models WHERE phone_brand_id=?";
+              connection.query(sql, [phoneID], function (err, result, fields) {
+                if (err) {
+                  connection.rollback(function () {
+                    throw err;
+                  });
+                }
+
+                sql = "DELETE FROM phone_brands WHERE phone_brand_id=?";
+                connection.query(sql, [phoneID], function (err, result, fields) {
+                  if (err) {
+                    connection.rollback(function () {
+                      throw err;
+                    });
+                  }
+
+                  sql = "SELECT * FROM compatibility_company ORDER BY company ";
+                  connection.query(sql, [req.body.companyID], function (err, result) {
+                    if (err) {
+                      connection.rollback(function () {
+                        throw err;
+                      });
+                    }
+                    console.log("Read phone brands succeed");
+
+                    connection.commit(function (err) {
+                      if (err) {
+                        connection.rollback(function () {
+                          throw err;
+                        });
+                      }
+                    });
+
+                    res.send(result);
+                    console.log('Transaction Completed Successfully.');
+                    connection.release();
+
+                  });
+
+                });
+
+              });
+
+            }
+            else {
+              sql = "SELECT * FROM compatibility_company ORDER BY company ";
+              connection.query(sql, [req.body.companyID], function (err, result) {
+                if (err) {
+                  connection.rollback(function () {
+                    throw err;
+                  });
+                }
+                console.log("Read phone brands succeed");
+
+
+                connection.commit(function (err) {
+                  if (err) {
+                    connection.rollback(function () {
+                      throw err;
+                    });
+                  }
+                  res.send(result);
+                  console.log('Transaction Completed Successfully.');
+                  connection.release();
+                });
+              });
+            }
+
+          });
+
+        });
+
+      })
+
+    });
+    /* End transaction */
+  })
+
+})
+
 router.post("/insertcompatibilitymodel", isAuth, isAdmin, async (req, res, next) => {
   mysqlConnection.getConnection(function (err, connection) {
     if (err) throw err; // not connected!
@@ -1434,6 +1562,94 @@ router.post("/insertcompatibilitymodel", isAuth, isAdmin, async (req, res, next)
 
 })
 
+router.post("/deletecompatibilitymodel/", isAuth, isAdmin, async (req, res, next) => {
+
+  mysqlConnection.getConnection(function (err, connection) {
+    if (err) throw err; // not connected!
+    /* Begin transaction */
+    connection.beginTransaction(function (err) {
+      if (err) { throw err; }
+
+      let sql = "DELETE FROM compatibility_model WHERE compatibility_model_id=?";
+      connection.query(sql, [req.body.modelID], function (err, result, fields) {
+        if (err) {
+          connection.rollback(function () {
+            throw err;
+          });
+        }
+
+        sql = "SELECT phone_brand_id FROM phone_brands WHERE brand=?";
+        connection.query(sql, [req.body.company], function (err, result) {
+          if (err) {
+            connection.rollback(function () {
+              throw err;
+            });
+          }
+
+          let brandID = result[0]?.phone_brand_id;
+
+          if (brandID > 0) {
+            sql = "DELETE FROM phone_models WHERE phone_brand_id=? AND model=? ";
+            connection.query(sql, [brandID, req.body.model], function (err, result) {
+              if (err) {
+                connection.rollback(function () {
+                  throw err;
+                });
+              }
+
+              sql = "SELECT * FROM compatibility_model WHERE compatibility_company_id=? ORDER BY model ";
+              connection.query(sql, [req.body.compatibilityCompanyId], function (err, result) {
+                if (err) {
+                  connection.rollback(function () {
+                    throw err;
+                  });
+                }
+                console.log("Read phone brands succeed");
+
+                connection.commit(function (err) {
+                  if (err) {
+                    connection.rollback(function () {
+                      throw err;
+                    });
+                  }
+                  res.send(result);
+                  console.log('Transaction Completed Successfully.');
+                  connection.release();
+                });
+              });
+            })
+          }
+          else {
+            sql = "SELECT * FROM compatibility_model WHERE compatibility_company_id=? ORDER BY model ";
+            connection.query(sql, [req.body.compatibilityCompanyId], function (err, result) {
+              if (err) {
+                connection.rollback(function () {
+                  throw err;
+                });
+              }
+              console.log("Read phone brands succeed");
+
+              connection.commit(function (err) {
+                if (err) {
+                  connection.rollback(function () {
+                    throw err;
+                  });
+                }
+                res.send(result);
+                console.log('Transaction Completed Successfully.');
+                connection.release();
+              });
+            });
+          }
+        });
+
+      });
+
+    });
+    /* End transaction */
+  })
+});
+
 router.post("/insertcompatibility", isAuth, isAdmin, async (req, res, next) => {
   mysqlConnection.getConnection(function (err, connection) {
     if (err) throw err; // not connected!
@@ -1441,7 +1657,10 @@ router.post("/insertcompatibility", isAuth, isAdmin, async (req, res, next) => {
     connection.beginTransaction(function (err) {
       if (err) { throw err; }
 
-      var sql = "INSERT INTO compatibilities (product_id,compatibility_company,compatibility_model) VALUES (?,?,?)";
+      var sql = `SELECT COUNT(*) as count FROM compatibilities
+                WHERE product_id=? 
+                AND compatibility_company=?
+                AND compatibility_model=?`;
       connection.query(sql, [req.body.productId, req.body.company, req.body.model], function (err, result, fields) {
         if (err) {
           connection.rollback(function () {
@@ -1449,18 +1668,112 @@ router.post("/insertcompatibility", isAuth, isAdmin, async (req, res, next) => {
           });
         }
 
-        let compat_id = result.insertId;
+        let count = result[0];
 
-        var sql = "INSERT INTO compatibilitiesHistory (product_id, compatibility_company, compatibility_model, UpdatedBy, UpdatedAt, actions) VALUES (?,?,?,?,?,?)";
-        connection.query(sql, [req.body.productId, req.body.company, req.body.model, req.user.username, new Date, "Προσθήκη"], function (err, result, fields) {
+        if (count.count === 0) {
+          var sql = `INSERT INTO compatibilities (product_id,compatibility_company,compatibility_model) VALUES (?,?,?)`;
+          connection.query(sql, [req.body.productId, req.body.company, req.body.model], function (err, result, fields) {
+            if (err) {
+              connection.rollback(function () {
+                throw err;
+              });
+            }
+
+            let compat_id = result.insertId;
+
+            var sql = "INSERT INTO compatibilitiesHistory (product_id, compatibility_company, compatibility_model, UpdatedBy, UpdatedAt, actions) VALUES (?,?,?,?,?,?)";
+            connection.query(sql, [req.body.productId, req.body.company, req.body.model, req.user.username, new Date, "Προσθήκη"], function (err, result, fields) {
+              if (err) {
+                connection.rollback(function () {
+                  throw err;
+                });
+              }
+
+              sql = "SELECT * FROM compatibilities WHERE product_id=? ORDER BY compatibility_company ASC, compatibility_model ASC";
+              connection.query(sql, [req.body.productId], function (err, result, fields) {
+                if (err) {
+                  connection.rollback(function () {
+                    throw err;
+                  });
+                }
+
+                const compatibilities = result;
+
+                connection.commit(function (err) {
+                  if (err) {
+                    connection.rollback(function () {
+                      throw err;
+                    });
+                  }
+                  res.status(201).send(compatibilities);
+                  console.log('Transaction Completed Successfully.');
+                });
+              });
+            });
+          });
+        }
+        else {
+          let sql = "SELECT * FROM compatibilities WHERE product_id=? ORDER BY compatibility_company ASC, compatibility_model ASC";
+          connection.query(sql, [req.body.productId], function (err, result, fields) {
+            if (err) {
+              connection.rollback(function () {
+                throw err;
+              });
+            }
+            res.status(200).send(result);
+          })
+        }
+
+      });
+      connection.release();
+
+      // Handle error after the release.
+      if (err) throw err;
+    })
+  });
+
+})
+
+router.post("/insertallphonescompatibility", isAuth, isAdmin, async (req, res, next) => {
+  mysqlConnection.getConnection(function (err, connection) {
+    if (err) throw err; // not connected!
+
+    connection.beginTransaction(function (err) {
+      if (err) { throw err; }
+
+      var sql = `INSERT INTO compatibilities (product_id,compatibility_company,compatibility_model)
+                SELECT ${req.body.productId},phone_brands.brand,phone_models.model 
+                FROM phone_brands
+                INNER JOIN phone_models
+                ON phone_brands.phone_brand_id=phone_models.phone_brand_id
+                WHERE (SELECT COUNT(*) FROM compatibilities
+                WHERE product_id=${req.body.productId}
+                AND compatibility_company=phone_brands.brand
+                AND compatibility_model=phone_models.model )=0`;
+      connection.query(sql, function (err, result, fields) {
+        if (err) {
+          connection.rollback(function () {
+            throw err;
+          });
+        }
+
+        var sql = `INSERT INTO compatibilitiesHistory (product_id, compatibility_company, compatibility_model, UpdatedBy, UpdatedAt, actions)
+                  SELECT ${req.body.productId},phone_brands.brand,phone_models.model, ?, ?, "Μαζική Προσθήκη" FROM phone_brands
+                  INNER JOIN phone_models
+                  ON phone_brands.phone_brand_id=phone_models.phone_brand_id
+                  WHERE (SELECT COUNT(*) FROM compatibilitiesHistory
+                  WHERE product_id=${req.body.productId}
+                  AND compatibility_company=phone_brands.brand
+                  AND compatibility_model=phone_models.model )=0`;
+        connection.query(sql, [req.user.username, new Date], function (err, result, fields) {
           if (err) {
             connection.rollback(function () {
               throw err;
             });
           }
 
-          sql = "SELECT * FROM compatibilities WHERE compatibility_id=? ORDER BY compatibility_company ASC, compatibility_model ASC";
-          connection.query(sql, [compat_id], function (err, result, fields) {
+          var sql = "SELECT * FROM compatibilities WHERE product_id=? ORDER BY compatibility_company ASC,compatibility_model ASC";
+          connection.query(sql, [req.body.productId], function (err, result, fields) {
             if (err) {
               connection.rollback(function () {
                 throw err;
@@ -1486,6 +1799,31 @@ router.post("/insertcompatibility", isAuth, isAdmin, async (req, res, next) => {
       // Handle error after the release.
       if (err) throw err;
     })
+  });
+
+})
+
+router.post("/deleteallcompatibilities", isAuth, isAdmin, async (req, res, next) => {
+  mysqlConnection.getConnection(function (err, connection) {
+    if (err) throw err; // not connected!
+
+    var sql = `DELETE FROM compatibilities WHERE product_id=?`;
+    connection.query(sql, [req.body.product_id], function (err, result, fields) {
+      if (err) throw err;
+
+      sql = "SELECT * FROM compatibilities WHERE product_id=? ORDER BY compatibility_company ASC,compatibility_model ASC";
+      connection.query(sql, [req.body.product_id], function (err, result, fields) {
+        if (err) throw err;
+
+        res.status(201).send(result);
+      });
+    });
+
+
+    connection.release();
+
+    // Handle error after the release.
+    if (err) throw err;
   });
 
 })

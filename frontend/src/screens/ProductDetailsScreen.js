@@ -8,6 +8,7 @@ import { addToCart, addToLocalCart } from '../action/cartActions';
 import { addToWishList } from '../action/wishListActions';
 import createDOMPurify from "dompurify";
 import { Helmet } from 'react-helmet';
+import TypicalImage from '../components/badges/TypicalImage';
 
 
 function ProductDetailScreen(props) {
@@ -76,6 +77,7 @@ function ProductDetailScreen(props) {
                         <div className="product-details-wrapper">
                             <div className="product-detail-image">
                                 <img className="product-img" src={product.image} alt={product.name}></img>
+                                {product.typicalImage===1 && <TypicalImage/>}
                             </div>
                             <div className="product-details">
                                 <ul>

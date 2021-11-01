@@ -73,7 +73,19 @@ import { PRODUCT_LIST_SUCCESS, PRODUCT_LIST_FAIL,
        STORE_FILTERS,
        STORE_BRAND_FILTERS,
        STORE_COMPATIBILITY_COMPANY_FILTERS,
-       STORE_COMPATIBILITY_MODEL_FILTERS} from '../constants/productConstant';
+       STORE_COMPATIBILITY_MODEL_FILTERS,
+       INSERT_ALL_PHONES_COMPATIBILITY_REQUEST,
+       INSERT_ALL_PHONES_COMPATIBILITY_SUCCESS,
+       INSERT_ALL_PHONES_COMPATIBILITY_FAIL,
+       DELETE_ALL_PRODUCT_COMPATIBILITY_REQUEST,
+       DELETE_ALL_PRODUCT_COMPATIBILITY_SUCCESS,
+       DELETE_ALL_PRODUCT_COMPATIBILITY_FAIL,
+       DELETE_COMPATIBILITY_COMPANY_REQUEST,
+       DELETE_COMPATIBILITY_COMPANY_FAIL,
+       DELETE_COMPATIBILITY_COMPANY_SUCCESS,
+       DELETE_COMPATIBILITY_MODEL_REQUEST,
+       DELETE_COMPATIBILITY_MODEL_SUCCESS,
+       DELETE_COMPATIBILITY_MODEL_FAIL} from '../constants/productConstant';
 
 function sortCompanies( a, b ) {
 if ( a.company < b.company ){
@@ -478,6 +490,12 @@ function compatibilityCompaniesReducer(state={companies:[]},action){
             };
         case INSERT_COMPATIBILITY_COMPANY_FAIL:
             return {loading:false, error : action.payload};
+        case DELETE_COMPATIBILITY_COMPANY_REQUEST:
+            return {loading:true, companies: [...state.companies]};
+        case DELETE_COMPATIBILITY_COMPANY_SUCCESS:
+            return {loading:false, companies : action.payload};
+        case DELETE_COMPATIBILITY_COMPANY_FAIL:
+            return {loading:false, error : action.payload};
         default:
             return state;
     }
@@ -500,6 +518,12 @@ function compatibilityModelsReducer(state={models:[]},action){
             };
         case INSERT_COMPATIBILITY_MODEL_FAIL:
             return {loading:false, error : action.payload};
+        case DELETE_COMPATIBILITY_MODEL_REQUEST:
+            return {loading:true, models: [...state.models]};
+        case DELETE_COMPATIBILITY_MODEL_SUCCESS:
+            return {loading:false, models : action.payload};
+        case DELETE_COMPATIBILITY_MODEL_FAIL:
+            return {loading:false, error : action.payload};
         default:
             return state;
     }
@@ -516,9 +540,8 @@ function productCompatibilitiesReducer(state={productCompat:[]},action){
         case INSERT_PRODUCT_COMPATIBILITY_REQUEST:
             return {loading:true, productCompat: [...state.productCompat]};
         case INSERT_PRODUCT_COMPATIBILITY_SUCCESS:
-            let item = action.payload;
             return {loadingSave:false,
-                productCompat :[...state.productCompat,item[0]].sort(sortCompatibilities)
+                productCompat :action.payload
             };
         case INSERT_PRODUCT_COMPATIBILITY_FAIL:
             return {loading:false, error : action.payload};
@@ -530,6 +553,18 @@ function productCompatibilitiesReducer(state={productCompat:[]},action){
                 productCompat :state.productCompat.filter(x=>x.compatibility_id!==delId)
             };
         case DELETE_PRODUCT_COMPATIBILITY_FAIL:
+            return {loading:false, error : action.payload};
+        case INSERT_ALL_PHONES_COMPATIBILITY_REQUEST:
+            return {loading:true, productCompat: [...state.productCompat]};
+        case INSERT_ALL_PHONES_COMPATIBILITY_SUCCESS:
+            return {loading:false, productCompat : action.payload};
+        case INSERT_ALL_PHONES_COMPATIBILITY_FAIL:
+            return {loading:false, error : action.payload};
+        case DELETE_ALL_PRODUCT_COMPATIBILITY_REQUEST:
+            return {loading:true, productCompat: [...state.productCompat]};
+        case DELETE_ALL_PRODUCT_COMPATIBILITY_SUCCESS:
+            return {loading:false, productCompat : action.payload};
+        case DELETE_ALL_PRODUCT_COMPATIBILITY_FAIL:
             return {loading:false, error : action.payload};
         default:
             return state;
